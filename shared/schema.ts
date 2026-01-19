@@ -104,17 +104,46 @@ export interface Subscriber {
   subscribedAt: string;
 }
 
-export interface RoutineArticle {
+export type PageType = 'routine' | 'real-estate' | 'invest';
+export type RoutineCategory = 'monthly' | 'routine' | 'failure' | 'gap';
+export type RealEstateCategory = 'buy' | 'subscription' | 'rent' | 'tax';
+export type InvestCategory = 'stock' | 'reit-etf' | 'dividend' | 'portfolio';
+export type ArticleCategory = RoutineCategory | RealEstateCategory | InvestCategory;
+
+export interface Article {
   id: string;
+  pageType: PageType;
   title: string;
   summary: string;
   content: string;
-  category: 'monthly' | 'routine' | 'failure' | 'gap';
+  category: ArticleCategory;
+  thumbnail?: string;
   date: string;
   readTime: number;
   views: number;
   featured: boolean;
+  isPinned?: boolean;
 }
+
+export interface RoutineArticle extends Omit<Article, 'pageType' | 'category' | 'thumbnail' | 'isPinned'> {
+  category: RoutineCategory;
+}
+
+export const insertArticleSchema = z.object({
+  pageType: z.enum(['routine', 'real-estate', 'invest']),
+  title: z.string().min(1, '제목은 필수입니다'),
+  summary: z.string().min(1, '요약은 필수입니다'),
+  content: z.string().min(1, '본문은 필수입니다'),
+  category: z.string().min(1),
+  thumbnail: z.string().optional(),
+  date: z.string().optional().default(() => new Date().toISOString().split('T')[0]),
+  readTime: z.number().optional().default(5),
+  views: z.number().optional().default(0),
+  featured: z.boolean().optional().default(false),
+  isPinned: z.boolean().optional().default(false),
+});
+
+export type InsertArticle = z.infer<typeof insertArticleSchema>;
 
 export const insertRoutineArticleSchema = z.object({
   title: z.string().min(1, '제목은 필수입니다'),

@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Subscriber, type RoutineArticle } from "@shared/schema";
+import { type User, type InsertUser, type Subscriber, type RoutineArticle, type Article, type PageType } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -13,18 +13,26 @@ export interface IStorage {
   createRoutineArticle(article: Omit<RoutineArticle, 'id'>): Promise<RoutineArticle>;
   updateRoutineArticle(id: string, article: Partial<Omit<RoutineArticle, 'id'>>): Promise<RoutineArticle | undefined>;
   deleteRoutineArticle(id: string): Promise<boolean>;
+  getArticles(pageType: PageType, category?: string): Promise<Article[]>;
+  getArticle(id: string): Promise<Article | undefined>;
+  createArticle(article: Omit<Article, 'id'>): Promise<Article>;
+  updateArticle(id: string, article: Partial<Omit<Article, 'id'>>): Promise<Article | undefined>;
+  deleteArticle(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private subscribers: Map<string, Subscriber>;
   private routineArticles: Map<string, RoutineArticle>;
+  private articles: Map<string, Article>;
 
   constructor() {
     this.users = new Map();
     this.subscribers = new Map();
     this.routineArticles = new Map();
+    this.articles = new Map();
     this.seedDefaultArticles();
+    this.seedDefaultPageArticles();
   }
 
   private seedDefaultArticles() {
@@ -151,6 +159,153 @@ export class MemStorage implements IStorage {
 
   async deleteRoutineArticle(id: string): Promise<boolean> {
     return this.routineArticles.delete(id);
+  }
+
+  private seedDefaultPageArticles() {
+    const defaultArticles: Article[] = [
+      {
+        id: 're-1',
+        pageType: 'real-estate',
+        title: '2026년 수도권 아파트 시장 전망',
+        summary: '올해 수도권 부동산 시장은 어떻게 될까요? 금리, 공급, 정책 변화를 종합적으로 분석합니다.',
+        content: '2026년 수도권 아파트 시장에 대한 상세 분석입니다...',
+        category: 'buy',
+        date: '2026-01-19',
+        readTime: 7,
+        views: 3240,
+        featured: true,
+        isPinned: true
+      },
+      {
+        id: 're-2',
+        pageType: 'real-estate',
+        title: '청약 가점 계산하는 법',
+        summary: '청약 가점제의 구성요소와 계산 방법을 상세히 알려드립니다.',
+        content: '청약 가점제에 대한 완벽 가이드입니다...',
+        category: 'subscription',
+        date: '2026-01-18',
+        readTime: 5,
+        views: 4120,
+        featured: true,
+        isPinned: true
+      },
+      {
+        id: 're-3',
+        pageType: 'real-estate',
+        title: '전세 사기 피하는 체크리스트',
+        summary: '전세 계약 전 반드시 확인해야 할 10가지.',
+        content: '전세 사기를 피하는 방법을 상세히 설명합니다...',
+        category: 'rent',
+        date: '2026-01-16',
+        readTime: 6,
+        views: 5670,
+        featured: true,
+        isPinned: true
+      },
+      {
+        id: 're-4',
+        pageType: 'real-estate',
+        title: '취득세 절감 전략',
+        summary: '부동산 취득 시 세금을 줄이는 합법적인 방법들.',
+        content: '취득세 절감에 대한 상세 가이드입니다...',
+        category: 'tax',
+        date: '2026-01-10',
+        readTime: 8,
+        views: 2890,
+        featured: false,
+        isPinned: false
+      },
+      {
+        id: 'inv-1',
+        pageType: 'invest',
+        title: '초보자를 위한 주식 시작하기',
+        summary: '주식 투자를 처음 시작하는 분들을 위한 완벽 가이드.',
+        content: '주식 투자의 기초부터 실전까지 알려드립니다...',
+        category: 'stock',
+        date: '2026-01-19',
+        readTime: 7,
+        views: 4520,
+        featured: true,
+        isPinned: true
+      },
+      {
+        id: 'inv-2',
+        pageType: 'invest',
+        title: '부동산 리츠 추천 TOP 5',
+        summary: '소액으로 부동산에 투자하는 방법, 리츠!',
+        content: '추천 리츠 상품에 대한 상세 분석입니다...',
+        category: 'reit-etf',
+        date: '2026-01-18',
+        readTime: 5,
+        views: 3120,
+        featured: true,
+        isPinned: true
+      },
+      {
+        id: 'inv-3',
+        pageType: 'invest',
+        title: '배당주로 월 30만원 만들기',
+        summary: '배당투자로 월급 외 수입 만들기.',
+        content: '배당 투자 전략에 대한 상세 가이드입니다...',
+        category: 'dividend',
+        date: '2026-01-16',
+        readTime: 7,
+        views: 5670,
+        featured: true,
+        isPinned: true
+      },
+      {
+        id: 'inv-4',
+        pageType: 'invest',
+        title: '나만의 포트폴리오 구성하기',
+        summary: '자산배분의 기본 원칙과 실전 포트폴리오 예시.',
+        content: '포트폴리오 구성에 대한 상세 가이드입니다...',
+        category: 'portfolio',
+        date: '2026-01-12',
+        readTime: 8,
+        views: 2340,
+        featured: false,
+        isPinned: false
+      }
+    ];
+    defaultArticles.forEach(article => {
+      this.articles.set(article.id, article);
+    });
+  }
+
+  async getArticles(pageType: PageType, category?: string): Promise<Article[]> {
+    const articles = Array.from(this.articles.values()).filter(a => a.pageType === pageType);
+    const filtered = category 
+      ? articles.filter(a => a.category === category)
+      : articles;
+    return filtered.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+  }
+
+  async getArticle(id: string): Promise<Article | undefined> {
+    return this.articles.get(id);
+  }
+
+  async createArticle(article: Omit<Article, 'id'>): Promise<Article> {
+    const id = randomUUID();
+    const newArticle: Article = { ...article, id };
+    this.articles.set(id, newArticle);
+    return newArticle;
+  }
+
+  async updateArticle(id: string, updates: Partial<Omit<Article, 'id'>>): Promise<Article | undefined> {
+    const existing = this.articles.get(id);
+    if (!existing) return undefined;
+    const updated: Article = { ...existing, ...updates };
+    this.articles.set(id, updated);
+    return updated;
+  }
+
+  async deleteArticle(id: string): Promise<boolean> {
+    return this.articles.delete(id);
   }
 }
 
