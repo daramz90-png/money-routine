@@ -20,7 +20,7 @@ function HeroSection({
   date, 
   title, 
   subtitle, 
-  availableDates,
+  availableDates = [],
   selectedDate,
   onDateChange 
 }: { 
@@ -31,19 +31,20 @@ function HeroSection({
   selectedDate: string;
   onDateChange: (date: string) => void;
 }) {
-  const currentIndex = availableDates.indexOf(selectedDate);
-  const canGoPrev = currentIndex < availableDates.length - 1;
+  const safeAvailableDates = availableDates || [];
+  const currentIndex = safeAvailableDates.indexOf(selectedDate);
+  const canGoPrev = currentIndex >= 0 && currentIndex < safeAvailableDates.length - 1;
   const canGoNext = currentIndex > 0;
 
   const goToPrev = () => {
     if (canGoPrev) {
-      onDateChange(availableDates[currentIndex + 1]);
+      onDateChange(safeAvailableDates[currentIndex + 1]);
     }
   };
 
   const goToNext = () => {
     if (canGoNext) {
-      onDateChange(availableDates[currentIndex - 1]);
+      onDateChange(safeAvailableDates[currentIndex - 1]);
     }
   };
 
@@ -53,7 +54,7 @@ function HeroSection({
     return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}요일`;
   };
 
-  const isToday = selectedDate === availableDates[0];
+  const isToday = safeAvailableDates.length === 0 || selectedDate === safeAvailableDates[0];
 
   return (
     <section className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white py-12 sm:py-16 px-4">
@@ -80,7 +81,7 @@ function HeroSection({
           <div className="inline-flex flex-wrap items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full" data-testid="text-date">
             <Calendar className="w-5 h-5" />
             <span className="font-medium">{selectedDate ? formatDateKorean(selectedDate) : date}</span>
-            {!isToday && availableDates.length > 0 && (
+            {!isToday && (
               <Badge className="bg-amber-500 text-white border-0 ml-2">지난 호</Badge>
             )}
           </div>
@@ -97,9 +98,9 @@ function HeroSection({
           </Button>
         </div>
 
-        {availableDates.length > 1 && (
+        {safeAvailableDates.length > 1 && (
           <div className="mt-4 flex flex-wrap justify-center gap-2">
-            {availableDates.slice(0, 7).map((d) => (
+            {safeAvailableDates.slice(0, 7).map((d) => (
               <button
                 key={d}
                 onClick={() => onDateChange(d)}
@@ -739,6 +740,9 @@ export default function Home() {
         date={currentDate} 
         title={content.heroTitle || ''} 
         subtitle={content.heroSubtitle || ''} 
+        availableDates={availableDates}
+        selectedDate={selectedDate}
+        onDateChange={setSelectedDate}
       />
       
       <main className="max-w-6xl mx-auto px-4 py-8">
