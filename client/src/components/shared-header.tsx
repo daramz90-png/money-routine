@@ -6,8 +6,8 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { name: '쿠쿠의 루틴', href: '/', icon: BookOpen },
-  { name: '홈', href: '/home', icon: Home },
+  { name: '홈', href: '/', icon: Home },
+  { name: '쿠쿠의 루틴', href: '/column', icon: BookOpen },
   { name: '부동산', href: '/real-estate', icon: Building2 },
   { name: '투자', href: '/invest', icon: TrendingUp },
   { name: '관리자', href: '/admin', icon: Settings },
