@@ -10,6 +10,7 @@ import {
 import { SharedHeader } from '@/components/shared-header';
 import { useQuery } from '@tanstack/react-query';
 import type { Article } from '@shared/schema';
+import { getInvestImage } from '@/lib/article-images';
 
 const categories = [
   { id: 'stock', name: '주식 투자', icon: BarChart3 },
@@ -47,7 +48,7 @@ function ArticleCard({ article }: { article: Article }) {
       <Card className="overflow-hidden hover-elevate cursor-pointer bg-card/95 backdrop-blur-sm border-0 shadow-lg h-full" data-testid={`article-card-${article.id}`}>
         <div className="aspect-video relative overflow-hidden">
           <img 
-            src={article.thumbnail} 
+            src={getInvestImage(article.category)} 
             alt={article.title}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />

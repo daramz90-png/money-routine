@@ -10,6 +10,7 @@ import {
 import { SharedHeader } from '@/components/shared-header';
 import { useQuery } from '@tanstack/react-query';
 import type { RoutineArticle } from '@shared/schema';
+import { getColumnImage } from '@/lib/article-images';
 
 const categories = [
   { id: 'monthly', name: '월간 투자 일지', icon: Calendar },
@@ -46,7 +47,7 @@ function ArticleCard({ article }: { article: RoutineArticle }) {
       <Card className="overflow-hidden hover-elevate cursor-pointer bg-card/95 backdrop-blur-sm border-0 shadow-lg h-full" data-testid={`article-card-${article.id}`}>
         <div className="aspect-video relative overflow-hidden">
           <img 
-            src={'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400&h=225&fit=crop'} 
+            src={getColumnImage(article.category)} 
             alt={article.title}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />

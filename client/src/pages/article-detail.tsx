@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SharedHeader } from '@/components/shared-header';
 import type { Article, RoutineArticle } from '@shared/schema';
+import { getRealEstateImage, getInvestImage, getColumnImage } from '@/lib/article-images';
 
 const categoryLabels: Record<string, string> = {
   buy: '매매 전략',
@@ -35,6 +36,20 @@ const pageTypeBackLinks: Record<string, string> = {
   column: '/column',
   routine: '/routine',
 };
+
+function getArticleImage(pageType: string, category: string): string {
+  switch (pageType) {
+    case 'real-estate':
+      return getRealEstateImage(category);
+    case 'invest':
+      return getInvestImage(category);
+    case 'column':
+    case 'routine':
+      return getColumnImage(category);
+    default:
+      return getRealEstateImage(category);
+  }
+}
 
 export default function ArticleDetail() {
   const [, params] = useRoute('/:pageType/:id');
@@ -140,6 +155,15 @@ export default function ArticleDetail() {
               </div>
             </div>
           </header>
+
+          <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
+            <img 
+              src={getArticleImage(pageType, article.category)} 
+              alt={article.title}
+              className="w-full h-64 md:h-80 object-cover"
+              data-testid="img-article-hero"
+            />
+          </div>
 
           <Card className="p-6 md:p-8">
             <div 
