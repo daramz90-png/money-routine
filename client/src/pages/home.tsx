@@ -607,14 +607,15 @@ function ClosingSection({ closingMessage, closingSubMessage, subscribeButtonText
           {closingMessage || '오늘 하루도 차분하게, 그리고 흔들리지 않게 갑시다'}
         </p>
         <p className="text-muted-foreground mb-6">{closingSubMessage || '오늘도 화이팅입니다 ^^'}</p>
-        <Button 
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
-          onClick={() => alert('이웃추가 기능은 곧 오픈됩니다!')}
-          data-testid="button-subscribe"
-        >
-          <Bell className="w-4 h-4 mr-2" />
-          {subscribeButtonText || '이웃추가하고 돈되는 루틴 받기'}
-        </Button>
+        <Link href="/subscribe">
+          <Button 
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+            data-testid="button-subscribe"
+          >
+            <Bell className="w-4 h-4 mr-2" />
+            {subscribeButtonText || '이웃추가하고 돈되는 루틴 받기'}
+          </Button>
+        </Link>
       </Card>
     </section>
   );
