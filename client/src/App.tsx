@@ -14,6 +14,7 @@ import Subscribe from "@/pages/subscribe";
 import About from "@/pages/about";
 import RealEstate from "@/pages/real-estate";
 import Routine from "@/pages/routine";
+import Column from "@/pages/column";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/invest" component={Invest} />
       <Route path="/real-estate" component={RealEstate} />
       <Route path="/routine" component={Routine} />
+      <Route path="/column" component={Column} />
       <Route path="/tools" component={Tools} />
       <Route path="/tax" component={Tax} />
       <Route path="/savings" component={Savings} />
