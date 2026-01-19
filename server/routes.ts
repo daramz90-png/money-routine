@@ -201,10 +201,11 @@ export async function registerRoutes(
   app.post('/api/subscribe', async (req, res) => {
     try {
       const { name, email } = req.body;
-      if (!name || !email) {
-        return res.status(400).json({ error: 'Name and email are required' });
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
       }
-      const subscriber = await storage.addSubscriber(name, email);
+      const subscriberName = name || '구독자';
+      const subscriber = await storage.addSubscriber(subscriberName, email);
       res.json({ success: true, subscriber });
     } catch (error) {
       res.status(500).json({ error: 'Failed to subscribe' });
