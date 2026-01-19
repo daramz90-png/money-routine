@@ -336,7 +336,7 @@ function TimelineSection() {
 
         <div className="space-y-4">
           {monthlyRecords.map((record, index) => (
-            <Card key={index} className="p-6 bg-card border-0 shadow-md" data-testid={`timeline-${index}`}>
+            <Card key={index} className="p-6 bg-card/95 backdrop-blur-sm border-0 shadow-lg" data-testid={`timeline-${index}`}>
               <div className="flex flex-col md:flex-row md:items-start gap-4">
                 <div className="flex-shrink-0">
                   <Badge className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white border-0 text-sm px-3 py-1">
@@ -382,7 +382,7 @@ function DailyScheduleSection() {
           <h2 className="text-xl font-bold text-foreground">워킹맘의 하루</h2>
         </div>
 
-        <Card className="p-6 bg-card border-0 shadow-lg">
+        <Card className="p-6 bg-card/95 backdrop-blur-sm border-0 shadow-lg">
           <div className="space-y-4">
             {dailySchedule.map((item, index) => (
               <div key={index} className="flex items-center gap-4" data-testid={`schedule-${index}`}>
@@ -417,7 +417,7 @@ function ArticleCard({ article }: { article: Article }) {
   
   return (
     <Link href={`/routine/${article.id}`}>
-      <Card className="p-5 hover-elevate cursor-pointer bg-card border-0 shadow-md h-full" data-testid={`article-card-${article.id}`}>
+      <Card className="p-5 hover-elevate cursor-pointer bg-card/95 backdrop-blur-sm border-0 shadow-lg h-full" data-testid={`article-card-${article.id}`}>
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center text-white flex-shrink-0">
             {category && <category.icon className="w-6 h-6" />}
