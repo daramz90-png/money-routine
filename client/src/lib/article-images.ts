@@ -1,15 +1,15 @@
-import seoulApartment from '@assets/generated_images/seoul_apartment_market_skyline.png';
-import housingSubscription from '@assets/generated_images/housing_subscription_documents_calculator.png';
-import rentalFraud from '@assets/generated_images/rental_fraud_prevention_checklist.png';
-import propertyTax from '@assets/generated_images/property_tax_calculation_strategy.png';
-import stockBeginners from '@assets/generated_images/stock_investing_for_beginners.png';
-import reitInvestment from '@assets/generated_images/reit_real_estate_investment.png';
-import dividendIncome from '@assets/generated_images/dividend_income_money_growth.png';
-import portfolioAllocation from '@assets/generated_images/portfolio_asset_allocation_chart.png';
-import monthlyReview from '@assets/generated_images/monthly_investment_review_january.png';
-import workingMom from '@assets/generated_images/working_mom_daily_routine.png';
-import investmentFailure from '@assets/generated_images/investment_failure_lessons_learned.png';
-import successStory from '@assets/generated_images/real_estate_upgrade_success_story.png';
+import seoulApartment from '@assets/generated_images/seoul_apartment_skyline_clean.png';
+import housingSubscription from '@assets/generated_images/housing_documents_calculator_clean.png';
+import rentalFraud from '@assets/generated_images/rental_checklist_inspection_clean.png';
+import propertyTax from '@assets/generated_images/property_tax_calculation_clean.png';
+import stockBeginners from '@assets/generated_images/stock_investing_beginner_clean.png';
+import reitInvestment from '@assets/generated_images/reit_buildings_skyline_clean.png';
+import dividendIncome from '@assets/generated_images/dividend_money_growth_clean.png';
+import portfolioAllocation from '@assets/generated_images/portfolio_pie_chart_clean.png';
+import monthlyReview from '@assets/generated_images/monthly_investment_review_clean.png';
+import workingMom from '@assets/generated_images/working_mom_routine_clean.png';
+import investmentFailure from '@assets/generated_images/investment_failure_lesson_clean.png';
+import successStory from '@assets/generated_images/real_estate_success_clean.png';
 
 export const realEstateImages: Record<string, string> = {
   buy: seoulApartment,
