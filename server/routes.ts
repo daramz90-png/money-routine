@@ -104,20 +104,19 @@ async function fetchBitcoin(): Promise<{ value: string; change: number }> {
 
 async function fetchNASDAQ(): Promise<{ value: string; change: number }> {
   try {
-    const response = await fetchWithTimeout('https://query2.finance.yahoo.com/v8/finance/chart/%5EIXIC?interval=1d&range=1d');
-    const data = await response.json() as YahooFinanceResponse;
-    if (data.chart?.result?.[0]?.meta) {
-      const quote = data.chart.result[0].meta;
-      const currentPrice = quote.regularMarketPrice;
-      const prevClose = quote.previousClose;
-      if (currentPrice && prevClose) {
-        const change = ((currentPrice - prevClose) / prevClose * 100);
-        return { value: currentPrice.toFixed(2), change };
-      }
+    const response = await fetchWithTimeout('https://api.stock.naver.com/index/.IXIC/basic', 8000);
+    const data = await response.json() as { 
+      closePrice: string; 
+      fluctuationsRatio: string;
+    };
+    if (data.closePrice) {
+      const value = data.closePrice.replace(/,/g, '');
+      const change = parseFloat(data.fluctuationsRatio) || 0;
+      return { value: parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), change };
     }
   } catch {}
   try {
-    const response = await fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/%5EIXIC');
+    const response = await fetchWithTimeout('https://query2.finance.yahoo.com/v8/finance/chart/%5EIXIC?interval=1d&range=1d');
     const data = await response.json() as YahooFinanceResponse;
     if (data.chart?.result?.[0]?.meta) {
       const quote = data.chart.result[0].meta;
