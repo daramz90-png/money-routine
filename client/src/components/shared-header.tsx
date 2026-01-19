@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { 
-  Menu, X, Coins, BookOpen, Building2, TrendingUp, Settings, FileText
+  Menu, X, Coins, BookOpen, Building2, TrendingUp, Settings, Home
 } from 'lucide-react';
 
 const navItems = [
   { name: '쿠쿠의 루틴', href: '/', icon: BookOpen },
+  { name: '홈', href: '/home', icon: Home },
   { name: '부동산', href: '/real-estate', icon: Building2 },
   { name: '투자', href: '/invest', icon: TrendingUp },
-  { name: '칼럼', href: '/column', icon: FileText },
   { name: '관리자', href: '/admin', icon: Settings },
 ];
 
