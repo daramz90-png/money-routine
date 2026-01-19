@@ -130,7 +130,7 @@ export default function Subscribe() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
             <Star className="w-4 h-4 text-yellow-300" />
-            <span className="text-sm font-medium">5,000명이 구독 중</span>
+            <span className="text-sm font-medium">쿠쿠의 돈루틴</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold mb-4" data-testid="page-title">
             매주 돈루틴을 받아보세요
