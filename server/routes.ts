@@ -266,6 +266,37 @@ export async function registerRoutes(
     }
   });
 
+  // Dashboard Content by Date
+  app.get('/api/dashboard/dates', async (_req, res) => {
+    try {
+      const dates = await storage.getAvailableDates();
+      res.json(dates);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get available dates' });
+    }
+  });
+
+  app.get('/api/dashboard/:date', async (req, res) => {
+    try {
+      const content = await storage.getDashboardContent(req.params.date);
+      if (!content) {
+        return res.status(404).json({ error: 'Content not found for this date' });
+      }
+      res.json(content);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get dashboard content' });
+    }
+  });
+
+  app.post('/api/dashboard/:date', async (req, res) => {
+    try {
+      const content = await storage.saveDashboardContent(req.params.date, req.body);
+      res.json(content);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to save dashboard content' });
+    }
+  });
+
   // Routine Articles CRUD
   app.get('/api/routine-articles', async (req, res) => {
     try {

@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Subscriber, type RoutineArticle, type Article, type PageType } from "@shared/schema";
+import { type User, type InsertUser, type Subscriber, type RoutineArticle, type Article, type PageType, type DashboardContent } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -18,6 +18,9 @@ export interface IStorage {
   createArticle(article: Omit<Article, 'id'>): Promise<Article>;
   updateArticle(id: string, article: Partial<Omit<Article, 'id'>>): Promise<Article | undefined>;
   deleteArticle(id: string): Promise<boolean>;
+  getDashboardContent(date: string): Promise<DashboardContent | undefined>;
+  saveDashboardContent(date: string, content: DashboardContent): Promise<DashboardContent>;
+  getAvailableDates(): Promise<string[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -25,14 +28,17 @@ export class MemStorage implements IStorage {
   private subscribers: Map<string, Subscriber>;
   private routineArticles: Map<string, RoutineArticle>;
   private articles: Map<string, Article>;
+  private dashboardContents: Map<string, DashboardContent>;
 
   constructor() {
     this.users = new Map();
     this.subscribers = new Map();
     this.routineArticles = new Map();
     this.articles = new Map();
+    this.dashboardContents = new Map();
     this.seedDefaultArticles();
     this.seedDefaultPageArticles();
+    this.seedDefaultDashboardContent();
   }
 
   private seedDefaultArticles() {
@@ -306,6 +312,104 @@ export class MemStorage implements IStorage {
 
   async deleteArticle(id: string): Promise<boolean> {
     return this.articles.delete(id);
+  }
+
+  private seedDefaultDashboardContent() {
+    const today = new Date();
+    const dates = [
+      new Date(today),
+      new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000),
+      new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000),
+      new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000),
+    ];
+
+    dates.forEach((date, index) => {
+      const dateStr = date.toISOString().split('T')[0];
+      const content: DashboardContent = {
+        date: dateStr,
+        heroTitle: '하루 5분으로 시작하는 재테크',
+        heroSubtitle: '공모주 청약부터 부동산 뉴스, 놓치기 쉬운 정책 정보까지!',
+        summaries: [
+          { id: '1', text: index === 0 ? '공모주 (세미파이브) 청약시작 (청약하세요)' : `${dateStr} 주요 요약 1` },
+          { id: '2', text: index === 0 ? '역삼 센트럴 자이 청약 마지막날' : `${dateStr} 주요 요약 2` },
+          { id: '3', text: index === 0 ? '환율 1480원 돌파' : `${dateStr} 주요 요약 3` },
+        ],
+        ipos: [
+          {
+            id: '1',
+            name: index === 0 ? '세미파이브' : `샘플기업 ${index}`,
+            score: 71 - index * 5,
+            period: `${date.getMonth() + 1}/${date.getDate()}~${date.getMonth() + 1}/${date.getDate() + 1}`,
+            price: '24,000원',
+            minAmount: '12만원',
+            broker: '삼성증권',
+            description: '반도체 설계 자동화 솔루션 기업',
+            isHighlight: true,
+          },
+        ],
+        realEstates: [
+          {
+            id: '1',
+            name: index === 0 ? '역삼 센트럴 자이' : `샘플 아파트 ${index}`,
+            location: '서울 강남구',
+            units: 340,
+            period: `${date.getMonth() + 1}/${date.getDate()}~${date.getMonth() + 1}/${date.getDate() + 2}`,
+            priority: '1순위',
+            type: 'apartment',
+          },
+        ],
+        news: [
+          {
+            id: '1',
+            title: index === 0 ? 'Fed 금리 동결 시사' : `${dateStr} 뉴스 1`,
+            summary: index === 0 ? '미국 연준이 당분간 금리를 동결할 것이라는 시사를 했습니다.' : `${dateStr}의 주요 금융 뉴스입니다.`,
+            url: 'https://example.com',
+          },
+        ],
+        todos: [
+          {
+            id: '1',
+            title: index === 0 ? '공모주 청약 확인' : `${dateStr} 할 일`,
+            description: index === 0 ? '세미파이브 청약 마감 전 확인하기' : `${dateStr}에 해야 할 일입니다.`,
+          },
+        ],
+        thoughts: [
+          {
+            id: '1',
+            title: '오늘의 생각',
+            content: index === 0 ? '장기적인 관점에서 투자하세요.' : `${dateStr}의 생각입니다.`,
+          },
+        ],
+        marketSectionTitle: '주요 항목 시세 CHECK',
+        marketRefreshNote: '5분 마다 자동 새로고침',
+        closingMessage: '오늘도 당신의 재테크를 응원합니다!',
+        closingSubMessage: '매일 아침 돈루틴과 함께하세요',
+        subscribeButtonText: '뉴스레터 구독하기',
+        quote: {
+          text: index === 0 ? '부는 인내하는 자에게 온다.' : '매일 조금씩 성장하는 것이 중요합니다.',
+          author: index === 0 ? '워렌 버핏' : '쿠쿠',
+        },
+        hashtags: ['#재테크', '#공모주', '#부동산', '#투자'],
+        footerText: '쿠쿠의 돈루틴과 함께 성공적인 재테크를 시작하세요!',
+      };
+      this.dashboardContents.set(dateStr, content);
+    });
+  }
+
+  async getDashboardContent(date: string): Promise<DashboardContent | undefined> {
+    return this.dashboardContents.get(date);
+  }
+
+  async saveDashboardContent(date: string, content: DashboardContent): Promise<DashboardContent> {
+    const contentWithDate = { ...content, date };
+    this.dashboardContents.set(date, contentWithDate);
+    return contentWithDate;
+  }
+
+  async getAvailableDates(): Promise<string[]> {
+    return Array.from(this.dashboardContents.keys()).sort((a, b) => 
+      new Date(b).getTime() - new Date(a).getTime()
+    );
   }
 }
 

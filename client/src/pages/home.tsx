@@ -10,13 +10,51 @@ import {
   BarChart3, Bitcoin, LineChart, Building2, Gauge, Ship, 
   Check, Calendar, Newspaper, ListTodo, Quote, Bell,
   Clock, ChartLine, Star, ExternalLink,
-  CheckSquare, Building
+  CheckSquare, Building, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import type { MarketData, FearGreedData, DashboardContent, ManualMarketData } from '@shared/schema';
 import { initialMarketData, defaultContent, defaultManualMarketData } from '@shared/schema';
 import { SharedHeader } from '@/components/shared-header';
 
-function HeroSection({ date, title, subtitle }: { date: string; title: string; subtitle: string }) {
+function HeroSection({ 
+  date, 
+  title, 
+  subtitle, 
+  availableDates,
+  selectedDate,
+  onDateChange 
+}: { 
+  date: string; 
+  title: string; 
+  subtitle: string;
+  availableDates: string[];
+  selectedDate: string;
+  onDateChange: (date: string) => void;
+}) {
+  const currentIndex = availableDates.indexOf(selectedDate);
+  const canGoPrev = currentIndex < availableDates.length - 1;
+  const canGoNext = currentIndex > 0;
+
+  const goToPrev = () => {
+    if (canGoPrev) {
+      onDateChange(availableDates[currentIndex + 1]);
+    }
+  };
+
+  const goToNext = () => {
+    if (canGoNext) {
+      onDateChange(availableDates[currentIndex - 1]);
+    }
+  };
+
+  const formatDateKorean = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}요일`;
+  };
+
+  const isToday = selectedDate === availableDates[0];
+
   return (
     <section className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white py-12 sm:py-16 px-4">
       <div className="max-w-6xl mx-auto text-center">
@@ -26,10 +64,57 @@ function HeroSection({ date, title, subtitle }: { date: string; title: string; s
         <p className="text-lg sm:text-xl text-white/90 mb-6 max-w-2xl mx-auto">
           {subtitle || '공모주 청약부터 부동산 뉴스, 놓치기 쉬운 정책 정보까지!'}
         </p>
-        <div className="inline-flex flex-wrap items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full" data-testid="text-date">
-          <Calendar className="w-5 h-5" />
-          <span className="font-medium">{date}</span>
+        
+        <div className="flex items-center justify-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToPrev}
+            disabled={!canGoPrev}
+            className="text-white hover:bg-white/20 disabled:opacity-30"
+            data-testid="button-prev-date"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </Button>
+          
+          <div className="inline-flex flex-wrap items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full" data-testid="text-date">
+            <Calendar className="w-5 h-5" />
+            <span className="font-medium">{selectedDate ? formatDateKorean(selectedDate) : date}</span>
+            {!isToday && availableDates.length > 0 && (
+              <Badge className="bg-amber-500 text-white border-0 ml-2">지난 호</Badge>
+            )}
+          </div>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToNext}
+            disabled={!canGoNext}
+            className="text-white hover:bg-white/20 disabled:opacity-30"
+            data-testid="button-next-date"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </Button>
         </div>
+
+        {availableDates.length > 1 && (
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {availableDates.slice(0, 7).map((d) => (
+              <button
+                key={d}
+                onClick={() => onDateChange(d)}
+                className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  d === selectedDate 
+                    ? 'bg-white text-purple-700 font-medium' 
+                    : 'bg-white/20 hover:bg-white/30'
+                }`}
+                data-testid={`date-chip-${d}`}
+              >
+                {new Date(d).getMonth() + 1}/{new Date(d).getDate()}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -561,7 +646,17 @@ function Footer({ hashtags, footerText }: { hashtags: string[]; footerText: stri
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const [content, setContent] = useState<DashboardContent>(defaultContent);
+
+  const { data: availableDates = [] } = useQuery<string[]>({
+    queryKey: ['/api/dashboard/dates'],
+  });
+
+  const { data: apiContent, isLoading: isLoadingContent } = useQuery<DashboardContent>({
+    queryKey: ['/api/dashboard', selectedDate],
+    enabled: !!selectedDate,
+  });
 
   const { data: marketData, isLoading, isFetching, refetch } = useQuery<MarketData>({
     queryKey: ['/api/market-data'],
@@ -580,16 +675,26 @@ export default function Home() {
   }, [formatDate]);
 
   useEffect(() => {
-    const savedContent = localStorage.getItem('dashboardContent');
-    if (savedContent) {
-      try {
-        const parsed = JSON.parse(savedContent);
-        setContent(parsed);
-      } catch (e) {
-        console.error('Failed to parse saved content');
+    if (availableDates.length > 0 && !selectedDate) {
+      setSelectedDate(availableDates[0]);
+    }
+  }, [availableDates, selectedDate]);
+
+  useEffect(() => {
+    if (apiContent) {
+      setContent(apiContent);
+    } else {
+      const savedContent = localStorage.getItem('dashboardContent');
+      if (savedContent) {
+        try {
+          const parsed = JSON.parse(savedContent);
+          setContent(parsed);
+        } catch (e) {
+          console.error('Failed to parse saved content');
+        }
       }
     }
-  }, []);
+  }, [apiContent]);
 
   const applyManualOverrides = useCallback((apiData: MarketData, manual: ManualMarketData | undefined): MarketData => {
     if (!manual) return apiData;
