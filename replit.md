@@ -23,17 +23,20 @@ A comprehensive Korean financial dashboard application that displays real-time m
 
 ## Application Structure
 
-### Pages
-- `/` - Home page with full dashboard
-- `/invest` - 투자 시작하기 (investment guides)
+### Pages (Main Navigation)
+- `/` - 홈 (Home page with full dashboard)
 - `/real-estate` - 부동산 (real estate articles with category filtering)
+- `/invest` - 투자 (investment guides)
+- `/money-tips` - 돈 버는 팁 (placeholder - coming soon)
+- `/tools` - 계산기 (financial calculators)
+- `/admin` - 관리자 (admin page for content management and subscriber list)
+
+### Legacy Pages (Not in main navigation)
 - `/tax` - 절세 & 환급 (tax tips)
 - `/savings` - 통장 관리 (savings strategies)
 - `/side-income` - 부수입 만들기 (side income ideas)
-- `/tools` - 재테크 계산기 (financial calculators)
 - `/subscribe` - 뉴스레터 구독 (newsletter subscription)
 - `/about` - 소개 페이지
-- `/admin` - Admin page for content management and subscriber list
 
 ### Dashboard Sections
 1. **Hero Section** - Gradient banner with title and date
