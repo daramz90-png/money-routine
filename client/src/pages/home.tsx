@@ -652,11 +652,15 @@ export default function Home() {
 
   const { data: availableDates = [] } = useQuery<string[]>({
     queryKey: ['/api/dashboard/dates'],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
   const { data: apiContent, isLoading: isLoadingContent } = useQuery<DashboardContent>({
     queryKey: ['/api/dashboard', selectedDate],
     enabled: !!selectedDate,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
   const { data: marketData, isLoading, isFetching, refetch } = useQuery<MarketData>({
