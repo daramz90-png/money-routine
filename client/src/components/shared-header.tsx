@@ -10,8 +10,8 @@ const navItems = [
   { name: '홈', href: '/', icon: HomeIcon },
   { name: '부동산', href: '/real-estate', icon: Building },
   { name: '투자', href: '/invest', icon: TrendingUp },
-  { name: '돈 버는 팁', href: '/money-tips', icon: Lightbulb },
-  { name: '계산기', href: '/tools', icon: Wrench },
+  { name: '쿠쿠의 루틴', href: '/routine', icon: Lightbulb },
+  { name: '도구', href: '/tools', icon: Wrench },
   { name: '관리자', href: '/admin', icon: Settings },
 ];
 

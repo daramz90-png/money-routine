@@ -189,7 +189,7 @@ function ArticleCard({ article }: { article: Article }) {
   const category = categories.find(c => c.id === article.category);
   
   return (
-    <Link href={`/money-tips/${article.id}`}>
+    <Link href={`/routine/${article.id}`}>
       <Card className="overflow-hidden hover-elevate cursor-pointer bg-card/95 backdrop-blur-sm border-0 shadow-lg h-full" data-testid={`article-card-${article.id}`}>
         <div className="aspect-video relative overflow-hidden">
           <img 
@@ -282,7 +282,7 @@ function Sidebar() {
         </div>
         <div className="space-y-3">
           {pinnedArticles.map((article) => (
-            <Link key={article.id} href={`/money-tips/${article.id}`}>
+            <Link key={article.id} href={`/routine/${article.id}`}>
               <div className="p-3 rounded-lg hover-elevate cursor-pointer bg-muted/30" data-testid={`pinned-article-${article.id}`}>
                 <p className="text-sm text-foreground line-clamp-2 font-medium">{article.title}</p>
                 <span className="text-xs text-muted-foreground mt-1 block">{formatDate(article.date)}</span>
@@ -299,7 +299,7 @@ function Sidebar() {
         </div>
         <div className="space-y-3">
           {popularArticles.map((article, index) => (
-            <Link key={article.id} href={`/money-tips/${article.id}`}>
+            <Link key={article.id} href={`/routine/${article.id}`}>
               <div className="flex items-start gap-3 p-2 rounded-lg hover-elevate cursor-pointer" data-testid={`popular-article-${index + 1}`}>
                 <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                   {index + 1}
@@ -338,7 +338,7 @@ function Sidebar() {
   );
 }
 
-export default function MoneyTips() {
+export default function Routine() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   
   const filteredArticles = activeCategory 
@@ -355,7 +355,7 @@ export default function MoneyTips() {
             <Lightbulb className="w-8 h-8" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold mb-3" data-testid="page-title">
-            돈 버는 팁
+            쿠쿠의 루틴
           </h1>
           <p className="text-lg text-white/90 max-w-2xl mx-auto">
             매일 실천하는 재테크 루틴

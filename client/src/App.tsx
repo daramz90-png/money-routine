@@ -13,7 +13,7 @@ import Tools from "@/pages/tools";
 import Subscribe from "@/pages/subscribe";
 import About from "@/pages/about";
 import RealEstate from "@/pages/real-estate";
-import MoneyTips from "@/pages/money-tips";
+import Routine from "@/pages/routine";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -22,7 +22,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/invest" component={Invest} />
       <Route path="/real-estate" component={RealEstate} />
-      <Route path="/money-tips" component={MoneyTips} />
+      <Route path="/routine" component={Routine} />
       <Route path="/tools" component={Tools} />
       <Route path="/tax" component={Tax} />
       <Route path="/savings" component={Savings} />
