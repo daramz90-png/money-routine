@@ -3,18 +3,18 @@ import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { 
   Menu, X, Coins, Home as HomeIcon, TrendingUp, Receipt, 
-  Wallet, Sparkles, Calculator, Mail, Settings 
+  Wallet, Sparkles, Calculator, Mail, Settings, Building
 } from 'lucide-react';
 
 const navItems = [
   { name: '홈', href: '/', icon: HomeIcon },
   { name: '투자', href: '/invest', icon: TrendingUp },
+  { name: '부동산', href: '/real-estate', icon: Building },
   { name: '절세', href: '/tax', icon: Receipt },
   { name: '저축', href: '/savings', icon: Wallet },
   { name: '부수입', href: '/side-income', icon: Sparkles },
   { name: '도구', href: '/tools', icon: Calculator },
   { name: '구독', href: '/subscribe', icon: Mail },
-  { name: '관리자', href: '/admin', icon: Settings },
 ];
 
 export function SharedHeader() {

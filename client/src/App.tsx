@@ -12,6 +12,7 @@ import SideIncome from "@/pages/side-income";
 import Tools from "@/pages/tools";
 import Subscribe from "@/pages/subscribe";
 import About from "@/pages/about";
+import RealEstate from "@/pages/real-estate";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/tools" component={Tools} />
       <Route path="/subscribe" component={Subscribe} />
       <Route path="/about" component={About} />
+      <Route path="/real-estate" component={RealEstate} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
