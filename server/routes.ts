@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import type { MarketData } from "@shared/schema";
+import { insertRoutineArticleSchema } from "@shared/schema";
 
 interface ExchangeRateResponse {
   rates: { KRW: number };
@@ -262,6 +263,63 @@ export async function registerRoutes(
     } catch (error) {
       console.error('Error fetching market data:', error);
       res.status(500).json({ error: 'Failed to fetch market data' });
+    }
+  });
+
+  // Routine Articles CRUD
+  app.get('/api/routine-articles', async (req, res) => {
+    try {
+      const category = req.query.category as string | undefined;
+      const articles = await storage.getRoutineArticles(category);
+      res.json(articles);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get articles' });
+    }
+  });
+
+  app.get('/api/routine-articles/:id', async (req, res) => {
+    try {
+      const article = await storage.getRoutineArticle(req.params.id);
+      if (!article) {
+        return res.status(404).json({ error: 'Article not found' });
+      }
+      res.json(article);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get article' });
+    }
+  });
+
+  app.post('/api/routine-articles', async (req, res) => {
+    try {
+      const parseResult = insertRoutineArticleSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        return res.status(400).json({ error: parseResult.error.errors[0]?.message || 'Invalid data' });
+      }
+      const article = await storage.createRoutineArticle(parseResult.data);
+      res.json(article);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to create article' });
+    }
+  });
+
+  app.patch('/api/routine-articles/:id', async (req, res) => {
+    try {
+      const article = await storage.updateRoutineArticle(req.params.id, req.body);
+      if (!article) {
+        return res.status(404).json({ error: 'Article not found' });
+      }
+      res.json(article);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update article' });
+    }
+  });
+
+  app.delete('/api/routine-articles/:id', async (req, res) => {
+    try {
+      const success = await storage.deleteRoutineArticle(req.params.id);
+      res.json({ success });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete article' });
     }
   });
 

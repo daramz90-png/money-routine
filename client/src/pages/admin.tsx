@@ -6,12 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
-  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw
+  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw, BookOpen, Edit, Loader2
 } from 'lucide-react';
-import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData, Subscriber } from '@shared/schema';
+import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData, Subscriber, RoutineArticle } from '@shared/schema';
 import { defaultContent, defaultManualMarketData } from '@shared/schema';
+import { apiRequest } from '@/lib/queryClient';
 
 function generateId() {
   return Math.random().toString(36).substr(2, 9);
@@ -103,13 +105,124 @@ function PasswordGate({ onAuthenticated }: { onAuthenticated: () => void }) {
   );
 }
 
+const categoryOptions = [
+  { value: 'monthly', label: '월간 투자 일지' },
+  { value: 'routine', label: '워킹맘 루틴' },
+  { value: 'failure', label: '실패담 & 교훈' },
+  { value: 'gap', label: '워킹맘 투자자의 이야기' },
+];
+
 export default function Admin() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [content, setContent] = useState<DashboardContent>(defaultContent);
   const [isSaving, setIsSaving] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isLoadingSubscribers, setIsLoadingSubscribers] = useState(false);
+  const [editingArticle, setEditingArticle] = useState<RoutineArticle | null>(null);
+  const [isArticleFormOpen, setIsArticleFormOpen] = useState(false);
+  const [articleForm, setArticleForm] = useState({
+    title: '',
+    summary: '',
+    content: '',
+    category: 'monthly' as RoutineArticle['category'],
+    date: new Date().toISOString().split('T')[0],
+    readTime: 5,
+    views: 0,
+    featured: false,
+  });
+
+  const { data: articles = [], isLoading: isLoadingArticles } = useQuery<RoutineArticle[]>({
+    queryKey: ['/api/routine-articles'],
+    enabled: isAuthenticated,
+  });
+
+  const createArticleMutation = useMutation({
+    mutationFn: async (article: Omit<RoutineArticle, 'id'>) => {
+      const res = await apiRequest('POST', '/api/routine-articles', article);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/routine-articles'] });
+      toast({ title: '글 작성 완료' });
+      resetArticleForm();
+    },
+    onError: () => {
+      toast({ title: '글 작성 실패', variant: 'destructive' });
+    },
+  });
+
+  const updateArticleMutation = useMutation({
+    mutationFn: async ({ id, ...article }: RoutineArticle) => {
+      const res = await apiRequest('PATCH', `/api/routine-articles/${id}`, article);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/routine-articles'] });
+      toast({ title: '글 수정 완료' });
+      resetArticleForm();
+    },
+    onError: () => {
+      toast({ title: '글 수정 실패', variant: 'destructive' });
+    },
+  });
+
+  const deleteArticleMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiRequest('DELETE', `/api/routine-articles/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/routine-articles'] });
+      toast({ title: '글 삭제 완료' });
+    },
+    onError: () => {
+      toast({ title: '글 삭제 실패', variant: 'destructive' });
+    },
+  });
+
+  const resetArticleForm = () => {
+    setArticleForm({
+      title: '',
+      summary: '',
+      content: '',
+      category: 'monthly',
+      date: new Date().toISOString().split('T')[0],
+      readTime: 5,
+      views: 0,
+      featured: false,
+    });
+    setEditingArticle(null);
+    setIsArticleFormOpen(false);
+  };
+
+  const handleEditArticle = (article: RoutineArticle) => {
+    setEditingArticle(article);
+    setArticleForm({
+      title: article.title,
+      summary: article.summary,
+      content: article.content,
+      category: article.category,
+      date: article.date,
+      readTime: article.readTime,
+      views: article.views,
+      featured: article.featured,
+    });
+    setIsArticleFormOpen(true);
+  };
+
+  const handleSubmitArticle = () => {
+    if (!articleForm.title || !articleForm.summary || !articleForm.content) {
+      toast({ title: '필수 항목을 입력해주세요', variant: 'destructive' });
+      return;
+    }
+    if (editingArticle) {
+      updateArticleMutation.mutate({ id: editingArticle.id, ...articleForm });
+    } else {
+      createArticleMutation.mutate(articleForm);
+    }
+  };
 
   useEffect(() => {
     const auth = sessionStorage.getItem('adminAuth');
@@ -901,6 +1014,185 @@ export default function Admin() {
               />
             </div>
           </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <BookOpen className="w-5 h-5 text-purple-600" />
+              <h2 className="text-xl font-bold text-foreground">쿠쿠의 루틴 글 관리</h2>
+              <span className="text-sm text-muted-foreground">({articles.length}개)</span>
+            </div>
+            <Button 
+              onClick={() => setIsArticleFormOpen(true)}
+              data-testid="button-new-article"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              새 글 작성
+            </Button>
+          </div>
+
+          {isArticleFormOpen && (
+            <Card className="p-4 mb-4 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800">
+              <h3 className="font-semibold mb-3 text-foreground">
+                {editingArticle ? '글 수정' : '새 글 작성'}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <Label>제목 *</Label>
+                  <Input
+                    value={articleForm.title}
+                    onChange={(e) => setArticleForm(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="글 제목"
+                    data-testid="input-article-title"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>요약 *</Label>
+                  <Textarea
+                    value={articleForm.summary}
+                    onChange={(e) => setArticleForm(prev => ({ ...prev, summary: e.target.value }))}
+                    placeholder="글 요약 (목록에 표시됨)"
+                    data-testid="input-article-summary"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>본문 *</Label>
+                  <Textarea
+                    value={articleForm.content}
+                    onChange={(e) => setArticleForm(prev => ({ ...prev, content: e.target.value }))}
+                    placeholder="글 본문 내용"
+                    className="min-h-32"
+                    data-testid="input-article-content"
+                  />
+                </div>
+                <div>
+                  <Label>카테고리</Label>
+                  <select
+                    value={articleForm.category}
+                    onChange={(e) => setArticleForm(prev => ({ ...prev, category: e.target.value as RoutineArticle['category'] }))}
+                    className="w-full h-9 px-3 rounded-md border border-input bg-background"
+                    data-testid="select-article-category"
+                  >
+                    {categoryOptions.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label>날짜</Label>
+                  <Input
+                    type="date"
+                    value={articleForm.date}
+                    onChange={(e) => setArticleForm(prev => ({ ...prev, date: e.target.value }))}
+                    data-testid="input-article-date"
+                  />
+                </div>
+                <div>
+                  <Label>읽는 시간 (분)</Label>
+                  <Input
+                    type="number"
+                    value={articleForm.readTime}
+                    onChange={(e) => setArticleForm(prev => ({ ...prev, readTime: parseInt(e.target.value) || 5 }))}
+                    data-testid="input-article-readtime"
+                  />
+                </div>
+                <div>
+                  <Label>조회수</Label>
+                  <Input
+                    type="number"
+                    value={articleForm.views}
+                    onChange={(e) => setArticleForm(prev => ({ ...prev, views: parseInt(e.target.value) || 0 }))}
+                    data-testid="input-article-views"
+                  />
+                </div>
+                <div className="sm:col-span-2 flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={articleForm.featured}
+                    onChange={(e) => setArticleForm(prev => ({ ...prev, featured: e.target.checked }))}
+                    className="w-4 h-4"
+                    data-testid="checkbox-article-featured"
+                  />
+                  <Label className="mb-0">추천 글로 표시</Label>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-4">
+                <Button 
+                  onClick={handleSubmitArticle}
+                  disabled={createArticleMutation.isPending || updateArticleMutation.isPending}
+                  data-testid="button-save-article"
+                >
+                  {(createArticleMutation.isPending || updateArticleMutation.isPending) ? (
+                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-1" />
+                  )}
+                  {editingArticle ? '수정' : '저장'}
+                </Button>
+                <Button variant="outline" onClick={resetArticleForm} data-testid="button-cancel-article">
+                  취소
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {isLoadingArticles ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Loader2 className="w-8 h-8 mx-auto animate-spin mb-2" />
+              로딩 중...
+            </div>
+          ) : articles.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>아직 작성된 글이 없습니다</p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {articles.map((article) => (
+                <div 
+                  key={article.id} 
+                  className="flex flex-wrap items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg"
+                  data-testid={`article-row-${article.id}`}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded">
+                        {categoryOptions.find(c => c.value === article.category)?.label}
+                      </span>
+                      {article.featured && (
+                        <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded">
+                          추천
+                        </span>
+                      )}
+                    </div>
+                    <div className="font-medium text-foreground truncate">{article.title}</div>
+                    <div className="text-sm text-muted-foreground truncate">{article.summary}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">{article.date}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleEditArticle(article)}
+                      data-testid={`button-edit-article-${article.id}`}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => deleteArticleMutation.mutate(article.id)}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                      data-testid={`button-delete-article-${article.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </Card>
 
         <Card className="p-6 mb-6 shadow-lg">

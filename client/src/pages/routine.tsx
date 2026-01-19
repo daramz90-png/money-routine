@@ -5,14 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useQuery } from '@tanstack/react-query';
 import { 
   Lightbulb, Clock, Calendar, Eye, ChevronRight, 
   User, CheckCircle2, Coffee, Briefcase, Moon, Sun,
   Train, Baby, BookOpen, TrendingUp, TrendingDown,
-  Mail, Heart, Award, Target, AlertCircle
+  Mail, Heart, Award, Target, AlertCircle, Loader2
 } from 'lucide-react';
 import { SharedHeader } from '@/components/shared-header';
 import { apiRequest } from '@/lib/queryClient';
+import type { RoutineArticle } from '@shared/schema';
 
 const categories = [
   { id: 'monthly', name: '월간 투자 일지', icon: Calendar },
@@ -31,107 +33,6 @@ interface Article {
   views: number;
 }
 
-const articles: Article[] = [
-  {
-    id: '1',
-    title: '2026년 1월 투자 기록',
-    summary: '새해 첫 달, 공모주 3건 청약하고 분양권 1건 검토했습니다. 수익과 배운 점을 정리합니다.',
-    category: 'monthly',
-    date: '2026-01-19',
-    readTime: 8,
-    views: 2340,
-  },
-  {
-    id: '2',
-    title: '2025년 결산 - 총 수익 공개',
-    summary: '2025년 한 해 동안의 투자 활동과 실제 수익을 공개합니다. 성공과 실패 모두 담았습니다.',
-    category: 'monthly',
-    date: '2026-01-05',
-    readTime: 12,
-    views: 5670,
-  },
-  {
-    id: '3',
-    title: '워킹맘의 아침 10분 루틴',
-    summary: '출근 준비하면서 10분 만에 확인하는 투자 체크리스트. 매일 습관이 되면 큰 차이를 만듭니다.',
-    category: 'routine',
-    date: '2026-01-15',
-    readTime: 5,
-    views: 4120,
-  },
-  {
-    id: '4',
-    title: '주말 2시간 투자 공부법',
-    summary: '아이가 낮잠 자는 동안 집중해서 공부하는 방법. 효율적인 정보 수집 노하우를 공유합니다.',
-    category: 'routine',
-    date: '2026-01-10',
-    readTime: 7,
-    views: 3890,
-  },
-  {
-    id: '5',
-    title: '육아 틈틈이 하는 공모주 청약',
-    summary: '지하철에서, 점심시간에, 잠들기 전에. 틈새 시간을 활용한 공모주 청약 노하우입니다.',
-    category: 'routine',
-    date: '2026-01-08',
-    readTime: 6,
-    views: 3450,
-  },
-  {
-    id: '6',
-    title: '분양권 투자 실패하고 배운 것',
-    summary: '첫 분양권 투자에서 손해 본 이야기. 너무 급하게 결정해서 생긴 문제들을 솔직하게 털어놓습니다.',
-    category: 'failure',
-    date: '2026-01-12',
-    readTime: 9,
-    views: 6780,
-  },
-  {
-    id: '7',
-    title: '손절 못해서 잃은 돈',
-    summary: '미련 때문에 손절 타이밍을 놓쳤습니다. 그때 배운 교훈이 지금의 원칙이 되었습니다.',
-    category: 'failure',
-    date: '2026-01-03',
-    readTime: 8,
-    views: 5230,
-  },
-  {
-    id: '8',
-    title: '욕심 부리다 놓친 기회',
-    summary: '더 오를 거라는 욕심이 가장 큰 적이었습니다. 적당히 만족하는 법을 배운 이야기.',
-    category: 'failure',
-    date: '2025-12-28',
-    readTime: 7,
-    views: 4560,
-  },
-  {
-    id: '9',
-    title: '5년 쉬고 달라진 시장',
-    summary: '육아로 5년 쉬는 동안 시장은 완전히 바뀌어 있었습니다. 복귀 후 느낀 변화들.',
-    category: 'gap',
-    date: '2026-01-18',
-    readTime: 10,
-    views: 7890,
-  },
-  {
-    id: '10',
-    title: '복귀 후 가장 어려웠던 점',
-    summary: '감을 되찾는 데 6개월이 걸렸습니다. 공백기 후 다시 시작하는 분들께 드리는 조언.',
-    category: 'gap',
-    date: '2026-01-14',
-    readTime: 8,
-    views: 5670,
-  },
-  {
-    id: '11',
-    title: '공백기에도 놓치지 말아야 할 것',
-    summary: '투자를 쉬더라도 이것만은 계속 해야 합니다. 저도 이걸 했기에 빨리 복귀할 수 있었습니다.',
-    category: 'gap',
-    date: '2026-01-06',
-    readTime: 6,
-    views: 4320,
-  },
-];
 
 const monthlyRecords = [
   {
@@ -450,9 +351,12 @@ function ArticleCard({ article }: { article: Article }) {
 }
 
 function ArticlesSection({ activeCategory }: { activeCategory: string | null }) {
-  const filteredArticles = activeCategory 
-    ? articles.filter(a => a.category === activeCategory)
-    : articles;
+  const queryUrl = activeCategory 
+    ? `/api/routine-articles?category=${activeCategory}` 
+    : '/api/routine-articles';
+  const { data: articles = [], isLoading } = useQuery<RoutineArticle[]>({
+    queryKey: [queryUrl],
+  });
 
   return (
     <section className="py-8 px-4">
@@ -464,17 +368,26 @@ function ArticlesSection({ activeCategory }: { activeCategory: string | null }) 
           <h2 className="text-xl font-bold text-foreground">글 목록</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredArticles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
-          ))}
-        </div>
-
-        {filteredArticles.length === 0 && (
+        {isLoading ? (
           <div className="text-center py-12">
-            <Lightbulb className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
-            <p className="text-muted-foreground">해당 카테고리의 글이 없습니다.</p>
+            <Loader2 className="w-8 h-8 mx-auto text-muted-foreground animate-spin mb-4" />
+            <p className="text-muted-foreground">글을 불러오는 중...</p>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {articles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+            </div>
+
+            {articles.length === 0 && (
+              <div className="text-center py-12">
+                <Lightbulb className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground">해당 카테고리의 글이 없습니다.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

@@ -104,6 +104,31 @@ export interface Subscriber {
   subscribedAt: string;
 }
 
+export interface RoutineArticle {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  category: 'monthly' | 'routine' | 'failure' | 'gap';
+  date: string;
+  readTime: number;
+  views: number;
+  featured: boolean;
+}
+
+export const insertRoutineArticleSchema = z.object({
+  title: z.string().min(1, '제목은 필수입니다'),
+  summary: z.string().min(1, '요약은 필수입니다'),
+  content: z.string().min(1, '본문은 필수입니다'),
+  category: z.enum(['monthly', 'routine', 'failure', 'gap']),
+  date: z.string().optional().default(() => new Date().toISOString().split('T')[0]),
+  readTime: z.number().optional().default(5),
+  views: z.number().optional().default(0),
+  featured: z.boolean().optional().default(false),
+});
+
+export type InsertRoutineArticle = z.infer<typeof insertRoutineArticleSchema>;
+
 export interface ManualMarketItem {
   enabled: boolean;
   value: string;
