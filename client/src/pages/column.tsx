@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   FileText, Clock, Calendar, Eye, ChevronRight, 
-  Lightbulb, Bell, Star, PinIcon, Loader2
+  Lightbulb, Bell, Star, Loader2
 } from 'lucide-react';
 import { SharedHeader } from '@/components/shared-header';
 import { useQuery } from '@tanstack/react-query';
-import type { Article } from '@shared/schema';
+import type { RoutineArticle } from '@shared/schema';
 
 const categories = [
   { id: 'monthly', name: '월간 투자 일지', icon: Calendar },
@@ -38,7 +38,7 @@ function formatViews(views: number) {
   return views.toString();
 }
 
-function ArticleCard({ article }: { article: Article }) {
+function ArticleCard({ article }: { article: RoutineArticle }) {
   const category = categories.find(c => c.id === article.category);
   
   return (
@@ -46,7 +46,7 @@ function ArticleCard({ article }: { article: Article }) {
       <Card className="overflow-hidden hover-elevate cursor-pointer bg-card/95 backdrop-blur-sm border-0 shadow-lg h-full" data-testid={`article-card-${article.id}`}>
         <div className="aspect-video relative overflow-hidden">
           <img 
-            src={article.thumbnail || 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400&h=225&fit=crop'} 
+            src={'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400&h=225&fit=crop'} 
             alt={article.title}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
@@ -123,32 +123,12 @@ function CategoryTabs({ activeCategory, onCategoryChange }: {
   );
 }
 
-function Sidebar({ articles = [] }: { articles: Article[] }) {
+function Sidebar({ articles = [] }: { articles: RoutineArticle[] }) {
   const randomTip = tips[Math.floor(Math.random() * tips.length)];
-  const pinnedArticles = (articles || []).filter(a => a.isPinned);
   const popularArticles = (articles || []).filter(a => a.featured).sort((a, b) => b.views - a.views).slice(0, 5);
   
   return (
     <div className="space-y-6">
-      {pinnedArticles.length > 0 && (
-        <Card className="p-5 bg-card/95 backdrop-blur-sm border-0 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <PinIcon className="w-5 h-5 text-red-500" />
-            <h3 className="font-bold text-foreground">필독 글</h3>
-          </div>
-          <div className="space-y-3">
-            {pinnedArticles.map((article) => (
-              <Link key={article.id} href={`/column/${article.id}`}>
-                <div className="p-3 rounded-lg hover-elevate cursor-pointer bg-muted/30" data-testid={`pinned-article-${article.id}`}>
-                  <p className="text-sm text-foreground line-clamp-2 font-medium">{article.title}</p>
-                  <span className="text-xs text-muted-foreground mt-1 block">{formatDate(article.date)}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </Card>
-      )}
-
       {popularArticles.length > 0 && (
         <Card className="p-5 bg-card/95 backdrop-blur-sm border-0 shadow-lg">
           <div className="flex items-center gap-2 mb-4">
@@ -200,8 +180,8 @@ function Sidebar({ articles = [] }: { articles: Article[] }) {
 export default function Column() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   
-  const { data: articles = [], isLoading } = useQuery<Article[]>({
-    queryKey: ['/api/articles/routine'],
+  const { data: articles = [], isLoading } = useQuery<RoutineArticle[]>({
+    queryKey: ['/api/routine-articles'],
   });
   
   const filteredArticles = activeCategory 
