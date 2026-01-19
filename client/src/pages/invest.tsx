@@ -124,10 +124,10 @@ function CategoryTabs({ activeCategory, onCategoryChange }: {
   );
 }
 
-function Sidebar({ articles }: { articles: Article[] }) {
+function Sidebar({ articles = [] }: { articles: Article[] }) {
   const randomTip = tips[Math.floor(Math.random() * tips.length)];
-  const pinnedArticles = articles.filter(a => a.isPinned);
-  const popularArticles = articles.filter(a => a.featured).sort((a, b) => b.views - a.views).slice(0, 5);
+  const pinnedArticles = (articles || []).filter(a => a.isPinned);
+  const popularArticles = (articles || []).filter(a => a.featured).sort((a, b) => b.views - a.views).slice(0, 5);
   
   return (
     <div className="space-y-6">
@@ -201,9 +201,24 @@ function Sidebar({ articles }: { articles: Article[] }) {
 export default function Invest() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   
+  const { data: articles = [], isLoading } = useQuery<Article[]>({
+    queryKey: ['/api/articles/invest'],
+  });
+  
   const filteredArticles = activeCategory 
     ? articles.filter(a => a.category === activeCategory)
     : articles;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <SharedHeader />
+        <div className="flex items-center justify-center py-32">
+          <Loader2 className="w-8 h-8 animate-spin text-white" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -247,7 +262,7 @@ export default function Invest() {
           
           <aside className="w-full lg:w-80 flex-shrink-0">
             <div className="lg:sticky lg:top-20">
-              <Sidebar />
+              <Sidebar articles={articles} />
             </div>
           </aside>
         </div>
