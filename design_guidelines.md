@@ -1,170 +1,233 @@
 # Design Guidelines: 쿠쿠의 돈루틴 Financial Dashboard
 
 ## Design Approach
-**Selected Framework:** Material Design for Data-Dense Applications
-**Rationale:** Financial dashboards require clear data hierarchy, excellent readability, and consistent interaction patterns. Material Design's elevation system and card-based layouts are ideal for organizing real-time market information.
+**Selected Framework:** Material Design for Data-Dense Applications + Korean Finance App Conventions
+**Visual References:** Toss 증권, KB증권, Naver Finance
+**Rationale:** Korean financial dashboards demand extreme data density, high readability, and culturally-appropriate visual language. Clean, minimal aesthetic with strategic use of elevation and professional color coding.
 
-**Key Design Principles:**
-1. Information clarity over visual flair
-2. Scannable data layouts with clear hierarchy
-3. Consistent visual language for financial indicators
-4. Purposeful use of space to reduce cognitive load
+**Core Principles:**
+1. Data clarity above all - maximum information density without clutter
+2. Korean color conventions for financial data (red=상승, blue=하락)
+3. Subtle depth through elevation, not gradients
+4. Professional, trustworthy visual language
+5. Rapid scanning with clear visual hierarchy
 
 ---
 
 ## Typography System
 
 **Font Family:** 
-- Primary: 'Pretendard' or 'Noto Sans KR' (Korean optimized)
-- Fallback: system-ui, -apple-system
+- Primary: 'Pretendard Variable' (Google Fonts CDN)
+- Fallback: 'Noto Sans KR', system-ui, sans-serif
 
 **Type Scale:**
-- Page Title (h1): text-4xl (36px), font-bold
-- Section Headers (h2): text-2xl (24px), font-bold
-- Card Titles: text-lg (18px), font-semibold
-- Data Values (primary): text-3xl (30px), font-bold
-- Data Labels: text-sm (14px), font-medium
+- Page Title (h1): text-2xl (24px), font-bold - compact header
+- Section Headers (h2): text-lg (18px), font-bold
+- Card Titles: text-sm (14px), font-semibold
+- Data Values (primary): text-3xl (30px), font-bold - high contrast
+- Data Values (secondary): text-xl (20px), font-semibold
+- Data Labels: text-xs (12px), font-medium, uppercase tracking
 - Metadata/timestamps: text-xs (12px), font-normal
-- Body text: text-base (16px)
+- Body text: text-sm (14px), font-normal
+
+**Korean-Specific Adjustments:**
+- Line height: leading-tight for Korean text (1.25)
+- Letter spacing: tracking-tight (-0.025em) for dense layouts
+
+---
+
+## Color System
+
+**Light Mode Foundation:**
+- Background: Soft gray (#F8F9FA)
+- Surface: Pure white (#FFFFFF)
+- Surface elevated: White with shadow-sm
+
+**Accent Color (Strategic Use Only):**
+- Primary Accent: Deep Indigo (#3B4DB8) - use for CTAs, active states, key highlights only
+- Do NOT use accent for backgrounds or large areas
+
+**Status Colors (Korean Convention):**
+- 상승 (Up/Positive): Red (#EF4444) - replaces traditional green
+- 하락 (Down/Negative): Blue (#3B82F6) - replaces traditional red
+- Neutral: Gray (#6B7280)
+
+**Text Hierarchy:**
+- Primary text: Gray-900 (#111827) - maximum contrast
+- Secondary text: Gray-600 (#4B5563)
+- Tertiary text: Gray-400 (#9CA3AF)
+
+**Dark Mode:**
+- Background: Dark Gray (#18181B)
+- Surface: Charcoal (#27272A)
+- Surface elevated: Lighter charcoal (#3F3F46) with shadow-lg
+- Primary text: Gray-50 (#F9FAFB)
+- Secondary text: Gray-400 (#9CA3AF)
+- Maintain same status colors with adjusted opacity for dark backgrounds
+
+**Borders & Dividers:**
+- Light mode: Gray-200 (#E5E7EB)
+- Dark mode: Gray-700 (#374151)
 
 ---
 
 ## Layout System
 
-**Spacing Primitives:** Tailwind units of 2, 4, 8, 12 (e.g., p-4, gap-8, mb-12)
+**Spacing Primitives:** Tailwind units of 4, 8, 12, 16 only
+- Micro spacing: 4 (1rem)
+- Standard spacing: 8 (2rem)
+- Section spacing: 12 (3rem)
+- Major spacing: 16 (4rem)
 
 **Container Strategy:**
-- Max width: max-w-4xl (960px) for optimal data scanning
-- Outer padding: p-5 (mobile), p-8 (desktop)
-- Section spacing: mb-10 between major sections
-- Card gaps: gap-4 for grid layouts
+- Max width: max-w-6xl (1152px) for data dashboards
+- Outer padding: px-4 py-6 (mobile), px-8 py-8 (desktop)
+- Section spacing: mb-8 between sections
+- Card gaps: gap-4 for grids
 
 **Grid System:**
-- Mobile: grid-cols-1 (all cards stack)
-- Tablet: grid-cols-2 (2-column market data)
-- Desktop: grid-cols-4 (4-column market data grid)
+- Mobile: grid-cols-1
+- Tablet: grid-cols-2
+- Desktop: grid-cols-4 for market cards, grid-cols-3 for summary items
 
 ---
 
 ## Component Library
 
 ### Header Component
-- Gradient background with centered content
-- Title + subtitle + date badge layout
-- Update timestamp displayed prominently
-- Padding: p-10 for breathing room
+- Compact design: py-6 px-4
+- Background: White (light) / Charcoal (dark) with border-b
+- Layout: Title + last update timestamp in single row
+- No gradient, no heavy decoration
+- Shadow: shadow-sm for subtle elevation
 
 ### Market Data Cards
-- Elevated card style with rounded corners (rounded-xl)
+- Surface: White background with shadow-sm, rounded-lg
+- Border: border border-gray-200 (light) / border-gray-700 (dark)
 - Internal padding: p-4
-- Structure per card:
-  - Icon/emoji indicator (top-left)
-  - Label text (text-sm, opacity-75)
-  - Large value display (text-3xl, font-bold)
-  - Unit suffix (text-sm, inline)
-  - Change indicator (percentage with arrow, text-sm)
-- Loading state: skeleton shimmer animation
-- Hover: subtle lift effect (shadow-md transition)
+- Structure:
+  - Label (top): text-xs, uppercase, gray-600
+  - Value (center): text-3xl, font-bold, gray-900
+  - Change indicator (bottom): text-sm with arrow, red/blue per convention
+- Loading: Subtle skeleton pulse without animation distraction
+- No hover effects - this is data display only
 
-### Summary List Items
-- Left border accent (border-l-4, w-1)
-- Background: white with subtle shadow
+### Summary Cards
+- Same card treatment as market data
+- Left border accent: border-l-4 in accent color for active items
 - Padding: p-4
-- Emoji bullet points for visual interest
-- Hover: translate-x-1 with shadow increase
+- Dense text layout with clear hierarchy
+- Icon indicators from lucide-react
+
+### Data Table Rows (for detailed views)
+- Alternating row background: even rows get gray-50 (light) / gray-800 (dark)
+- Row padding: py-2 px-4
+- Border-bottom: border-gray-200
+- Hover: bg-gray-100 (light) / bg-gray-700 (dark)
 
 ### Status Indicators
-- Change values: Positive (green icon/text), Negative (red icon/text)
-- Fear & Greed gauge: Circular progress indicator with value display
-- Loading states: Pulsing skeleton UI
+- 상승: ↑ arrow + red text + red background at 10% opacity
+- 하락: ↓ arrow + blue text + blue background at 10% opacity
+- Badge style: px-2 py-1, rounded, text-xs, font-semibold
 
 ### Refresh Button
-- Positioned top-right of section header
-- Icon + text label
-- Subtle interaction (no background, text color change on hover)
+- Position: Inline with section header (right-aligned)
+- Style: Minimal - icon + text in gray-600
+- Interaction: Text darkens on hover, no background
 
 ---
 
 ## Visual Hierarchy
 
-**Priority 1 (Highest Emphasis):**
-- Large numerical data values in market cards
+**Critical Data (Highest Contrast):**
+- Numerical values in cards (text-3xl, font-bold, gray-900)
+- Status change percentages with color coding
 - Page title
-- 3-line summary items
 
-**Priority 2 (Medium Emphasis):**
-- Section headers
-- Card labels
-- Change percentages
+**Secondary Information:**
+- Card labels and section headers
+- Timestamps and metadata
+- Supporting text
 
-**Priority 3 (Supporting Information):**
-- Update timestamps
-- Units/suffixes
-- Metadata
+**Tertiary (Subtle):**
+- Borders, dividers
+- Background differentiators
+- Helper text
 
 ---
 
 ## Data Presentation Standards
 
 **Number Formatting:**
-- Use locale-specific separators (e.g., 1,427.80)
-- Decimal precision: 2 places for currencies, 0 for large integers
-- Percentage changes: Always show +/- sign, 2 decimal places
+- Korean locale: 1,427.80 (comma separators)
+- Currency: ₩ prefix or Won suffix
+- Percentage: Always +/- sign, 2 decimals
+- Large numbers: 억/만 units for Korean readability
 
-**Change Indicators:**
-- Positive: ↑ arrow with upward trend visual
-- Negative: ↓ arrow with downward trend visual
-- Display both icon and numeric percentage
+**Status Indicators:**
+- Positive changes: ↑ + red + percentage
+- Negative changes: ↓ + blue + percentage
+- Zero change: — with neutral gray
 
 **Loading States:**
-- "로딩중..." text placeholder
-- Shimmer animation on card backgrounds
-- Maintain card structure during loading
-
----
-
-## Interaction Patterns
-
-**Data Updates:**
-- Auto-refresh every 5 minutes
-- Manual refresh button (top-right of section)
-- Subtle fade animation on data change
-- Timestamp updates with each refresh
-
-**Card Interactions:**
-- Hover: Slight elevation increase (shadow enhancement)
-- No click action needed (information display only)
-- Maintain visual consistency across all states
-
-**Animations:**
-- Entry: Staggered slideUp for sections (0.1s delay increments)
-- Fade-in on mount
-- Hover transitions: 200ms ease
-- Loading: Continuous pulse for skeletons
+- Text placeholder: "데이터 로딩중..."
+- Skeleton: Light gray pulse, maintains layout structure
+- No heavy animations
 
 ---
 
 ## Responsive Behavior
 
 **Mobile (<768px):**
-- Single column layout for all cards
-- Reduced padding (p-5)
+- Single column, full card stacking
+- Reduced padding: px-4 py-6
+- Compact header: vertical stacking of title/timestamp
 - Maintained text sizes for readability
-- Stack date and update info vertically
 
 **Tablet (768px-1024px):**
-- 2-column market data grid
-- Moderate padding (p-6)
+- 2-column grid for market data
+- Moderate padding: px-6 py-8
 
 **Desktop (>1024px):**
-- 4-column market data grid
-- Full padding (p-8)
-- Optimal max-width container
+- 4-column market grid, 3-column summary grid
+- Full padding: px-8 py-8
+- Optimal scanning width with max-w-6xl
+
+---
+
+## Dark Mode Implementation
+
+**Surface Elevation:**
+- Level 0 (background): #18181B
+- Level 1 (cards): #27272A with shadow-lg
+- Level 2 (modals/overlays): #3F3F46 with shadow-xl
+
+**Text Adjustments:**
+- Maintain same hierarchy, adjust opacity
+- Primary: gray-50
+- Secondary: gray-400
+- Reduce contrast slightly to prevent eye strain
+
+**Status Colors:**
+- Keep red/blue convention
+- Adjust brightness: 상승 #FCA5A5, 하락 #93C5FD
+- Background overlays at 15% opacity
 
 ---
 
 ## Images
 
-**Image Usage:** None required. This is a data-focused dashboard where numerical information and text content are primary. Visual indicators use icons rather than imagery.
+**Image Usage:** None. This is a data-focused financial dashboard where numerical information is primary. All visual indicators use lucide-react icons for consistency and professionalism.
 
-**Icon Strategy:** Use lucide-react icons for visual indicators. This provides a consistent, professional look with proper scalability and theming support. Avoid emojis per global design rules.
+**Icon Library:** lucide-react via CDN for arrows, refresh, charts, trending indicators
+
+---
+
+## Animations
+
+**Minimal Animation Policy:**
+- Entry animations: Simple fadeIn only
+- Data updates: Subtle 200ms color transition
+- Loading: Light pulse (not distracting)
+- No scroll animations, parallax, or decorative motion
+- Focus on instant data readability
