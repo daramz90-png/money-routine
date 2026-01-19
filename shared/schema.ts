@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, boolean, json } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -16,6 +16,65 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Articles table for real-estate and invest pages
+export const articles = pgTable("articles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  pageType: text("page_type").notNull(), // 'real-estate' | 'invest'
+  title: text("title").notNull(),
+  summary: text("summary").notNull(),
+  content: text("content").notNull(),
+  category: text("category").notNull(),
+  thumbnail: text("thumbnail"),
+  date: text("date").notNull(),
+  readTime: integer("read_time").notNull().default(5),
+  views: integer("views").notNull().default(0),
+  featured: boolean("featured").notNull().default(false),
+  isPinned: boolean("is_pinned").notNull().default(false),
+});
+
+export const dbInsertArticleSchema = createInsertSchema(articles).omit({ id: true });
+export type DbInsertArticle = z.infer<typeof dbInsertArticleSchema>;
+export type DbArticle = typeof articles.$inferSelect;
+
+// Routine articles table
+export const routineArticles = pgTable("routine_articles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  summary: text("summary").notNull(),
+  content: text("content").notNull(),
+  category: text("category").notNull(), // 'monthly' | 'routine' | 'failure' | 'gap'
+  date: text("date").notNull(),
+  readTime: integer("read_time").notNull().default(5),
+  views: integer("views").notNull().default(0),
+  featured: boolean("featured").notNull().default(false),
+});
+
+export const dbInsertRoutineArticleSchema = createInsertSchema(routineArticles).omit({ id: true });
+export type DbInsertRoutineArticle = z.infer<typeof dbInsertRoutineArticleSchema>;
+export type DbRoutineArticle = typeof routineArticles.$inferSelect;
+
+// Subscribers table
+export const subscribers = pgTable("subscribers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().default(''),
+  email: text("email").notNull().unique(),
+  subscribedAt: text("subscribed_at").notNull(),
+});
+
+export const dbInsertSubscriberSchema = createInsertSchema(subscribers).omit({ id: true });
+export type DbInsertSubscriber = z.infer<typeof dbInsertSubscriberSchema>;
+export type DbSubscriber = typeof subscribers.$inferSelect;
+
+// Dashboard content table (stores JSON content per date)
+export const dashboardContents = pgTable("dashboard_contents", {
+  date: varchar("date").primaryKey(), // Date string as primary key (e.g., "2026-01-19")
+  content: json("content").notNull(),
+});
+
+export const dbInsertDashboardContentSchema = createInsertSchema(dashboardContents);
+export type DbInsertDashboardContent = z.infer<typeof dbInsertDashboardContentSchema>;
+export type DbDashboardContent = typeof dashboardContents.$inferSelect;
 
 export interface MarketDataItem {
   value: string;
