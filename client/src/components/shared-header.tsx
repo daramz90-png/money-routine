@@ -2,36 +2,19 @@ import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { 
-  Menu, X, Coins, Home as HomeIcon, Newspaper, ChartLine, ListTodo, Settings
+  Menu, X, Coins, BookOpen, Building2, TrendingUp, Settings
 } from 'lucide-react';
 
 const navItems = [
-  { name: '홈', href: '/', icon: HomeIcon },
-  { name: '뉴스', href: '/#news', icon: Newspaper, isAnchor: true },
-  { name: '시세', href: '/#market', icon: ChartLine, isAnchor: true },
-  { name: '오늘 해야하는 것', href: '/#todo', icon: ListTodo, isAnchor: true },
+  { name: '쿠쿠의 루틴', href: '/', icon: BookOpen },
+  { name: '부동산', href: '/real-estate', icon: Building2 },
+  { name: '투자', href: '/invest', icon: TrendingUp },
   { name: '관리자', href: '/admin', icon: Settings },
 ];
 
 export function SharedHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [location, setLocation] = useLocation();
-
-  const handleNavClick = (item: typeof navItems[0]) => {
-    if (item.isAnchor) {
-      const anchor = item.href.split('#')[1];
-      if (location !== '/') {
-        setLocation('/');
-        setTimeout(() => {
-          const element = document.getElementById(anchor);
-          element?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      } else {
-        const element = document.getElementById(anchor);
-        element?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
+  const [location] = useLocation();
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-xl">
@@ -46,22 +29,8 @@ export function SharedHeader() {
           
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
-              const isActive = !item.isAnchor && (location === item.href || 
-                (item.href !== '/' && location.startsWith(item.href)));
-              
-              if (item.isAnchor) {
-                return (
-                  <button 
-                    key={item.name}
-                    onClick={() => handleNavClick(item)}
-                    className="px-4 py-2 text-sm font-medium transition-colors relative flex items-center gap-1.5 text-white/80 hover:text-white"
-                    data-testid={`nav-${item.name}`}
-                  >
-                    <item.icon className="w-4 h-4" />
-                    {item.name}
-                  </button>
-                );
-              }
+              const isActive = location === item.href || 
+                (item.href !== '/' && location.startsWith(item.href));
               
               return (
                 <Link key={item.name} href={item.href}>
@@ -123,25 +92,8 @@ export function SharedHeader() {
         <nav className="p-4">
           <div className="flex flex-col gap-1">
             {navItems.map((item) => {
-              const isActive = !item.isAnchor && (location === item.href || 
-                (item.href !== '/' && location.startsWith(item.href)));
-              
-              if (item.isAnchor) {
-                return (
-                  <button 
-                    key={item.name}
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      handleNavClick(item);
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-white/80 hover:bg-white/10 hover:text-white"
-                    data-testid={`mobile-nav-${item.name}`}
-                  >
-                    <item.icon className="w-5 h-5" />
-                    <span className="font-medium">{item.name}</span>
-                  </button>
-                );
-              }
+              const isActive = location === item.href || 
+                (item.href !== '/' && location.startsWith(item.href));
               
               return (
                 <Link key={item.name} href={item.href} onClick={() => setIsMenuOpen(false)}>
