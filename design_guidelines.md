@@ -165,6 +165,6 @@
 
 ## Images
 
-**Image Usage:** None required. This is a data-focused dashboard where numerical information and text content are primary. Visual indicators use icons/emojis rather than imagery.
+**Image Usage:** None required. This is a data-focused dashboard where numerical information and text content are primary. Visual indicators use icons rather than imagery.
 
-**Icon Strategy:** Use emoji indicators (💰, 📅, ✔️, 🔄) for personality without adding asset dependencies.
+**Icon Strategy:** Use lucide-react icons for visual indicators. This provides a consistent, professional look with proper scalability and theming support. Avoid emojis per global design rules.
