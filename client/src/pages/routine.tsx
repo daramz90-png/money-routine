@@ -526,16 +526,18 @@ export default function Routine() {
 
       <ProfileSection />
       
-      <div className="max-w-4xl mx-auto px-4">
-        <CategoryTabs 
-          activeCategory={activeCategory} 
-          onCategoryChange={setActiveCategory} 
-        />
-      </div>
+      <div className="bg-background">
+        <div className="max-w-4xl mx-auto px-4 pt-8">
+          <CategoryTabs 
+            activeCategory={activeCategory} 
+            onCategoryChange={setActiveCategory} 
+          />
+        </div>
 
-      <TimelineSection />
-      <DailyScheduleSection />
-      <ArticlesSection activeCategory={activeCategory} />
+        <TimelineSection />
+        <DailyScheduleSection />
+        <ArticlesSection activeCategory={activeCategory} />
+      </div>
       <SubscribeSection />
     </div>
   );
