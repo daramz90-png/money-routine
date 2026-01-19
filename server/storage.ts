@@ -1,4 +1,7 @@
-import { type User, type InsertUser, type Subscriber, type RoutineArticle, type Article, type PageType, type DashboardContent } from "@shared/schema";
+import { type User, type InsertUser, type Subscriber, type RoutineArticle, type Article, type PageType, type DashboardContent, defaultContent, DbSubscriber, DbRoutineArticle, DbArticle } from "@shared/schema";
+import { articles, routineArticles, subscribers, dashboardContents, users } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, and } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -23,28 +26,36 @@ export interface IStorage {
   getAvailableDates(): Promise<string[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private subscribers: Map<string, Subscriber>;
-  private routineArticles: Map<string, RoutineArticle>;
-  private articles: Map<string, Article>;
-  private dashboardContents: Map<string, DashboardContent>;
+export class DatabaseStorage implements IStorage {
+  private initialized = false;
 
-  constructor() {
-    this.users = new Map();
-    this.subscribers = new Map();
-    this.routineArticles = new Map();
-    this.articles = new Map();
-    this.dashboardContents = new Map();
-    this.seedDefaultArticles();
-    this.seedDefaultPageArticles();
-    this.seedDefaultDashboardContent();
+  private async ensureInitialized() {
+    if (this.initialized) return;
+    await this.seedIfEmpty();
+    this.initialized = true;
   }
 
-  private seedDefaultArticles() {
-    const defaultArticles: RoutineArticle[] = [
+  private async seedIfEmpty() {
+    const existingArticles = await db.select().from(articles).limit(1);
+    if (existingArticles.length === 0) {
+      await this.seedDefaultPageArticles();
+    }
+
+    const existingRoutineArticles = await db.select().from(routineArticles).limit(1);
+    if (existingRoutineArticles.length === 0) {
+      await this.seedDefaultRoutineArticles();
+    }
+
+    const existingDashboard = await db.select().from(dashboardContents).limit(1);
+    if (existingDashboard.length === 0) {
+      await this.seedDefaultDashboardContent();
+    }
+  }
+
+  private async seedDefaultRoutineArticles() {
+    const defaultArticles = [
       {
-        id: '1',
+        id: randomUUID(),
         title: '2026년 1월 투자 결산',
         summary: '연초 계획대로 진행한 투자 현황과 배운 점들을 정리합니다.',
         content: '2026년 1월의 투자 결산입니다. 이번 달에는 공모주 청약과 부동산 시장 분석에 집중했습니다...',
@@ -55,7 +66,7 @@ export class MemStorage implements IStorage {
         featured: true
       },
       {
-        id: '2',
+        id: randomUUID(),
         title: '워킹맘의 하루 루틴 공개',
         summary: '육아와 직장, 그리고 투자까지. 시간 관리의 비밀을 공개합니다.',
         content: '많은 분들이 어떻게 시간을 관리하냐고 물어보세요. 솔직히 처음에는 정말 힘들었어요...',
@@ -66,7 +77,7 @@ export class MemStorage implements IStorage {
         featured: true
       },
       {
-        id: '3',
+        id: randomUUID(),
         title: '첫 분양권 투자 실패담',
         summary: '처음 투자에서 배운 값비싼 교훈을 솔직하게 공유합니다.',
         content: '투자를 시작하고 처음 겪은 실패 이야기입니다. 지금 생각하면 왜 그랬을까 싶지만...',
@@ -77,7 +88,7 @@ export class MemStorage implements IStorage {
         featured: false
       },
       {
-        id: '4',
+        id: randomUUID(),
         title: '지방에서 서울로, 갈아타기 성공기',
         summary: '5년간의 투자 여정과 서울 입성까지의 이야기',
         content: '지방 아파트에서 시작해서 서울로 갈아타기까지의 여정을 공유합니다...',
@@ -88,89 +99,13 @@ export class MemStorage implements IStorage {
         featured: true
       }
     ];
-    defaultArticles.forEach(article => {
-      this.routineArticles.set(article.id, article);
-    });
+    await db.insert(routineArticles).values(defaultArticles);
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
-  }
-
-  async getSubscribers(): Promise<Subscriber[]> {
-    return Array.from(this.subscribers.values()).sort(
-      (a, b) => new Date(b.subscribedAt).getTime() - new Date(a.subscribedAt).getTime()
-    );
-  }
-
-  async addSubscriber(name: string, email: string): Promise<Subscriber> {
-    const existing = Array.from(this.subscribers.values()).find(s => s.email === email);
-    if (existing) {
-      return existing;
-    }
-    const id = randomUUID();
-    const subscriber: Subscriber = {
-      id,
-      name,
-      email,
-      subscribedAt: new Date().toISOString(),
-    };
-    this.subscribers.set(id, subscriber);
-    return subscriber;
-  }
-
-  async removeSubscriber(id: string): Promise<boolean> {
-    return this.subscribers.delete(id);
-  }
-
-  async getRoutineArticles(category?: string): Promise<RoutineArticle[]> {
-    const articles = Array.from(this.routineArticles.values());
-    const filtered = category 
-      ? articles.filter(a => a.category === category)
-      : articles;
-    return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }
-
-  async getRoutineArticle(id: string): Promise<RoutineArticle | undefined> {
-    return this.routineArticles.get(id);
-  }
-
-  async createRoutineArticle(article: Omit<RoutineArticle, 'id'>): Promise<RoutineArticle> {
-    const id = randomUUID();
-    const newArticle: RoutineArticle = { ...article, id };
-    this.routineArticles.set(id, newArticle);
-    return newArticle;
-  }
-
-  async updateRoutineArticle(id: string, updates: Partial<Omit<RoutineArticle, 'id'>>): Promise<RoutineArticle | undefined> {
-    const existing = this.routineArticles.get(id);
-    if (!existing) return undefined;
-    const updated: RoutineArticle = { ...existing, ...updates };
-    this.routineArticles.set(id, updated);
-    return updated;
-  }
-
-  async deleteRoutineArticle(id: string): Promise<boolean> {
-    return this.routineArticles.delete(id);
-  }
-
-  private seedDefaultPageArticles() {
-    const defaultArticles: Article[] = [
+  private async seedDefaultPageArticles() {
+    const defaultArticlesData = [
       {
-        id: 're-1',
+        id: randomUUID(),
         pageType: 'real-estate',
         title: '2026년 수도권 아파트 시장 전망',
         summary: '올해 수도권 부동산 시장은 어떻게 될까요? 금리, 공급, 정책 변화를 종합적으로 분석합니다.',
@@ -183,7 +118,7 @@ export class MemStorage implements IStorage {
         isPinned: true
       },
       {
-        id: 're-2',
+        id: randomUUID(),
         pageType: 'real-estate',
         title: '청약 가점 계산하는 법',
         summary: '청약 가점제의 구성요소와 계산 방법을 상세히 알려드립니다.',
@@ -196,7 +131,7 @@ export class MemStorage implements IStorage {
         isPinned: true
       },
       {
-        id: 're-3',
+        id: randomUUID(),
         pageType: 'real-estate',
         title: '전세 사기 피하는 체크리스트',
         summary: '전세 계약 전 반드시 확인해야 할 10가지.',
@@ -209,7 +144,7 @@ export class MemStorage implements IStorage {
         isPinned: true
       },
       {
-        id: 're-4',
+        id: randomUUID(),
         pageType: 'real-estate',
         title: '취득세 절감 전략',
         summary: '부동산 취득 시 세금을 줄이는 합법적인 방법들.',
@@ -222,7 +157,7 @@ export class MemStorage implements IStorage {
         isPinned: false
       },
       {
-        id: 'inv-1',
+        id: randomUUID(),
         pageType: 'invest',
         title: '초보자를 위한 주식 시작하기',
         summary: '주식 투자를 처음 시작하는 분들을 위한 완벽 가이드.',
@@ -235,7 +170,7 @@ export class MemStorage implements IStorage {
         isPinned: true
       },
       {
-        id: 'inv-2',
+        id: randomUUID(),
         pageType: 'invest',
         title: '부동산 리츠 추천 TOP 5',
         summary: '소액으로 부동산에 투자하는 방법, 리츠!',
@@ -248,7 +183,7 @@ export class MemStorage implements IStorage {
         isPinned: true
       },
       {
-        id: 'inv-3',
+        id: randomUUID(),
         pageType: 'invest',
         title: '배당주로 월 30만원 만들기',
         summary: '배당투자로 월급 외 수입 만들기.',
@@ -261,7 +196,7 @@ export class MemStorage implements IStorage {
         isPinned: true
       },
       {
-        id: 'inv-4',
+        id: randomUUID(),
         pageType: 'invest',
         title: '나만의 포트폴리오 구성하기',
         summary: '자산배분의 기본 원칙과 실전 포트폴리오 예시.',
@@ -274,47 +209,10 @@ export class MemStorage implements IStorage {
         isPinned: false
       }
     ];
-    defaultArticles.forEach(article => {
-      this.articles.set(article.id, article);
-    });
+    await db.insert(articles).values(defaultArticlesData);
   }
 
-  async getArticles(pageType: PageType, category?: string): Promise<Article[]> {
-    const articles = Array.from(this.articles.values()).filter(a => a.pageType === pageType);
-    const filtered = category 
-      ? articles.filter(a => a.category === category)
-      : articles;
-    return filtered.sort((a, b) => {
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    });
-  }
-
-  async getArticle(id: string): Promise<Article | undefined> {
-    return this.articles.get(id);
-  }
-
-  async createArticle(article: Omit<Article, 'id'>): Promise<Article> {
-    const id = randomUUID();
-    const newArticle: Article = { ...article, id };
-    this.articles.set(id, newArticle);
-    return newArticle;
-  }
-
-  async updateArticle(id: string, updates: Partial<Omit<Article, 'id'>>): Promise<Article | undefined> {
-    const existing = this.articles.get(id);
-    if (!existing) return undefined;
-    const updated: Article = { ...existing, ...updates };
-    this.articles.set(id, updated);
-    return updated;
-  }
-
-  async deleteArticle(id: string): Promise<boolean> {
-    return this.articles.delete(id);
-  }
-
-  private seedDefaultDashboardContent() {
+  private async seedDefaultDashboardContent() {
     const today = new Date();
     const dates = [
       new Date(today),
@@ -323,7 +221,7 @@ export class MemStorage implements IStorage {
       new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000),
     ];
 
-    dates.forEach((date, index) => {
+    const contentsToInsert = dates.map((date, index) => {
       const dateStr = date.toISOString().split('T')[0];
       const content: DashboardContent = {
         date: dateStr,
@@ -392,25 +290,285 @@ export class MemStorage implements IStorage {
         hashtags: ['#재테크', '#공모주', '#부동산', '#투자'],
         footerText: '쿠쿠의 돈루틴과 함께 성공적인 재테크를 시작하세요!',
       };
-      this.dashboardContents.set(dateStr, content);
+      return { date: dateStr, content };
     });
+
+    await db.insert(dashboardContents).values(contentsToInsert);
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(insertUser).returning();
+    return result[0];
+  }
+
+  async getSubscribers(): Promise<Subscriber[]> {
+    await this.ensureInitialized();
+    const result = await db.select().from(subscribers).orderBy(desc(subscribers.subscribedAt));
+    return result.map((s: DbSubscriber) => ({
+      id: s.id,
+      name: s.name,
+      email: s.email,
+      subscribedAt: s.subscribedAt,
+    }));
+  }
+
+  async addSubscriber(name: string, email: string): Promise<Subscriber> {
+    await this.ensureInitialized();
+    const existing = await db.select().from(subscribers).where(eq(subscribers.email, email)).limit(1);
+    if (existing.length > 0) {
+      return {
+        id: existing[0].id,
+        name: existing[0].name,
+        email: existing[0].email,
+        subscribedAt: existing[0].subscribedAt,
+      };
+    }
+    const result = await db.insert(subscribers).values({
+      name,
+      email,
+      subscribedAt: new Date().toISOString(),
+    }).returning();
+    return {
+      id: result[0].id,
+      name: result[0].name,
+      email: result[0].email,
+      subscribedAt: result[0].subscribedAt,
+    };
+  }
+
+  async removeSubscriber(id: string): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db.delete(subscribers).where(eq(subscribers.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getRoutineArticles(category?: string): Promise<RoutineArticle[]> {
+    await this.ensureInitialized();
+    let query;
+    if (category) {
+      query = db.select().from(routineArticles).where(eq(routineArticles.category, category)).orderBy(desc(routineArticles.date));
+    } else {
+      query = db.select().from(routineArticles).orderBy(desc(routineArticles.date));
+    }
+    const result = await query;
+    return result.map((a: DbRoutineArticle) => ({
+      id: a.id,
+      title: a.title,
+      summary: a.summary,
+      content: a.content,
+      category: a.category as RoutineArticle['category'],
+      date: a.date,
+      readTime: a.readTime,
+      views: a.views,
+      featured: a.featured,
+    }));
+  }
+
+  async getRoutineArticle(id: string): Promise<RoutineArticle | undefined> {
+    await this.ensureInitialized();
+    const result = await db.select().from(routineArticles).where(eq(routineArticles.id, id)).limit(1);
+    if (result.length === 0) return undefined;
+    const a = result[0];
+    return {
+      id: a.id,
+      title: a.title,
+      summary: a.summary,
+      content: a.content,
+      category: a.category as RoutineArticle['category'],
+      date: a.date,
+      readTime: a.readTime,
+      views: a.views,
+      featured: a.featured,
+    };
+  }
+
+  async createRoutineArticle(article: Omit<RoutineArticle, 'id'>): Promise<RoutineArticle> {
+    await this.ensureInitialized();
+    const result = await db.insert(routineArticles).values(article).returning();
+    const a = result[0];
+    return {
+      id: a.id,
+      title: a.title,
+      summary: a.summary,
+      content: a.content,
+      category: a.category as RoutineArticle['category'],
+      date: a.date,
+      readTime: a.readTime,
+      views: a.views,
+      featured: a.featured,
+    };
+  }
+
+  async updateRoutineArticle(id: string, updates: Partial<Omit<RoutineArticle, 'id'>>): Promise<RoutineArticle | undefined> {
+    await this.ensureInitialized();
+    const result = await db.update(routineArticles).set(updates).where(eq(routineArticles.id, id)).returning();
+    if (result.length === 0) return undefined;
+    const a = result[0];
+    return {
+      id: a.id,
+      title: a.title,
+      summary: a.summary,
+      content: a.content,
+      category: a.category as RoutineArticle['category'],
+      date: a.date,
+      readTime: a.readTime,
+      views: a.views,
+      featured: a.featured,
+    };
+  }
+
+  async deleteRoutineArticle(id: string): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db.delete(routineArticles).where(eq(routineArticles.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getArticles(pageType: PageType, category?: string): Promise<Article[]> {
+    await this.ensureInitialized();
+    let result;
+    if (category) {
+      result = await db.select().from(articles)
+        .where(and(eq(articles.pageType, pageType), eq(articles.category, category)))
+        .orderBy(desc(articles.isPinned), desc(articles.date));
+    } else {
+      result = await db.select().from(articles)
+        .where(eq(articles.pageType, pageType))
+        .orderBy(desc(articles.isPinned), desc(articles.date));
+    }
+    return result.map((a: DbArticle) => ({
+      id: a.id,
+      pageType: a.pageType as PageType,
+      title: a.title,
+      summary: a.summary,
+      content: a.content,
+      category: a.category as Article['category'],
+      thumbnail: a.thumbnail || undefined,
+      date: a.date,
+      readTime: a.readTime,
+      views: a.views,
+      featured: a.featured,
+      isPinned: a.isPinned,
+    }));
+  }
+
+  async getArticle(id: string): Promise<Article | undefined> {
+    await this.ensureInitialized();
+    const result = await db.select().from(articles).where(eq(articles.id, id)).limit(1);
+    if (result.length === 0) return undefined;
+    const a = result[0];
+    return {
+      id: a.id,
+      pageType: a.pageType as PageType,
+      title: a.title,
+      summary: a.summary,
+      content: a.content,
+      category: a.category as Article['category'],
+      thumbnail: a.thumbnail || undefined,
+      date: a.date,
+      readTime: a.readTime,
+      views: a.views,
+      featured: a.featured,
+      isPinned: a.isPinned,
+    };
+  }
+
+  async createArticle(article: Omit<Article, 'id'>): Promise<Article> {
+    await this.ensureInitialized();
+    const result = await db.insert(articles).values({
+      pageType: article.pageType,
+      title: article.title,
+      summary: article.summary,
+      content: article.content,
+      category: article.category,
+      thumbnail: article.thumbnail || null,
+      date: article.date,
+      readTime: article.readTime,
+      views: article.views,
+      featured: article.featured,
+      isPinned: article.isPinned || false,
+    }).returning();
+    const a = result[0];
+    return {
+      id: a.id,
+      pageType: a.pageType as PageType,
+      title: a.title,
+      summary: a.summary,
+      content: a.content,
+      category: a.category as Article['category'],
+      thumbnail: a.thumbnail || undefined,
+      date: a.date,
+      readTime: a.readTime,
+      views: a.views,
+      featured: a.featured,
+      isPinned: a.isPinned,
+    };
+  }
+
+  async updateArticle(id: string, updates: Partial<Omit<Article, 'id'>>): Promise<Article | undefined> {
+    await this.ensureInitialized();
+    const updateData: any = { ...updates };
+    if (updates.thumbnail !== undefined) {
+      updateData.thumbnail = updates.thumbnail || null;
+    }
+    const result = await db.update(articles).set(updateData).where(eq(articles.id, id)).returning();
+    if (result.length === 0) return undefined;
+    const a = result[0];
+    return {
+      id: a.id,
+      pageType: a.pageType as PageType,
+      title: a.title,
+      summary: a.summary,
+      content: a.content,
+      category: a.category as Article['category'],
+      thumbnail: a.thumbnail || undefined,
+      date: a.date,
+      readTime: a.readTime,
+      views: a.views,
+      featured: a.featured,
+      isPinned: a.isPinned,
+    };
+  }
+
+  async deleteArticle(id: string): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db.delete(articles).where(eq(articles.id, id)).returning();
+    return result.length > 0;
   }
 
   async getDashboardContent(date: string): Promise<DashboardContent | undefined> {
-    return this.dashboardContents.get(date);
+    await this.ensureInitialized();
+    const result = await db.select().from(dashboardContents).where(eq(dashboardContents.date, date)).limit(1);
+    if (result.length === 0) return undefined;
+    return result[0].content as DashboardContent;
   }
 
   async saveDashboardContent(date: string, content: DashboardContent): Promise<DashboardContent> {
+    await this.ensureInitialized();
     const contentWithDate = { ...content, date };
-    this.dashboardContents.set(date, contentWithDate);
+    const existing = await db.select().from(dashboardContents).where(eq(dashboardContents.date, date)).limit(1);
+    if (existing.length > 0) {
+      await db.update(dashboardContents).set({ content: contentWithDate }).where(eq(dashboardContents.date, date));
+    } else {
+      await db.insert(dashboardContents).values({ date, content: contentWithDate });
+    }
     return contentWithDate;
   }
 
   async getAvailableDates(): Promise<string[]> {
-    return Array.from(this.dashboardContents.keys()).sort((a, b) => 
-      new Date(b).getTime() - new Date(a).getTime()
-    );
+    await this.ensureInitialized();
+    const result = await db.select({ date: dashboardContents.date }).from(dashboardContents).orderBy(desc(dashboardContents.date));
+    return result.map((r: { date: string }) => r.date);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
