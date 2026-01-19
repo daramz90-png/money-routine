@@ -6,6 +6,8 @@ A comprehensive Korean financial dashboard application that displays real-time m
 
 ## Recent Changes (2026-01-19)
 
+- Added /real-estate page with category filtering (매매 전략, 청약 가이드, 전월세 노하우, 세금/대출)
+- Subscriber management system: API endpoints for subscribe/unsubscribe, admin panel section
 - Complete visual redesign with modern gradient backgrounds (blue-indigo-purple)
 - Added sticky header with navigation and mobile hamburger menu
 - New hero section with gradient background
@@ -23,7 +25,15 @@ A comprehensive Korean financial dashboard application that displays real-time m
 
 ### Pages
 - `/` - Home page with full dashboard
-- `/admin` - Admin page for content management
+- `/invest` - 투자 시작하기 (investment guides)
+- `/real-estate` - 부동산 (real estate articles with category filtering)
+- `/tax` - 절세 & 환급 (tax tips)
+- `/savings` - 통장 관리 (savings strategies)
+- `/side-income` - 부수입 만들기 (side income ideas)
+- `/tools` - 재테크 계산기 (financial calculators)
+- `/subscribe` - 뉴스레터 구독 (newsletter subscription)
+- `/about` - 소개 페이지
+- `/admin` - Admin page for content management and subscriber list
 
 ### Dashboard Sections
 1. **Hero Section** - Gradient banner with title and date
@@ -74,8 +84,16 @@ Key server files:
 
 ### Data Layer
 - **Content Storage**: localStorage for dashboard content (summaries, IPOs, news, todos, etc.)
+- **Subscriber Storage**: In-memory storage via MemStorage (server/storage.ts)
 - **Market Data**: Real-time fetching from external APIs
 - **Schema**: Defined in `shared/schema.ts` with TypeScript interfaces
+
+### API Endpoints
+- `POST /api/admin/verify` - Admin password verification (password: set via ADMIN_PASSWORD env var)
+- `GET /api/market-data` - Fetch all market data
+- `POST /api/subscribe` - Subscribe to newsletter (name, email)
+- `GET /api/subscribers` - Get all subscribers (admin)
+- `DELETE /api/subscribers/:id` - Remove subscriber (admin)
 
 ### Design System
 - Modern gradient accents (blue-indigo-purple)
