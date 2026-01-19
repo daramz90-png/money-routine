@@ -18,7 +18,7 @@ const categories = [
   { id: 'monthly', name: '월간 투자 일지', icon: Calendar },
   { id: 'routine', name: '워킹맘 루틴', icon: Clock },
   { id: 'failure', name: '실패담 & 교훈', icon: AlertCircle },
-  { id: 'gap', name: '5년 공백 이야기', icon: Heart },
+  { id: 'gap', name: '워킹맘 투자자의 이야기', icon: Heart },
 ];
 
 interface Article {
