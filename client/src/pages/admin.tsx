@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
-  Newspaper, ListTodo, Quote, Coins, MessageSquare
+  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type
 } from 'lucide-react';
 import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem } from '@shared/schema';
 import { defaultContent } from '@shared/schema';
@@ -216,6 +216,33 @@ export default function Admin() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8 pb-24">
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Sparkles className="w-5 h-5 text-purple-600" />
+            <h2 className="text-xl font-bold text-foreground">히어로 섹션</h2>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <Label>메인 타이틀</Label>
+              <Input
+                value={content.heroTitle || ''}
+                onChange={(e) => setContent(prev => ({ ...prev, heroTitle: e.target.value }))}
+                placeholder="하루 5분으로 시작하는 재테크"
+                data-testid="input-hero-title"
+              />
+            </div>
+            <div>
+              <Label>서브 타이틀</Label>
+              <Input
+                value={content.heroSubtitle || ''}
+                onChange={(e) => setContent(prev => ({ ...prev, heroSubtitle: e.target.value }))}
+                placeholder="공모주 청약부터 부동산 뉴스, 놓치기 쉬운 정책 정보까지!"
+                data-testid="input-hero-subtitle"
+              />
+            </div>
+          </div>
+        </Card>
+
         <Card className="p-6 mb-6 shadow-lg">
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <Check className="w-5 h-5 text-green-600" />
@@ -506,6 +533,63 @@ export default function Admin() {
                 onChange={(e) => setContent(prev => ({ ...prev, quote: { ...prev.quote, author: e.target.value } }))}
                 placeholder="저자 이름"
                 data-testid="input-quote-author"
+              />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Type className="w-5 h-5 text-indigo-600" />
+            <h2 className="text-xl font-bold text-foreground">마무리 섹션</h2>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <Label>마무리 서브 메시지</Label>
+              <Input
+                value={content.closingSubMessage || ''}
+                onChange={(e) => setContent(prev => ({ ...prev, closingSubMessage: e.target.value }))}
+                placeholder="오늘도 화이팅입니다 ^^"
+                data-testid="input-closing-sub-message"
+              />
+            </div>
+            <div>
+              <Label>구독 버튼 텍스트</Label>
+              <Input
+                value={content.subscribeButtonText || ''}
+                onChange={(e) => setContent(prev => ({ ...prev, subscribeButtonText: e.target.value }))}
+                placeholder="이웃추가하고 돈되는 루틴 받기"
+                data-testid="input-subscribe-button-text"
+              />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Hash className="w-5 h-5 text-blue-600" />
+            <h2 className="text-xl font-bold text-foreground">푸터 설정</h2>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <Label>푸터 설명 문구</Label>
+              <Input
+                value={content.footerText || ''}
+                onChange={(e) => setContent(prev => ({ ...prev, footerText: e.target.value }))}
+                placeholder="하루 5분으로 시작하는 재테크 루틴"
+                data-testid="input-footer-text"
+              />
+            </div>
+            <div>
+              <Label>해시태그 (쉼표로 구분)</Label>
+              <Input
+                value={(content.hashtags || []).join(', ')}
+                onChange={(e) => setContent(prev => ({ 
+                  ...prev, 
+                  hashtags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+                }))}
+                placeholder="재테크루틴, 경제뉴스요약, 공모주청약, ..."
+                data-testid="input-hashtags"
               />
             </div>
           </div>

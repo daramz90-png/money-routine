@@ -99,6 +99,8 @@ export interface ThoughtItem {
 
 export interface DashboardContent {
   date: string;
+  heroTitle: string;
+  heroSubtitle: string;
   summaries: SummaryItem[];
   ipos: IPOItem[];
   realEstates: RealEstateItem[];
@@ -106,14 +108,20 @@ export interface DashboardContent {
   todos: TodoItem[];
   thoughts: ThoughtItem[];
   closingMessage: string;
+  closingSubMessage: string;
+  subscribeButtonText: string;
   quote: {
     text: string;
     author: string;
   };
+  hashtags: string[];
+  footerText: string;
 }
 
 export const defaultContent: DashboardContent = {
   date: '',
+  heroTitle: '하루 5분으로 시작하는 재테크',
+  heroSubtitle: '공모주 청약부터 부동산 뉴스, 놓치기 쉬운 정책 정보까지!',
   summaries: [
     { id: '1', text: '공모주 (세미파이브) 청약시작 (청약하세요)' },
     { id: '2', text: '역삼 센트럴 자이 청약 마지막날 (2순위 청약일)' },
@@ -194,8 +202,12 @@ export const defaultContent: DashboardContent = {
     },
   ],
   closingMessage: '오늘도 흔들림 없이, 루틴대로 갑시다',
+  closingSubMessage: '오늘도 화이팅입니다 ^^',
+  subscribeButtonText: '이웃추가하고 돈되는 루틴 받기',
   quote: {
     text: '위기는 언제나 기회와 함께 온다.',
     author: '존 F. 케네디',
   },
+  hashtags: ['재테크루틴', '경제뉴스요약', '공모주청약', '투자공부', '부동산청약', '환율', '연말정산', '돈공부'],
+  footerText: '하루 5분으로 시작하는 재테크 루틴',
 };

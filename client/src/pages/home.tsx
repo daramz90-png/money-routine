@@ -112,15 +112,15 @@ function Header() {
   );
 }
 
-function HeroSection({ date }: { date: string }) {
+function HeroSection({ date, title, subtitle }: { date: string; title: string; subtitle: string }) {
   return (
     <section className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white py-12 sm:py-16 px-4">
       <div className="max-w-6xl mx-auto text-center">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" data-testid="text-hero-title">
-          하루 5분으로 시작하는 재테크
+          {title || '하루 5분으로 시작하는 재테크'}
         </h1>
         <p className="text-lg sm:text-xl text-white/90 mb-6 max-w-2xl mx-auto">
-          공모주 청약부터 부동산 뉴스, 놓치기 쉬운 정책 정보까지!
+          {subtitle || '공모주 청약부터 부동산 뉴스, 놓치기 쉬운 정책 정보까지!'}
         </p>
         <div className="inline-flex flex-wrap items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full" data-testid="text-date">
           <Calendar className="w-5 h-5" />
@@ -562,29 +562,30 @@ function QuoteSection({ quote }: { quote: { text: string; author: string } }) {
   );
 }
 
-function ClosingSection({ closingMessage }: { closingMessage: string }) {
+function ClosingSection({ closingMessage, closingSubMessage, subscribeButtonText }: { closingMessage: string; closingSubMessage: string; subscribeButtonText: string }) {
   return (
     <section className="py-8">
       <Card className="p-8 text-center shadow-lg border-0 bg-card">
         <p className="text-xl font-medium text-foreground mb-2">
           {closingMessage || '오늘 하루도 차분하게, 그리고 흔들리지 않게 갑시다'}
         </p>
-        <p className="text-muted-foreground mb-6">오늘도 화이팅입니다 ^^</p>
+        <p className="text-muted-foreground mb-6">{closingSubMessage || '오늘도 화이팅입니다 ^^'}</p>
         <Button 
           className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
           onClick={() => alert('이웃추가 기능은 곧 오픈됩니다!')}
           data-testid="button-subscribe"
         >
           <Bell className="w-4 h-4 mr-2" />
-          이웃추가하고 돈되는 루틴 받기
+          {subscribeButtonText || '이웃추가하고 돈되는 루틴 받기'}
         </Button>
       </Card>
     </section>
   );
 }
 
-function Footer() {
-  const hashtags = ['재테크루틴', '경제뉴스요약', '공모주청약', '투자공부', '부동산청약', '환율', '연말정산', '돈공부'];
+function Footer({ hashtags, footerText }: { hashtags: string[]; footerText: string }) {
+  const defaultHashtags = ['재테크루틴', '경제뉴스요약', '공모주청약', '투자공부', '부동산청약', '환율', '연말정산', '돈공부'];
+  const displayHashtags = hashtags && hashtags.length > 0 ? hashtags : defaultHashtags;
   
   return (
     <footer className="bg-gray-900 text-white py-12 mt-8">
@@ -595,9 +596,9 @@ function Footer() {
           </div>
           <span className="text-xl font-bold">쿠쿠의 돈루틴</span>
         </div>
-        <p className="text-gray-400 mb-6">하루 5분으로 시작하는 재테크 루틴</p>
+        <p className="text-gray-400 mb-6">{footerText || '하루 5분으로 시작하는 재테크 루틴'}</p>
         <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {hashtags.map((tag) => (
+          {displayHashtags.map((tag) => (
             <span key={tag} className="text-sm text-blue-400">#{tag}</span>
           ))}
         </div>
@@ -644,7 +645,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <HeroSection date={currentDate} />
+      <HeroSection 
+        date={currentDate} 
+        title={content.heroTitle || ''} 
+        subtitle={content.heroSubtitle || ''} 
+      />
       
       <main className="max-w-6xl mx-auto px-4 py-8">
         <SummarySection summaries={content.summaries} />
@@ -659,10 +664,17 @@ export default function Home() {
         />
         <ThoughtsSection thoughts={content.thoughts || []} />
         <QuoteSection quote={content.quote} />
-        <ClosingSection closingMessage={content.closingMessage || ''} />
+        <ClosingSection 
+          closingMessage={content.closingMessage || ''} 
+          closingSubMessage={content.closingSubMessage || ''}
+          subscribeButtonText={content.subscribeButtonText || ''}
+        />
       </main>
       
-      <Footer />
+      <Footer 
+        hashtags={content.hashtags || []} 
+        footerText={content.footerText || ''} 
+      />
     </div>
   );
 }
