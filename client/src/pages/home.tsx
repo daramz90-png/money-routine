@@ -540,7 +540,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
         />
       </div>
       <p className="mt-4 text-xs text-muted-foreground text-center">
-        {refreshNote || '* 데이터는 5분마다 자동 갱신됩니다'}
+        {refreshNote || '* 데이터는 1분마다 자동 갱신됩니다'}
       </p>
     </section>
   );
@@ -666,8 +666,8 @@ export default function Home() {
 
   const { data: marketData, isLoading, isFetching, refetch } = useQuery<MarketData>({
     queryKey: ['/api/market-data'],
-    refetchInterval: 5 * 60 * 1000,
-    staleTime: 60 * 1000,
+    refetchInterval: 1 * 60 * 1000,
+    staleTime: 30 * 1000,
   });
 
   const formatDate = useCallback(() => {

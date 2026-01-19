@@ -279,7 +279,7 @@ export class DatabaseStorage implements IStorage {
           },
         ],
         marketSectionTitle: '주요 항목 시세 CHECK',
-        marketRefreshNote: '5분 마다 자동 새로고침',
+        marketRefreshNote: '1분 마다 자동 새로고침',
         closingMessage: '오늘도 당신의 재테크를 응원합니다!',
         closingSubMessage: '매일 아침 돈루틴과 함께하세요',
         subscribeButtonText: '뉴스레터 구독하기',

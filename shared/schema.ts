@@ -359,7 +359,7 @@ export const defaultContent: DashboardContent = {
     },
   ],
   marketSectionTitle: '주요 항목 시세 CHECK',
-  marketRefreshNote: '* 데이터는 5분마다 자동 갱신됩니다',
+  marketRefreshNote: '* 데이터는 1분마다 자동 갱신됩니다',
   closingMessage: '오늘도 흔들림 없이, 루틴대로 갑시다',
   closingSubMessage: '오늘도 화이팅입니다 ^^',
   subscribeButtonText: '이웃추가하고 돈되는 루틴 받기',
