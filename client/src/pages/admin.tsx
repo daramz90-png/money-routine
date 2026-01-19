@@ -11,9 +11,23 @@ import {
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
   Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw, BookOpen, Edit, Loader2
 } from 'lucide-react';
-import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData, Subscriber, RoutineArticle } from '@shared/schema';
+import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData, Subscriber, RoutineArticle, Article, PageType } from '@shared/schema';
 import { defaultContent, defaultManualMarketData } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
+
+const realEstateCategoryOptions = [
+  { value: 'buy', label: '매매 전략' },
+  { value: 'subscription', label: '청약 가이드' },
+  { value: 'rent', label: '전월세 노하우' },
+  { value: 'tax', label: '세금/대출' },
+];
+
+const investCategoryOptions = [
+  { value: 'stock', label: '주식 투자' },
+  { value: 'reit-etf', label: '리츠/ETF' },
+  { value: 'dividend', label: '배당주' },
+  { value: 'portfolio', label: '포트폴리오' },
+];
 
 function generateId() {
   return Math.random().toString(36).substr(2, 9);
@@ -138,6 +152,46 @@ export default function Admin() {
     enabled: isAuthenticated,
   });
 
+  const { data: realEstateArticles = [], isLoading: isLoadingRealEstateArticles } = useQuery<Article[]>({
+    queryKey: ['/api/articles/real-estate'],
+    enabled: isAuthenticated,
+  });
+
+  const { data: investArticles = [], isLoading: isLoadingInvestArticles } = useQuery<Article[]>({
+    queryKey: ['/api/articles/invest'],
+    enabled: isAuthenticated,
+  });
+
+  const [editingRealEstateArticle, setEditingRealEstateArticle] = useState<Article | null>(null);
+  const [isRealEstateFormOpen, setIsRealEstateFormOpen] = useState(false);
+  const [realEstateForm, setRealEstateForm] = useState({
+    title: '',
+    summary: '',
+    content: '',
+    category: 'buy',
+    thumbnail: '',
+    date: new Date().toISOString().split('T')[0],
+    readTime: 5,
+    views: 0,
+    featured: false,
+    isPinned: false,
+  });
+
+  const [editingInvestArticle, setEditingInvestArticle] = useState<Article | null>(null);
+  const [isInvestFormOpen, setIsInvestFormOpen] = useState(false);
+  const [investForm, setInvestForm] = useState({
+    title: '',
+    summary: '',
+    content: '',
+    category: 'stock',
+    thumbnail: '',
+    date: new Date().toISOString().split('T')[0],
+    readTime: 5,
+    views: 0,
+    featured: false,
+    isPinned: false,
+  });
+
   const createArticleMutation = useMutation({
     mutationFn: async (article: Omit<RoutineArticle, 'id'>) => {
       const res = await apiRequest('POST', '/api/routine-articles', article);
@@ -182,6 +236,58 @@ export default function Admin() {
     },
   });
 
+  const createPageArticleMutation = useMutation({
+    mutationFn: async (article: Omit<Article, 'id'>) => {
+      const res = await apiRequest('POST', '/api/articles', article);
+      return res.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/articles/${variables.pageType}`] });
+      toast({ title: '글 작성 완료' });
+      if (variables.pageType === 'real-estate') {
+        resetRealEstateForm();
+      } else if (variables.pageType === 'invest') {
+        resetInvestForm();
+      }
+    },
+    onError: () => {
+      toast({ title: '글 작성 실패', variant: 'destructive' });
+    },
+  });
+
+  const updatePageArticleMutation = useMutation({
+    mutationFn: async ({ id, pageType, ...article }: Article) => {
+      const res = await apiRequest('PATCH', `/api/articles/${id}`, { pageType, ...article });
+      return { ...article, id, pageType };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/articles/${data.pageType}`] });
+      toast({ title: '글 수정 완료' });
+      if (data.pageType === 'real-estate') {
+        resetRealEstateForm();
+      } else if (data.pageType === 'invest') {
+        resetInvestForm();
+      }
+    },
+    onError: () => {
+      toast({ title: '글 수정 실패', variant: 'destructive' });
+    },
+  });
+
+  const deletePageArticleMutation = useMutation({
+    mutationFn: async ({ id, pageType }: { id: string; pageType: PageType }) => {
+      const res = await apiRequest('DELETE', `/api/articles/${id}`);
+      return { success: true, pageType };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/articles/${data.pageType}`] });
+      toast({ title: '글 삭제 완료' });
+    },
+    onError: () => {
+      toast({ title: '글 삭제 실패', variant: 'destructive' });
+    },
+  });
+
   const resetArticleForm = () => {
     setArticleForm({
       title: '',
@@ -195,6 +301,100 @@ export default function Admin() {
     });
     setEditingArticle(null);
     setIsArticleFormOpen(false);
+  };
+
+  const resetRealEstateForm = () => {
+    setRealEstateForm({
+      title: '',
+      summary: '',
+      content: '',
+      category: 'buy',
+      thumbnail: '',
+      date: new Date().toISOString().split('T')[0],
+      readTime: 5,
+      views: 0,
+      featured: false,
+      isPinned: false,
+    });
+    setEditingRealEstateArticle(null);
+    setIsRealEstateFormOpen(false);
+  };
+
+  const resetInvestForm = () => {
+    setInvestForm({
+      title: '',
+      summary: '',
+      content: '',
+      category: 'stock',
+      thumbnail: '',
+      date: new Date().toISOString().split('T')[0],
+      readTime: 5,
+      views: 0,
+      featured: false,
+      isPinned: false,
+    });
+    setEditingInvestArticle(null);
+    setIsInvestFormOpen(false);
+  };
+
+  const handleEditRealEstateArticle = (article: Article) => {
+    setEditingRealEstateArticle(article);
+    setRealEstateForm({
+      title: article.title,
+      summary: article.summary,
+      content: article.content,
+      category: article.category,
+      thumbnail: article.thumbnail || '',
+      date: article.date,
+      readTime: article.readTime,
+      views: article.views,
+      featured: article.featured,
+      isPinned: article.isPinned || false,
+    });
+    setIsRealEstateFormOpen(true);
+  };
+
+  const handleEditInvestArticle = (article: Article) => {
+    setEditingInvestArticle(article);
+    setInvestForm({
+      title: article.title,
+      summary: article.summary,
+      content: article.content,
+      category: article.category,
+      thumbnail: article.thumbnail || '',
+      date: article.date,
+      readTime: article.readTime,
+      views: article.views,
+      featured: article.featured,
+      isPinned: article.isPinned || false,
+    });
+    setIsInvestFormOpen(true);
+  };
+
+  const handleSubmitRealEstateArticle = () => {
+    if (!realEstateForm.title || !realEstateForm.summary || !realEstateForm.content) {
+      toast({ title: '필수 항목을 입력해주세요', variant: 'destructive' });
+      return;
+    }
+    const articleData = { ...realEstateForm, pageType: 'real-estate' as PageType };
+    if (editingRealEstateArticle) {
+      updatePageArticleMutation.mutate({ id: editingRealEstateArticle.id, ...articleData });
+    } else {
+      createPageArticleMutation.mutate(articleData);
+    }
+  };
+
+  const handleSubmitInvestArticle = () => {
+    if (!investForm.title || !investForm.summary || !investForm.content) {
+      toast({ title: '필수 항목을 입력해주세요', variant: 'destructive' });
+      return;
+    }
+    const articleData = { ...investForm, pageType: 'invest' as PageType };
+    if (editingInvestArticle) {
+      updatePageArticleMutation.mutate({ id: editingInvestArticle.id, ...articleData });
+    } else {
+      createPageArticleMutation.mutate(articleData);
+    }
   };
 
   const handleEditArticle = (article: RoutineArticle) => {
@@ -1185,6 +1385,398 @@ export default function Admin() {
                       onClick={() => deleteArticleMutation.mutate(article.id)}
                       className="text-red-500 hover:text-red-600 hover:bg-red-50"
                       data-testid={`button-delete-article-${article.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <Building className="w-5 h-5 text-blue-600" />
+              <h2 className="text-xl font-bold text-foreground">부동산 글 관리</h2>
+              <span className="text-sm text-muted-foreground">({realEstateArticles.length}개)</span>
+            </div>
+            <Button 
+              onClick={() => setIsRealEstateFormOpen(true)}
+              data-testid="button-new-realestate-article"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              새 글 작성
+            </Button>
+          </div>
+
+          {isRealEstateFormOpen && (
+            <Card className="p-4 mb-4 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+              <h3 className="font-semibold mb-3 text-foreground">
+                {editingRealEstateArticle ? '글 수정' : '새 글 작성'}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <Label>제목 *</Label>
+                  <Input
+                    value={realEstateForm.title}
+                    onChange={(e) => setRealEstateForm(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="글 제목"
+                    data-testid="input-realestate-title"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>요약 *</Label>
+                  <Textarea
+                    value={realEstateForm.summary}
+                    onChange={(e) => setRealEstateForm(prev => ({ ...prev, summary: e.target.value }))}
+                    placeholder="글 요약"
+                    data-testid="input-realestate-summary"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>본문 *</Label>
+                  <Textarea
+                    value={realEstateForm.content}
+                    onChange={(e) => setRealEstateForm(prev => ({ ...prev, content: e.target.value }))}
+                    placeholder="글 본문"
+                    className="min-h-32"
+                    data-testid="input-realestate-content"
+                  />
+                </div>
+                <div>
+                  <Label>카테고리</Label>
+                  <select
+                    value={realEstateForm.category}
+                    onChange={(e) => setRealEstateForm(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full h-9 px-3 rounded-md border border-input bg-background"
+                    data-testid="select-realestate-category"
+                  >
+                    {realEstateCategoryOptions.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label>날짜</Label>
+                  <Input
+                    type="date"
+                    value={realEstateForm.date}
+                    onChange={(e) => setRealEstateForm(prev => ({ ...prev, date: e.target.value }))}
+                    data-testid="input-realestate-date"
+                  />
+                </div>
+                <div>
+                  <Label>읽는 시간 (분)</Label>
+                  <Input
+                    type="number"
+                    value={realEstateForm.readTime}
+                    onChange={(e) => setRealEstateForm(prev => ({ ...prev, readTime: parseInt(e.target.value) || 5 }))}
+                    data-testid="input-realestate-readtime"
+                  />
+                </div>
+                <div>
+                  <Label>조회수</Label>
+                  <Input
+                    type="number"
+                    value={realEstateForm.views}
+                    onChange={(e) => setRealEstateForm(prev => ({ ...prev, views: parseInt(e.target.value) || 0 }))}
+                    data-testid="input-realestate-views"
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={realEstateForm.featured}
+                      onChange={(e) => setRealEstateForm(prev => ({ ...prev, featured: e.target.checked }))}
+                      className="w-4 h-4"
+                      data-testid="checkbox-realestate-featured"
+                    />
+                    <Label className="mb-0">추천</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={realEstateForm.isPinned}
+                      onChange={(e) => setRealEstateForm(prev => ({ ...prev, isPinned: e.target.checked }))}
+                      className="w-4 h-4"
+                      data-testid="checkbox-realestate-pinned"
+                    />
+                    <Label className="mb-0">상단 고정</Label>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-4">
+                <Button 
+                  onClick={handleSubmitRealEstateArticle}
+                  disabled={createPageArticleMutation.isPending || updatePageArticleMutation.isPending}
+                  data-testid="button-save-realestate-article"
+                >
+                  {(createPageArticleMutation.isPending || updatePageArticleMutation.isPending) ? (
+                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-1" />
+                  )}
+                  {editingRealEstateArticle ? '수정' : '저장'}
+                </Button>
+                <Button variant="outline" onClick={resetRealEstateForm} data-testid="button-cancel-realestate-article">
+                  취소
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {isLoadingRealEstateArticles ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Loader2 className="w-8 h-8 mx-auto animate-spin mb-2" />
+              로딩 중...
+            </div>
+          ) : realEstateArticles.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Building className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>아직 작성된 글이 없습니다</p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {realEstateArticles.map((article) => (
+                <div 
+                  key={article.id} 
+                  className="flex flex-wrap items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg"
+                  data-testid={`realestate-article-row-${article.id}`}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
+                        {realEstateCategoryOptions.find(c => c.value === article.category)?.label}
+                      </span>
+                      {article.featured && (
+                        <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded">
+                          추천
+                        </span>
+                      )}
+                      {article.isPinned && (
+                        <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">
+                          고정
+                        </span>
+                      )}
+                    </div>
+                    <div className="font-medium text-foreground truncate">{article.title}</div>
+                    <div className="text-sm text-muted-foreground truncate">{article.summary}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">{article.date}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleEditRealEstateArticle(article)}
+                      data-testid={`button-edit-realestate-${article.id}`}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => deletePageArticleMutation.mutate({ id: article.id, pageType: 'real-estate' })}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                      data-testid={`button-delete-realestate-${article.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <TrendingUp className="w-5 h-5 text-green-600" />
+              <h2 className="text-xl font-bold text-foreground">투자 글 관리</h2>
+              <span className="text-sm text-muted-foreground">({investArticles.length}개)</span>
+            </div>
+            <Button 
+              onClick={() => setIsInvestFormOpen(true)}
+              data-testid="button-new-invest-article"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              새 글 작성
+            </Button>
+          </div>
+
+          {isInvestFormOpen && (
+            <Card className="p-4 mb-4 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+              <h3 className="font-semibold mb-3 text-foreground">
+                {editingInvestArticle ? '글 수정' : '새 글 작성'}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <Label>제목 *</Label>
+                  <Input
+                    value={investForm.title}
+                    onChange={(e) => setInvestForm(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="글 제목"
+                    data-testid="input-invest-title"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>요약 *</Label>
+                  <Textarea
+                    value={investForm.summary}
+                    onChange={(e) => setInvestForm(prev => ({ ...prev, summary: e.target.value }))}
+                    placeholder="글 요약"
+                    data-testid="input-invest-summary"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>본문 *</Label>
+                  <Textarea
+                    value={investForm.content}
+                    onChange={(e) => setInvestForm(prev => ({ ...prev, content: e.target.value }))}
+                    placeholder="글 본문"
+                    className="min-h-32"
+                    data-testid="input-invest-content"
+                  />
+                </div>
+                <div>
+                  <Label>카테고리</Label>
+                  <select
+                    value={investForm.category}
+                    onChange={(e) => setInvestForm(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full h-9 px-3 rounded-md border border-input bg-background"
+                    data-testid="select-invest-category"
+                  >
+                    {investCategoryOptions.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label>날짜</Label>
+                  <Input
+                    type="date"
+                    value={investForm.date}
+                    onChange={(e) => setInvestForm(prev => ({ ...prev, date: e.target.value }))}
+                    data-testid="input-invest-date"
+                  />
+                </div>
+                <div>
+                  <Label>읽는 시간 (분)</Label>
+                  <Input
+                    type="number"
+                    value={investForm.readTime}
+                    onChange={(e) => setInvestForm(prev => ({ ...prev, readTime: parseInt(e.target.value) || 5 }))}
+                    data-testid="input-invest-readtime"
+                  />
+                </div>
+                <div>
+                  <Label>조회수</Label>
+                  <Input
+                    type="number"
+                    value={investForm.views}
+                    onChange={(e) => setInvestForm(prev => ({ ...prev, views: parseInt(e.target.value) || 0 }))}
+                    data-testid="input-invest-views"
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={investForm.featured}
+                      onChange={(e) => setInvestForm(prev => ({ ...prev, featured: e.target.checked }))}
+                      className="w-4 h-4"
+                      data-testid="checkbox-invest-featured"
+                    />
+                    <Label className="mb-0">추천</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={investForm.isPinned}
+                      onChange={(e) => setInvestForm(prev => ({ ...prev, isPinned: e.target.checked }))}
+                      className="w-4 h-4"
+                      data-testid="checkbox-invest-pinned"
+                    />
+                    <Label className="mb-0">상단 고정</Label>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-4">
+                <Button 
+                  onClick={handleSubmitInvestArticle}
+                  disabled={createPageArticleMutation.isPending || updatePageArticleMutation.isPending}
+                  data-testid="button-save-invest-article"
+                >
+                  {(createPageArticleMutation.isPending || updatePageArticleMutation.isPending) ? (
+                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-1" />
+                  )}
+                  {editingInvestArticle ? '수정' : '저장'}
+                </Button>
+                <Button variant="outline" onClick={resetInvestForm} data-testid="button-cancel-invest-article">
+                  취소
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {isLoadingInvestArticles ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Loader2 className="w-8 h-8 mx-auto animate-spin mb-2" />
+              로딩 중...
+            </div>
+          ) : investArticles.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>아직 작성된 글이 없습니다</p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {investArticles.map((article) => (
+                <div 
+                  key={article.id} 
+                  className="flex flex-wrap items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg"
+                  data-testid={`invest-article-row-${article.id}`}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">
+                        {investCategoryOptions.find(c => c.value === article.category)?.label}
+                      </span>
+                      {article.featured && (
+                        <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded">
+                          추천
+                        </span>
+                      )}
+                      {article.isPinned && (
+                        <span className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
+                          고정
+                        </span>
+                      )}
+                    </div>
+                    <div className="font-medium text-foreground truncate">{article.title}</div>
+                    <div className="text-sm text-muted-foreground truncate">{article.summary}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">{article.date}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleEditInvestArticle(article)}
+                      data-testid={`button-edit-invest-${article.id}`}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => deletePageArticleMutation.mutate({ id: article.id, pageType: 'invest' })}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                      data-testid={`button-delete-invest-${article.id}`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
