@@ -347,7 +347,8 @@ function MarketCard({
   unit, 
   change, 
   loading, 
-  icon: Icon
+  icon: Icon,
+  url
 }: { 
   name: string; 
   value: string; 
@@ -355,14 +356,16 @@ function MarketCard({
   change: number; 
   loading: boolean; 
   icon?: React.ElementType;
+  url?: string;
 }) {
   const isUp = change > 0;
   
-  return (
-    <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all" data-testid={`card-market-${name.toLowerCase().replace(/\s/g, '-')}`}>
+  const cardContent = (
+    <>
       <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-3">
         {Icon && <Icon className="w-4 h-4" />}
         <span>{name}</span>
+        {url && <ExternalLink className="w-3 h-3 ml-auto opacity-50" />}
       </div>
       {loading ? (
         <Skeleton className="h-8 w-28 mb-2" />
@@ -378,11 +381,27 @@ function MarketCard({
           <span>{isUp ? '+' : ''}{change.toFixed(2)}%</span>
         </div>
       )}
+    </>
+  );
+
+  if (url) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="block">
+        <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all cursor-pointer" data-testid={`card-market-${name.toLowerCase().replace(/\s/g, '-')}`}>
+          {cardContent}
+        </Card>
+      </a>
+    );
+  }
+  
+  return (
+    <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all" data-testid={`card-market-${name.toLowerCase().replace(/\s/g, '-')}`}>
+      {cardContent}
     </Card>
   );
 }
 
-function FearGreedCard({ data }: { data: FearGreedData }) {
+function FearGreedCard({ data, url }: { data: FearGreedData; url?: string }) {
   const getFearGreedStyle = (value: string) => {
     const num = parseInt(value);
     if (num < 25) return { color: 'text-red-600', bg: 'bg-red-100 dark:bg-red-900/30' };
@@ -394,11 +413,12 @@ function FearGreedCard({ data }: { data: FearGreedData }) {
 
   const style = getFearGreedStyle(data.value);
 
-  return (
-    <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all" data-testid="card-fear-greed">
+  const cardContent = (
+    <>
       <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-3">
         <Gauge className="w-4 h-4" />
         <span>CNN 공포지수</span>
+        {url && <ExternalLink className="w-3 h-3 ml-auto opacity-50" />}
       </div>
       {data.loading ? (
         <Skeleton className="h-8 w-16 mb-2" />
@@ -412,6 +432,22 @@ function FearGreedCard({ data }: { data: FearGreedData }) {
           {data.status}
         </div>
       )}
+    </>
+  );
+
+  if (url) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="block">
+        <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all cursor-pointer" data-testid="card-fear-greed">
+          {cardContent}
+        </Card>
+      </a>
+    );
+  }
+
+  return (
+    <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all" data-testid="card-fear-greed">
+      {cardContent}
     </Card>
   );
 }
@@ -453,6 +489,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
           change={marketData.usdkrw.change}
           loading={isLoading || marketData.usdkrw.loading}
           icon={DollarSign}
+          url="https://m.stock.naver.com/marketindex/exchange/FX_USDKRW"
         />
         <MarketCard 
           name="금 (Gold)"
@@ -461,14 +498,16 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
           change={marketData.gold.change}
           loading={isLoading || marketData.gold.loading}
           icon={Coins}
+          url="https://m.stock.naver.com/marketindex/metals/M04020000"
         />
         <MarketCard 
-          name="S&P 500"
+          name="SPY"
           value={marketData.spy.value}
           unit="$"
           change={marketData.spy.change}
           loading={isLoading || marketData.spy.loading}
           icon={BarChart3}
+          url="https://m.stock.naver.com/worldstock/etf/SPY/total"
         />
         <MarketCard 
           name="비트코인"
@@ -477,6 +516,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
           change={marketData.bitcoin.change}
           loading={isLoading || marketData.bitcoin.loading}
           icon={Bitcoin}
+          url="https://m.stock.naver.com/crypto/UPBIT/BTC"
         />
         <MarketCard 
           name="나스닥"
@@ -485,6 +525,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
           change={marketData.nasdaq.change}
           loading={isLoading || marketData.nasdaq.loading}
           icon={LineChart}
+          url="https://m.stock.naver.com/worldstock/stock/NDAQ.O/total"
         />
         <MarketCard 
           name="KODEX 200"
@@ -493,8 +534,12 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
           change={marketData.kodex200.change}
           loading={isLoading || marketData.kodex200.loading}
           icon={Building2}
+          url="https://m.stock.naver.com/domestic/stock/069500/total"
         />
-        <FearGreedCard data={isLoading ? { ...marketData.fearGreed, loading: true } : marketData.fearGreed} />
+        <FearGreedCard 
+          data={isLoading ? { ...marketData.fearGreed, loading: true } : marketData.fearGreed} 
+          url="https://edition.cnn.com/markets/fear-and-greed"
+        />
         <MarketCard 
           name="SCFI (운임지수)"
           value={marketData.scfi.value}
