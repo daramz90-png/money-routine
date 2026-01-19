@@ -58,13 +58,14 @@ async function fetchUSDKRW(): Promise<{ value: string; change: number }> {
 
 async function fetchGold(usdkrw: number): Promise<{ value: string; change: number }> {
   try {
-    const response = await fetchWithTimeout('https://api.metals.live/v1/spot/gold');
-    const data = await response.json() as GoldPriceResponse[];
-    const usdPerOz = data[0].price;
-    const krwPerG = Math.round(usdPerOz * usdkrw / 31.1035);
-    return { value: krwPerG.toLocaleString('ko-KR'), change: 1.88 };
+    const response = await fetchWithTimeout('https://data-asg.goldprice.org/dbXRates/KRW');
+    const data = await response.json() as { items: Array<{ xauPrice: number; pcXau: number }> };
+    const krwPerOz = data.items[0].xauPrice;
+    const krwPerG = Math.round(krwPerOz / 31.1035);
+    const change = data.items[0].pcXau || 0;
+    return { value: krwPerG.toLocaleString('ko-KR'), change };
   } catch {
-    return { value: '187,050', change: 1.88 };
+    return { value: '220,000', change: 0 };
   }
 }
 
@@ -84,42 +85,81 @@ async function fetchSPY(): Promise<{ value: string; change: number }> {
 
 async function fetchBitcoin(): Promise<{ value: string; change: number }> {
   try {
-    const response = await fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=krw&include_24hr_change=true');
-    const data = await response.json() as CoinGeckoResponse;
-    const price = data.bitcoin.krw;
-    const change = data.bitcoin.krw_24h_change;
+    const response = await fetchWithTimeout('https://api.upbit.com/v1/ticker?markets=KRW-BTC');
+    const data = await response.json() as Array<{ trade_price: number; signed_change_rate: number }>;
+    const price = data[0].trade_price;
+    const change = data[0].signed_change_rate * 100;
     return { value: price.toLocaleString('ko-KR'), change };
   } catch {
-    return { value: '164,002,000', change: -0.16 };
+    try {
+      const response = await fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=krw&include_24hr_change=true');
+      const data = await response.json() as CoinGeckoResponse;
+      if (data.bitcoin) {
+        return { value: data.bitcoin.krw.toLocaleString('ko-KR'), change: data.bitcoin.krw_24h_change };
+      }
+    } catch {}
+    return { value: '136,000,000', change: 0 };
   }
 }
 
 async function fetchNASDAQ(): Promise<{ value: string; change: number }> {
   try {
+    const response = await fetchWithTimeout('https://query2.finance.yahoo.com/v8/finance/chart/%5EIXIC?interval=1d&range=1d');
+    const data = await response.json() as YahooFinanceResponse;
+    if (data.chart?.result?.[0]?.meta) {
+      const quote = data.chart.result[0].meta;
+      const currentPrice = quote.regularMarketPrice;
+      const prevClose = quote.previousClose;
+      if (currentPrice && prevClose) {
+        const change = ((currentPrice - prevClose) / prevClose * 100);
+        return { value: currentPrice.toFixed(2), change };
+      }
+    }
+  } catch {}
+  try {
     const response = await fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/%5EIXIC');
     const data = await response.json() as YahooFinanceResponse;
-    const quote = data.chart.result[0].meta;
-    const currentPrice = quote.regularMarketPrice;
-    const prevClose = quote.previousClose;
-    const change = ((currentPrice - prevClose) / prevClose * 100);
-    return { value: currentPrice.toFixed(2), change };
-  } catch {
-    return { value: '19,478.45', change: -1.2 };
-  }
+    if (data.chart?.result?.[0]?.meta) {
+      const quote = data.chart.result[0].meta;
+      const currentPrice = quote.regularMarketPrice;
+      const prevClose = quote.previousClose;
+      if (currentPrice && prevClose) {
+        const change = ((currentPrice - prevClose) / prevClose * 100);
+        return { value: currentPrice.toFixed(2), change };
+      }
+    }
+  } catch {}
+  return { value: '19,500', change: 0 };
 }
 
 async function fetchKODEX200(): Promise<{ value: string; change: number }> {
   try {
+    const response = await fetchWithTimeout('https://query2.finance.yahoo.com/v8/finance/chart/069500.KS?interval=1d&range=1d');
+    const data = await response.json() as YahooFinanceResponse;
+    if (data.chart?.result?.[0]?.meta) {
+      const quote = data.chart.result[0].meta;
+      const currentPrice = quote.regularMarketPrice;
+      const prevClose = quote.previousClose;
+      if (currentPrice && prevClose) {
+        const change = ((currentPrice - prevClose) / prevClose * 100);
+        return { value: currentPrice.toLocaleString('ko-KR'), change };
+      }
+    }
+  } catch {}
+  try {
     const response = await fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/069500.KS');
     const data = await response.json() as YahooFinanceResponse;
-    const quote = data.chart.result[0].meta;
-    const currentPrice = quote.regularMarketPrice;
-    const prevClose = quote.previousClose;
-    const change = ((currentPrice - prevClose) / prevClose * 100);
-    return { value: currentPrice.toLocaleString('ko-KR'), change };
-  } catch {
-    return { value: '41,250', change: 0.85 };
-  }
+    if (data.chart?.result?.[0]?.meta) {
+      const quote = data.chart.result[0].meta;
+      const currentPrice = quote.regularMarketPrice;
+      const prevClose = quote.previousClose;
+      if (currentPrice && prevClose) {
+        const change = ((currentPrice - prevClose) / prevClose * 100);
+        return { value: currentPrice.toLocaleString('ko-KR'), change };
+      }
+    }
+  } catch {}
+  return { value: '41,000', change: 0 };
 }
 
 async function fetchFearGreed(): Promise<{ value: string; status: string }> {
