@@ -210,7 +210,7 @@ export default function RealEstate() {
     : articles;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-background">
       <SharedHeader />
       
       <section className="bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 text-white py-12 sm:py-16 px-4">
