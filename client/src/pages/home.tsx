@@ -10,28 +10,24 @@ import {
   BarChart3, Bitcoin, LineChart, Building2, Gauge, Ship, 
   Check, Calendar, Newspaper, ListTodo, Quote, Bell, Menu, X,
   Home as HomeIcon, Clock, ChartLine, Settings, Star, ExternalLink,
-  CheckSquare, Building, TrendingDown as TrendingDownIcon
+  CheckSquare, Building, TrendingDown as TrendingDownIcon,
+  Receipt, Wallet, Sparkles, Calculator, Mail
 } from 'lucide-react';
 import type { MarketData, FearGreedData, DashboardContent, ManualMarketData } from '@shared/schema';
 import { initialMarketData, defaultContent, defaultManualMarketData } from '@shared/schema';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMenuOpen(false);
-  };
 
   const navItems = [
-    { name: '홈', href: '/', isRoute: true, icon: HomeIcon },
-    { name: '일정', sectionId: 'schedule', isRoute: false, icon: Calendar },
-    { name: '뉴스', sectionId: 'news', isRoute: false, icon: Newspaper },
-    { name: '시세', sectionId: 'market', isRoute: false, icon: ChartLine },
-    { name: '관리자', href: '/admin', isRoute: true, icon: Settings },
+    { name: '홈', href: '/', icon: HomeIcon },
+    { name: '투자', href: '/invest', icon: TrendingUp },
+    { name: '절세', href: '/tax', icon: Receipt },
+    { name: '저축', href: '/savings', icon: Wallet },
+    { name: '부수입', href: '/side-income', icon: Sparkles },
+    { name: '도구', href: '/tools', icon: Calculator },
+    { name: '구독', href: '/subscribe', icon: Mail },
+    { name: '관리자', href: '/admin', icon: Settings },
   ];
 
   return (
@@ -47,26 +43,12 @@ function Header() {
           
           <nav className="hidden md:flex flex-wrap items-center gap-1">
             {navItems.map((item) => (
-              item.isRoute ? (
-                <Link key={item.name} href={item.href!}>
-                  <Button variant="ghost" size="sm" className="text-white/90 hover:text-white hover:bg-white/10" data-testid={`nav-${item.name}`}>
-                    <item.icon className="w-4 h-4 mr-1" />
-                    {item.name}
-                  </Button>
-                </Link>
-              ) : (
-                <Button 
-                  key={item.name}
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-white/90 hover:text-white hover:bg-white/10"
-                  onClick={() => scrollToSection(item.sectionId!)}
-                  data-testid={`nav-${item.name}`}
-                >
+              <Link key={item.name} href={item.href}>
+                <Button variant="ghost" size="sm" className="text-white/90 hover:text-white hover:bg-white/10" data-testid={`nav-${item.name}`}>
                   <item.icon className="w-4 h-4 mr-1" />
                   {item.name}
                 </Button>
-              )
+              </Link>
             ))}
           </nav>
           
@@ -85,24 +67,12 @@ function Header() {
           <nav className="md:hidden pb-4 border-t border-white/20 pt-4">
             <div className="flex flex-col gap-2">
               {navItems.map((item) => (
-                item.isRoute ? (
-                  <Link key={item.name} href={item.href!} onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start text-white/90 hover:text-white hover:bg-white/10">
-                      <item.icon className="w-4 h-4 mr-2" />
-                      {item.name}
-                    </Button>
-                  </Link>
-                ) : (
-                  <Button 
-                    key={item.name}
-                    variant="ghost" 
-                    className="w-full justify-start text-white/90 hover:text-white hover:bg-white/10"
-                    onClick={() => scrollToSection(item.sectionId!)}
-                  >
+                <Link key={item.name} href={item.href} onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start text-white/90 hover:text-white hover:bg-white/10">
                     <item.icon className="w-4 h-4 mr-2" />
                     {item.name}
                   </Button>
-                )
+                </Link>
               ))}
             </div>
           </nav>
