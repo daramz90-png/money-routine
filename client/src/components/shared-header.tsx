@@ -10,7 +10,6 @@ const navItems = [
   { name: '부동산', href: '/real-estate', icon: Building2 },
   { name: '투자', href: '/invest', icon: TrendingUp },
   { name: '칼럼', href: '/column', icon: FileText },
-  { name: '관리자', href: '/admin', icon: Settings },
 ];
 
 export function SharedHeader() {
