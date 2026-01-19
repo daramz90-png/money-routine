@@ -471,7 +471,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <MarketCard 
           name="달러 환율"
           value={marketData.usdkrw.value}
