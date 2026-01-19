@@ -475,6 +475,43 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh }: {
   );
 }
 
+function ThoughtsSection({ thoughts }: { thoughts: { id: string; title: string; content: string }[] }) {
+  return (
+    <section className="py-8" id="thoughts">
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+          <DollarSign className="w-5 h-5" />
+        </div>
+        <h2 className="text-2xl font-bold text-foreground">오늘 쿠쿠의 생각</h2>
+      </div>
+      
+      <Card className="p-6 shadow-lg border-0 bg-card">
+        <div className="space-y-6">
+          {thoughts.map((thought) => (
+            <div key={thought.id} data-testid={`thought-${thought.id}`}>
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                <Check className="w-5 h-5 text-teal-600" />
+                <h3 className="text-lg font-bold text-foreground">{thought.title}</h3>
+              </div>
+              <div className="pl-7 space-y-3">
+                {thought.content.split('\n\n').map((paragraph, idx) => (
+                  <p key={idx} className="text-muted-foreground leading-relaxed">{paragraph}</p>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="mt-8 pt-6 border-t">
+          <p className="text-center text-lg font-bold text-foreground">
+            오늘도 흔들림 없이, 루틴대로 갑시다
+          </p>
+        </div>
+      </Card>
+    </section>
+  );
+}
+
 function QuoteSection({ quote }: { quote: { text: string; author: string } }) {
   return (
     <section className="py-8">
@@ -491,12 +528,12 @@ function QuoteSection({ quote }: { quote: { text: string; author: string } }) {
   );
 }
 
-function ClosingSection() {
+function ClosingSection({ closingMessage }: { closingMessage: string }) {
   return (
     <section className="py-8">
       <Card className="p-8 text-center shadow-lg border-0 bg-card">
         <p className="text-xl font-medium text-foreground mb-2">
-          오늘 하루도 차분하게, 그리고 흔들리지 않게 갑시다
+          {closingMessage || '오늘 하루도 차분하게, 그리고 흔들리지 않게 갑시다'}
         </p>
         <p className="text-muted-foreground mb-6">오늘도 화이팅입니다 ^^</p>
         <Button 
@@ -586,8 +623,9 @@ export default function Home() {
           isFetching={isFetching}
           onRefresh={() => refetch()}
         />
+        <ThoughtsSection thoughts={content.thoughts || []} />
         <QuoteSection quote={content.quote} />
-        <ClosingSection />
+        <ClosingSection closingMessage={content.closingMessage || ''} />
       </main>
       
       <Footer />

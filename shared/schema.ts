@@ -91,6 +91,12 @@ export interface TodoItem {
   description: string;
 }
 
+export interface ThoughtItem {
+  id: string;
+  title: string;
+  content: string;
+}
+
 export interface DashboardContent {
   date: string;
   summaries: SummaryItem[];
@@ -98,6 +104,8 @@ export interface DashboardContent {
   realEstates: RealEstateItem[];
   news: NewsItem[];
   todos: TodoItem[];
+  thoughts: ThoughtItem[];
+  closingMessage: string;
   quote: {
     text: string;
     author: string;
@@ -173,6 +181,19 @@ export const defaultContent: DashboardContent = {
       description: '연말정산 시즌 대비 공제항목 미리 점검',
     },
   ],
+  thoughts: [
+    {
+      id: '1',
+      title: '10월의 마지막날',
+      content: '이번 달은 시장이 유난히 뜨거웠네요. 코스피가 4100선을 돌파했고, 삼성전자는 반도체의 부활을 알리며 시장 심리를 완전히 바꿔놓았습니다.\n\n약간의 단기 과열구간이라고 생각되지만 꾸준히 매수하는 것은 멈추지 않을 계획입니다. 꾸준히 오래 누가 더 버티는가에 싸움을 또 열심히 해야겠습니다.',
+    },
+    {
+      id: '2',
+      title: '11월을 맞이하면서',
+      content: '미국에서 금리를 낮추고 갈수록 돈잔치의 분위기로 방향성이 잡히고 있네요. 내가 가지고 있는 자산에 대해서 어느정도는 무관심하게 봐야할때도 있지만 또 시장상황에 맞게 대응해야할 때가 있습니다.\n\n이제 더 펼쳐질 돈잔치를 대비하기 위해 어느정도는 준비를 하실 때라고 생각이 되네요. 11월을 맞이하기 전 오늘 하루, 내 자산의 구조를 한 번 점검해보세요.',
+    },
+  ],
+  closingMessage: '오늘도 흔들림 없이, 루틴대로 갑시다',
   quote: {
     text: '위기는 언제나 기회와 함께 온다.',
     author: '존 F. 케네디',

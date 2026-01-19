@@ -8,9 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
-  Newspaper, ListTodo, Quote, Coins
+  Newspaper, ListTodo, Quote, Coins, MessageSquare
 } from 'lucide-react';
-import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem } from '@shared/schema';
+import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem } from '@shared/schema';
 import { defaultContent } from '@shared/schema';
 
 function generateId() {
@@ -171,6 +171,27 @@ export default function Admin() {
     setContent(prev => ({
       ...prev,
       todos: prev.todos.filter(t => t.id !== id)
+    }));
+  };
+
+  const addThought = () => {
+    setContent(prev => ({
+      ...prev,
+      thoughts: [...(prev.thoughts || []), { id: generateId(), title: '', content: '' }]
+    }));
+  };
+
+  const updateThought = (id: string, field: keyof ThoughtItem, value: string) => {
+    setContent(prev => ({
+      ...prev,
+      thoughts: (prev.thoughts || []).map(t => t.id === id ? { ...t, [field]: value } : t)
+    }));
+  };
+
+  const removeThought = (id: string) => {
+    setContent(prev => ({
+      ...prev,
+      thoughts: (prev.thoughts || []).filter(t => t.id !== id)
     }));
   };
 
@@ -412,6 +433,54 @@ export default function Admin() {
               <Plus className="w-4 h-4 mr-2" />
               할일 추가
             </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <MessageSquare className="w-5 h-5 text-teal-600" />
+            <h2 className="text-xl font-bold text-foreground">오늘 쿠쿠의 생각</h2>
+          </div>
+          <div className="space-y-4">
+            {(content.thoughts || []).map((thought, index) => (
+              <Card key={thought.id} className="p-4 bg-muted/30" data-testid={`thought-form-${index}`}>
+                <div className="flex flex-wrap justify-between items-start gap-2 mb-3">
+                  <span className="font-semibold text-foreground">생각 {index + 1}</span>
+                  <Button variant="destructive" size="sm" onClick={() => removeThought(thought.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label>제목 (예: 10월의 마지막날)</Label>
+                    <Input value={thought.title} onChange={(e) => updateThought(thought.id, 'title', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>내용 (빈 줄로 단락 구분)</Label>
+                    <Textarea 
+                      value={thought.content} 
+                      onChange={(e) => updateThought(thought.id, 'content', e.target.value)} 
+                      className="min-h-32"
+                      placeholder="이번 달은 시장이 유난히 뜨거웠네요...&#10;&#10;두 번째 단락은 빈 줄로 구분하세요."
+                    />
+                  </div>
+                </div>
+              </Card>
+            ))}
+            <Button variant="outline" onClick={addThought} className="w-full" data-testid="button-add-thought">
+              <Plus className="w-4 h-4 mr-2" />
+              생각 추가
+            </Button>
+          </div>
+          
+          <div className="mt-6 pt-4 border-t">
+            <Label>마무리 문구</Label>
+            <Input
+              value={content.closingMessage || ''}
+              onChange={(e) => setContent(prev => ({ ...prev, closingMessage: e.target.value }))}
+              placeholder="오늘도 흔들림 없이, 루틴대로 갑시다"
+              data-testid="input-closing-message"
+            />
           </div>
         </Card>
 
