@@ -525,7 +525,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
           change={marketData.nasdaq.change}
           loading={isLoading || marketData.nasdaq.loading}
           icon={LineChart}
-          url="https://m.stock.naver.com/worldstock/stock/NDAQ.O/total"
+          url="https://m.stock.naver.com/worldstock/index/.IXIC/total"
         />
         <MarketCard 
           name="KODEX 200"
