@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
-  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine
+  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock
 } from 'lucide-react';
 import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData } from '@shared/schema';
 import { defaultContent, defaultManualMarketData } from '@shared/schema';
@@ -17,12 +17,107 @@ function generateId() {
   return Math.random().toString(36).substr(2, 9);
 }
 
+function PasswordGate({ onAuthenticated }: { onAuthenticated: () => void }) {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      
+      if (response.ok) {
+        sessionStorage.setItem('adminAuth', 'true');
+        onAuthenticated();
+        toast({
+          title: "인증 성공",
+          description: "관리자 페이지에 접속했습니다.",
+        });
+      } else {
+        setError(true);
+        setPassword('');
+        toast({
+          title: "인증 실패",
+          description: "비밀번호가 올바르지 않습니다.",
+          variant: "destructive",
+        });
+      }
+    } catch {
+      toast({
+        title: "오류 발생",
+        description: "서버에 연결할 수 없습니다.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-8 bg-card/95 backdrop-blur-sm shadow-2xl">
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-lg mb-4">
+            <Lock className="w-8 h-8" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">관리자 인증</h1>
+          <p className="text-muted-foreground mt-2 text-center">관리자 페이지에 접근하려면 비밀번호를 입력하세요</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="password">비밀번호</Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError(false);
+              }}
+              placeholder="비밀번호 입력"
+              className={error ? 'border-red-500' : ''}
+              data-testid="input-admin-password"
+              autoFocus
+            />
+            {error && <p className="text-sm text-red-500 mt-1">비밀번호가 올바르지 않습니다</p>}
+          </div>
+          <Button type="submit" className="w-full" disabled={isLoading} data-testid="button-admin-login">
+            {isLoading ? '확인 중...' : '로그인'}
+          </Button>
+          <div className="text-center">
+            <Link href="/" className="text-sm text-muted-foreground hover:text-primary">
+              홈으로 돌아가기
+            </Link>
+          </div>
+        </form>
+      </Card>
+    </div>
+  );
+}
+
 export default function Admin() {
   const { toast } = useToast();
   const [content, setContent] = useState<DashboardContent>(defaultContent);
   const [isSaving, setIsSaving] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    const auth = sessionStorage.getItem('adminAuth');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     const savedContent = localStorage.getItem('dashboardContent');
     if (savedContent) {
       try {
@@ -31,7 +126,11 @@ export default function Admin() {
         console.error('Failed to parse saved content');
       }
     }
-  }, []);
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return <PasswordGate onAuthenticated={() => setIsAuthenticated(true)} />;
+  }
 
   const handleSave = () => {
     setIsSaving(true);

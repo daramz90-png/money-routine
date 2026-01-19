@@ -189,6 +189,17 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
+  app.post('/api/admin/verify', (req, res) => {
+    const { password } = req.body;
+    const adminPassword = process.env.ADMIN_PASSWORD || '5511';
+    
+    if (password === adminPassword) {
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ success: false, error: '비밀번호가 올바르지 않습니다' });
+    }
+  });
+
   app.get('/api/market-data', async (_req, res) => {
     try {
       const [usdkrw, spy, bitcoin, nasdaq, kodex200, fearGreed] = await Promise.all([
