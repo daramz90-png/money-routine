@@ -91,14 +91,35 @@ export default function Subscribe() {
     
     setIsSubmitting(true);
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsSubmitting(false);
-    setIsSubscribed(true);
-    toast({
-      title: "구독 완료!",
-      description: "매주 유익한 재테크 정보를 보내드릴게요.",
-    });
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), email: email.trim() }),
+      });
+      
+      if (response.ok) {
+        setIsSubscribed(true);
+        toast({
+          title: "구독 완료!",
+          description: "매주 유익한 재테크 정보를 보내드릴게요.",
+        });
+      } else {
+        toast({
+          title: "구독 실패",
+          description: "잠시 후 다시 시도해주세요.",
+          variant: "destructive",
+        });
+      }
+    } catch {
+      toast({
+        title: "오류 발생",
+        description: "서버에 연결할 수 없습니다.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

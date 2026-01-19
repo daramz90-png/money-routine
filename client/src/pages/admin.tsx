@@ -8,9 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
-  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock
+  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw
 } from 'lucide-react';
-import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData } from '@shared/schema';
+import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData, Subscriber } from '@shared/schema';
 import { defaultContent, defaultManualMarketData } from '@shared/schema';
 
 function generateId() {
@@ -108,6 +108,8 @@ export default function Admin() {
   const [content, setContent] = useState<DashboardContent>(defaultContent);
   const [isSaving, setIsSaving] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [isLoadingSubscribers, setIsLoadingSubscribers] = useState(false);
 
   useEffect(() => {
     const auth = sessionStorage.getItem('adminAuth');
@@ -115,6 +117,39 @@ export default function Admin() {
       setIsAuthenticated(true);
     }
   }, []);
+
+  const fetchSubscribers = async () => {
+    setIsLoadingSubscribers(true);
+    try {
+      const response = await fetch('/api/subscribers');
+      if (response.ok) {
+        const data = await response.json();
+        setSubscribers(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch subscribers');
+    } finally {
+      setIsLoadingSubscribers(false);
+    }
+  };
+
+  const removeSubscriber = async (id: string) => {
+    try {
+      const response = await fetch(`/api/subscribers/${id}`, { method: 'DELETE' });
+      if (response.ok) {
+        setSubscribers(prev => prev.filter(s => s.id !== id));
+        toast({ title: '구독자 삭제 완료' });
+      }
+    } catch {
+      toast({ title: '삭제 실패', variant: 'destructive' });
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchSubscribers();
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -866,6 +901,63 @@ export default function Admin() {
               />
             </div>
           </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <Users className="w-5 h-5 text-green-600" />
+              <h2 className="text-xl font-bold text-foreground">구독자 관리</h2>
+              <span className="text-sm text-muted-foreground">({subscribers.length}명)</span>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={fetchSubscribers}
+              disabled={isLoadingSubscribers}
+              data-testid="button-refresh-subscribers"
+            >
+              <RefreshCw className={`w-4 h-4 mr-1 ${isLoadingSubscribers ? 'animate-spin' : ''}`} />
+              새로고침
+            </Button>
+          </div>
+          {isLoadingSubscribers ? (
+            <div className="text-center py-8 text-muted-foreground">로딩 중...</div>
+          ) : subscribers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Mail className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>아직 구독자가 없습니다</p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {subscribers.map((subscriber) => (
+                <div 
+                  key={subscriber.id} 
+                  className="flex flex-wrap items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg"
+                  data-testid={`subscriber-row-${subscriber.id}`}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-foreground truncate">{subscriber.name}</div>
+                    <div className="text-sm text-muted-foreground truncate">{subscriber.email}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(subscriber.subscribedAt).toLocaleDateString('ko-KR')}
+                    </span>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => removeSubscriber(subscriber.id)}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                      data-testid={`button-delete-subscriber-${subscriber.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </Card>
       </main>
 
