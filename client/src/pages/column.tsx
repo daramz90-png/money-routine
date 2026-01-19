@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   FileText, Clock, Calendar, Eye, ChevronRight, 
-  Lightbulb, Bell, Star, Loader2
+  Lightbulb, Bell, Star, Loader2, User, TrendingUp, Home, Briefcase, Award
 } from 'lucide-react';
 import { SharedHeader } from '@/components/shared-header';
 import { useQuery } from '@tanstack/react-query';
@@ -124,6 +124,62 @@ function CategoryTabs({ activeCategory, onCategoryChange }: {
   );
 }
 
+function AuthorIntro() {
+  const achievements = [
+    { icon: Home, text: '지방→서울 갈아타기 성공' },
+    { icon: TrendingUp, text: '순자산 9억 달성' },
+    { icon: Award, text: '분양권 투자 1억+ 수익' },
+    { icon: Briefcase, text: '육아휴직 복직 후 과장 승진' },
+  ];
+
+  return (
+    <Card className="p-6 sm:p-8 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-0 shadow-lg mb-8">
+      <div className="flex flex-col sm:flex-row gap-6 items-start">
+        <div className="flex-shrink-0">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+            <User className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+          </div>
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground">쿠쿠</h3>
+            <Badge className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-0 text-xs">
+              5년차 투자자
+            </Badge>
+          </div>
+          <p className="text-muted-foreground mb-4 leading-relaxed">
+            30대 중반 대기업 워킹맘이자, 5년 부동산 투자 경력을 가진 실전 투자자입니다.
+          </p>
+          
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            {achievements.map((item, index) => (
+              <div key={index} className="flex items-center gap-2 text-sm">
+                <item.icon className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                <span className="text-foreground">{item.text}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-white/60 dark:bg-white/10 rounded-lg p-4 space-y-2">
+            <div className="flex items-center gap-2 text-sm">
+              <TrendingUp className="w-4 h-4 text-green-600" />
+              <span className="text-foreground">지방/서울 투자로 <strong>5억+</strong> 수익</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Star className="w-4 h-4 text-amber-500" />
+              <span className="text-foreground">공모주 청약으로 월 <strong>10~50만원</strong></span>
+            </div>
+          </div>
+
+          <p className="text-sm text-muted-foreground mt-4 italic">
+            "아무것도 모르던 5년 전, 100번 넘게 듣고 배우며 시작했습니다. 바닥부터 시작해서 9억의 순 자산을 만들어가고 있습니다."
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 function Sidebar({ articles = [] }: { articles: RoutineArticle[] }) {
   const randomTip = tips[Math.floor(Math.random() * tips.length)];
   const popularArticles = (articles || []).filter(a => a.featured).sort((a, b) => b.views - a.views).slice(0, 5);
@@ -219,6 +275,8 @@ export default function Column() {
       </section>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
+        <AuthorIntro />
+        
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1">
             <CategoryTabs 
