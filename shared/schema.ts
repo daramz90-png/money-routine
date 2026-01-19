@@ -97,6 +97,40 @@ export interface ThoughtItem {
   content: string;
 }
 
+export interface ManualMarketItem {
+  enabled: boolean;
+  value: string;
+  change: number;
+}
+
+export interface ManualFearGreedItem {
+  enabled: boolean;
+  value: string;
+  status: string;
+}
+
+export interface ManualMarketData {
+  usdkrw: ManualMarketItem;
+  gold: ManualMarketItem;
+  spy: ManualMarketItem;
+  bitcoin: ManualMarketItem;
+  nasdaq: ManualMarketItem;
+  kodex200: ManualMarketItem;
+  fearGreed: ManualFearGreedItem;
+  scfi: ManualMarketItem;
+}
+
+export const defaultManualMarketData: ManualMarketData = {
+  usdkrw: { enabled: false, value: '', change: 0 },
+  gold: { enabled: false, value: '', change: 0 },
+  spy: { enabled: false, value: '', change: 0 },
+  bitcoin: { enabled: false, value: '', change: 0 },
+  nasdaq: { enabled: false, value: '', change: 0 },
+  kodex200: { enabled: false, value: '', change: 0 },
+  fearGreed: { enabled: false, value: '', status: '' },
+  scfi: { enabled: false, value: '', change: 0 },
+};
+
 export interface DashboardContent {
   date: string;
   heroTitle: string;
@@ -118,6 +152,7 @@ export interface DashboardContent {
   };
   hashtags: string[];
   footerText: string;
+  manualMarketData?: ManualMarketData;
 }
 
 export const defaultContent: DashboardContent = {

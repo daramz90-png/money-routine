@@ -10,8 +10,8 @@ import {
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
   Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine
 } from 'lucide-react';
-import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem } from '@shared/schema';
-import { defaultContent } from '@shared/schema';
+import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData } from '@shared/schema';
+import { defaultContent, defaultManualMarketData } from '@shared/schema';
 
 function generateId() {
   return Math.random().toString(36).substr(2, 9);
@@ -488,8 +488,152 @@ export default function Admin() {
               />
             </div>
             <p className="text-sm text-muted-foreground">
-              * 시세 데이터는 실시간 API에서 자동으로 가져옵니다
+              * 시세 데이터는 실시간 API에서 자동으로 가져옵니다. 아래에서 수동으로 값을 입력할 수 있습니다.
             </p>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg border-2 border-orange-200 dark:border-orange-900">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Coins className="w-5 h-5 text-orange-600" />
+            <h2 className="text-xl font-bold text-foreground">시세 수동 입력</h2>
+            <span className="text-xs text-orange-600 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded">API 오류시 사용</span>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            API에서 데이터를 가져오지 못할 경우, 체크박스를 활성화하고 값을 직접 입력하세요.
+          </p>
+          <div className="space-y-4">
+            {[
+              { key: 'usdkrw', label: '달러 환율', unit: '원' },
+              { key: 'gold', label: '금 시세', unit: '원/g' },
+              { key: 'spy', label: 'S&P 500 (SPY)', unit: 'USD' },
+              { key: 'bitcoin', label: '비트코인', unit: '원' },
+              { key: 'nasdaq', label: '나스닥', unit: '' },
+              { key: 'kodex200', label: 'KODEX 200', unit: '원' },
+              { key: 'scfi', label: 'SCFI 운임지수', unit: '' },
+            ].map((item) => {
+              const manualData = content.manualMarketData || defaultManualMarketData;
+              const itemData = manualData[item.key as keyof ManualMarketData] as { enabled: boolean; value: string; change: number };
+              return (
+                <Card key={item.key} className={`p-3 ${itemData.enabled ? 'bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800' : 'bg-muted/30'}`}>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={itemData.enabled}
+                      onChange={(e) => setContent(prev => ({
+                        ...prev,
+                        manualMarketData: {
+                          ...defaultManualMarketData,
+                          ...prev.manualMarketData,
+                          [item.key]: { ...itemData, enabled: e.target.checked }
+                        }
+                      }))}
+                      className="w-4 h-4"
+                      data-testid={`checkbox-manual-${item.key}`}
+                    />
+                    <span className="font-medium min-w-24">{item.label}</span>
+                    <Input
+                      value={itemData.value}
+                      onChange={(e) => setContent(prev => ({
+                        ...prev,
+                        manualMarketData: {
+                          ...defaultManualMarketData,
+                          ...prev.manualMarketData,
+                          [item.key]: { ...itemData, value: e.target.value }
+                        }
+                      }))}
+                      placeholder={`값 입력 (${item.unit})`}
+                      className="flex-1 min-w-0"
+                      disabled={!itemData.enabled}
+                      data-testid={`input-manual-${item.key}-value`}
+                    />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={itemData.change}
+                      onChange={(e) => setContent(prev => ({
+                        ...prev,
+                        manualMarketData: {
+                          ...defaultManualMarketData,
+                          ...prev.manualMarketData,
+                          [item.key]: { ...itemData, change: parseFloat(e.target.value) || 0 }
+                        }
+                      }))}
+                      placeholder="변동률 %"
+                      className="w-24"
+                      disabled={!itemData.enabled}
+                      data-testid={`input-manual-${item.key}-change`}
+                    />
+                    <span className="text-sm text-muted-foreground">%</span>
+                  </div>
+                </Card>
+              );
+            })}
+            
+            <Card className={`p-3 ${(content.manualMarketData?.fearGreed?.enabled) ? 'bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800' : 'bg-muted/30'}`}>
+              <div className="flex flex-wrap items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={content.manualMarketData?.fearGreed?.enabled || false}
+                  onChange={(e) => setContent(prev => ({
+                    ...prev,
+                    manualMarketData: {
+                      ...defaultManualMarketData,
+                      ...prev.manualMarketData,
+                      fearGreed: { 
+                        ...(prev.manualMarketData?.fearGreed || defaultManualMarketData.fearGreed), 
+                        enabled: e.target.checked 
+                      }
+                    }
+                  }))}
+                  className="w-4 h-4"
+                  data-testid="checkbox-manual-fearGreed"
+                />
+                <span className="font-medium min-w-24">CNN 공포지수</span>
+                <Input
+                  value={content.manualMarketData?.fearGreed?.value || ''}
+                  onChange={(e) => setContent(prev => ({
+                    ...prev,
+                    manualMarketData: {
+                      ...defaultManualMarketData,
+                      ...prev.manualMarketData,
+                      fearGreed: { 
+                        ...(prev.manualMarketData?.fearGreed || defaultManualMarketData.fearGreed), 
+                        value: e.target.value 
+                      }
+                    }
+                  }))}
+                  placeholder="지수 (0-100)"
+                  className="w-24"
+                  disabled={!content.manualMarketData?.fearGreed?.enabled}
+                  data-testid="input-manual-fearGreed-value"
+                />
+                <select
+                  value={content.manualMarketData?.fearGreed?.status || ''}
+                  onChange={(e) => setContent(prev => ({
+                    ...prev,
+                    manualMarketData: {
+                      ...defaultManualMarketData,
+                      ...prev.manualMarketData,
+                      fearGreed: { 
+                        ...(prev.manualMarketData?.fearGreed || defaultManualMarketData.fearGreed), 
+                        status: e.target.value 
+                      }
+                    }
+                  }))}
+                  className="h-9 px-3 rounded-md border border-input bg-background"
+                  disabled={!content.manualMarketData?.fearGreed?.enabled}
+                  data-testid="select-manual-fearGreed-status"
+                >
+                  <option value="">상태 선택</option>
+                  <option value="극단적 공포">극단적 공포</option>
+                  <option value="공포">공포</option>
+                  <option value="중립">중립</option>
+                  <option value="탐욕">탐욕</option>
+                  <option value="극단적 탐욕">극단적 탐욕</option>
+                </select>
+              </div>
+            </Card>
           </div>
         </Card>
 

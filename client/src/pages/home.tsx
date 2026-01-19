@@ -12,8 +12,8 @@ import {
   Home as HomeIcon, Clock, ChartLine, Settings, Star, ExternalLink,
   CheckSquare, Building, TrendingDown as TrendingDownIcon
 } from 'lucide-react';
-import type { MarketData, FearGreedData, DashboardContent } from '@shared/schema';
-import { initialMarketData, defaultContent } from '@shared/schema';
+import type { MarketData, FearGreedData, DashboardContent, ManualMarketData } from '@shared/schema';
+import { initialMarketData, defaultContent, defaultManualMarketData } from '@shared/schema';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -687,7 +687,41 @@ export default function Home() {
     }
   }, []);
 
-  const currentMarketData = marketData || initialMarketData;
+  const applyManualOverrides = useCallback((apiData: MarketData, manual: ManualMarketData | undefined): MarketData => {
+    if (!manual) return apiData;
+    
+    return {
+      usdkrw: manual.usdkrw?.enabled && manual.usdkrw.value 
+        ? { value: manual.usdkrw.value, change: manual.usdkrw.change, loading: false }
+        : apiData.usdkrw,
+      gold: manual.gold?.enabled && manual.gold.value 
+        ? { value: manual.gold.value, change: manual.gold.change, loading: false }
+        : apiData.gold,
+      spy: manual.spy?.enabled && manual.spy.value 
+        ? { value: manual.spy.value, change: manual.spy.change, loading: false }
+        : apiData.spy,
+      bitcoin: manual.bitcoin?.enabled && manual.bitcoin.value 
+        ? { value: manual.bitcoin.value, change: manual.bitcoin.change, loading: false }
+        : apiData.bitcoin,
+      nasdaq: manual.nasdaq?.enabled && manual.nasdaq.value 
+        ? { value: manual.nasdaq.value, change: manual.nasdaq.change, loading: false }
+        : apiData.nasdaq,
+      kodex200: manual.kodex200?.enabled && manual.kodex200.value 
+        ? { value: manual.kodex200.value, change: manual.kodex200.change, loading: false }
+        : apiData.kodex200,
+      fearGreed: manual.fearGreed?.enabled && manual.fearGreed.value 
+        ? { value: manual.fearGreed.value, status: manual.fearGreed.status, loading: false }
+        : apiData.fearGreed,
+      scfi: manual.scfi?.enabled && manual.scfi.value 
+        ? { value: manual.scfi.value, change: manual.scfi.change, loading: false }
+        : apiData.scfi,
+    };
+  }, []);
+
+  const currentMarketData = applyManualOverrides(
+    marketData || initialMarketData, 
+    content.manualMarketData
+  );
 
   return (
     <div className="min-h-screen bg-background">
