@@ -6,13 +6,16 @@ A comprehensive Korean financial dashboard application that displays real-time m
 
 ## Recent Changes (2026-01-19)
 
+- **Database Migration**: Migrated from in-memory storage to PostgreSQL for persistent data storage
+- Database tables: articles, routine_articles, subscribers, dashboard_contents
+- All article, subscriber, and dashboard content data now persists across server restarts
 - Added /real-estate page with category filtering (매매 전략, 청약 가이드, 전월세 노하우, 세금/대출)
 - Subscriber management system: API endpoints for subscribe/unsubscribe, admin panel section
 - Complete visual redesign with modern gradient backgrounds (blue-indigo-purple)
 - Added sticky header with navigation and mobile hamburger menu
 - New hero section with gradient background
 - 8 comprehensive content sections: summary, IPO/real estate schedule, news, todos, market data, quote, closing
-- New admin page (/admin) for content management with localStorage persistence
+- New admin page (/admin) for content management
 - Professional card-based layouts with proper shadows and hover effects
 
 ## User Preferences
