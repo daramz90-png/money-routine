@@ -1,0 +1,461 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'wouter';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { 
+  ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
+  Newspaper, ListTodo, Quote, Coins
+} from 'lucide-react';
+import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem } from '@shared/schema';
+import { defaultContent } from '@shared/schema';
+
+function generateId() {
+  return Math.random().toString(36).substr(2, 9);
+}
+
+export default function Admin() {
+  const { toast } = useToast();
+  const [content, setContent] = useState<DashboardContent>(defaultContent);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const savedContent = localStorage.getItem('dashboardContent');
+    if (savedContent) {
+      try {
+        setContent(JSON.parse(savedContent));
+      } catch (e) {
+        console.error('Failed to parse saved content');
+      }
+    }
+  }, []);
+
+  const handleSave = () => {
+    setIsSaving(true);
+    try {
+      localStorage.setItem('dashboardContent', JSON.stringify(content));
+      toast({
+        title: "저장 완료",
+        description: "콘텐츠가 성공적으로 저장되었습니다.",
+      });
+    } catch (e) {
+      toast({
+        title: "저장 실패",
+        description: "콘텐츠 저장 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    }
+    setIsSaving(false);
+  };
+
+  const addSummary = () => {
+    setContent(prev => ({
+      ...prev,
+      summaries: [...prev.summaries, { id: generateId(), text: '' }]
+    }));
+  };
+
+  const updateSummary = (id: string, text: string) => {
+    setContent(prev => ({
+      ...prev,
+      summaries: prev.summaries.map(s => s.id === id ? { ...s, text } : s)
+    }));
+  };
+
+  const removeSummary = (id: string) => {
+    setContent(prev => ({
+      ...prev,
+      summaries: prev.summaries.filter(s => s.id !== id)
+    }));
+  };
+
+  const addIPO = () => {
+    setContent(prev => ({
+      ...prev,
+      ipos: [...prev.ipos, {
+        id: generateId(),
+        name: '',
+        score: 0,
+        period: '',
+        price: '',
+        minAmount: '',
+        broker: '',
+        description: '',
+        isHighlight: false,
+      }]
+    }));
+  };
+
+  const updateIPO = (id: string, field: keyof IPOItem, value: any) => {
+    setContent(prev => ({
+      ...prev,
+      ipos: prev.ipos.map(i => i.id === id ? { ...i, [field]: value } : i)
+    }));
+  };
+
+  const removeIPO = (id: string) => {
+    setContent(prev => ({
+      ...prev,
+      ipos: prev.ipos.filter(i => i.id !== id)
+    }));
+  };
+
+  const addRealEstate = () => {
+    setContent(prev => ({
+      ...prev,
+      realEstates: [...prev.realEstates, {
+        id: generateId(),
+        name: '',
+        location: '',
+        units: 0,
+        period: '',
+        priority: '',
+        type: 'apartment',
+      }]
+    }));
+  };
+
+  const updateRealEstate = (id: string, field: keyof RealEstateItem, value: any) => {
+    setContent(prev => ({
+      ...prev,
+      realEstates: prev.realEstates.map(r => r.id === id ? { ...r, [field]: value } : r)
+    }));
+  };
+
+  const removeRealEstate = (id: string) => {
+    setContent(prev => ({
+      ...prev,
+      realEstates: prev.realEstates.filter(r => r.id !== id)
+    }));
+  };
+
+  const addNews = () => {
+    setContent(prev => ({
+      ...prev,
+      news: [...prev.news, { id: generateId(), title: '', summary: '', url: '' }]
+    }));
+  };
+
+  const updateNews = (id: string, field: keyof NewsItem, value: string) => {
+    setContent(prev => ({
+      ...prev,
+      news: prev.news.map(n => n.id === id ? { ...n, [field]: value } : n)
+    }));
+  };
+
+  const removeNews = (id: string) => {
+    setContent(prev => ({
+      ...prev,
+      news: prev.news.filter(n => n.id !== id)
+    }));
+  };
+
+  const addTodo = () => {
+    setContent(prev => ({
+      ...prev,
+      todos: [...prev.todos, { id: generateId(), title: '', description: '' }]
+    }));
+  };
+
+  const updateTodo = (id: string, field: keyof TodoItem, value: string) => {
+    setContent(prev => ({
+      ...prev,
+      todos: prev.todos.map(t => t.id === id ? { ...t, [field]: value } : t)
+    }));
+  };
+
+  const removeTodo = (id: string) => {
+    setContent(prev => ({
+      ...prev,
+      todos: prev.todos.filter(t => t.id !== id)
+    }));
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 bg-gradient-to-r from-gray-800 to-gray-900 text-white shadow-xl">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-between h-16 gap-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+              </Link>
+              <div className="flex flex-wrap items-center gap-2">
+                <Coins className="w-6 h-6" />
+                <span className="text-lg font-bold">관리자 페이지</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 py-8 pb-24">
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Check className="w-5 h-5 text-green-600" />
+            <h2 className="text-xl font-bold text-foreground">오늘의 주요 요약</h2>
+          </div>
+          <div className="space-y-3">
+            {content.summaries.map((summary, index) => (
+              <div key={summary.id} className="flex flex-wrap gap-2">
+                <Input
+                  value={summary.text}
+                  onChange={(e) => updateSummary(summary.id, e.target.value)}
+                  placeholder={`요약 ${index + 1}`}
+                  className="flex-1 min-w-0"
+                  data-testid={`input-summary-${index}`}
+                />
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => removeSummary(summary.id)}
+                  data-testid={`button-remove-summary-${index}`}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+            <Button variant="outline" onClick={addSummary} className="w-full" data-testid="button-add-summary">
+              <Plus className="w-4 h-4 mr-2" />
+              요약 추가
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <TrendingUp className="w-5 h-5 text-blue-600" />
+            <h2 className="text-xl font-bold text-foreground">공모주 청약</h2>
+          </div>
+          <div className="space-y-4">
+            {content.ipos.map((ipo, index) => (
+              <Card key={ipo.id} className="p-4 bg-muted/30" data-testid={`ipo-form-${index}`}>
+                <div className="flex flex-wrap justify-between items-start gap-2 mb-3">
+                  <span className="font-semibold text-foreground">공모주 {index + 1}</span>
+                  <Button variant="destructive" size="sm" onClick={() => removeIPO(ipo.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label>종목명</Label>
+                    <Input value={ipo.name} onChange={(e) => updateIPO(ipo.id, 'name', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>접수 점수</Label>
+                    <Input type="number" value={ipo.score} onChange={(e) => updateIPO(ipo.id, 'score', parseInt(e.target.value) || 0)} />
+                  </div>
+                  <div>
+                    <Label>청약기간</Label>
+                    <Input value={ipo.period} onChange={(e) => updateIPO(ipo.id, 'period', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>공모가</Label>
+                    <Input value={ipo.price} onChange={(e) => updateIPO(ipo.id, 'price', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>최소금액</Label>
+                    <Input value={ipo.minAmount} onChange={(e) => updateIPO(ipo.id, 'minAmount', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>증권사</Label>
+                    <Input value={ipo.broker} onChange={(e) => updateIPO(ipo.id, 'broker', e.target.value)} />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <Label>설명</Label>
+                    <Input value={ipo.description} onChange={(e) => updateIPO(ipo.id, 'description', e.target.value)} />
+                  </div>
+                  <div className="sm:col-span-2 flex flex-wrap items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={ipo.isHighlight}
+                      onChange={(e) => updateIPO(ipo.id, 'isHighlight', e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <Label className="mb-0">중요 공모주 (강조 표시)</Label>
+                  </div>
+                </div>
+              </Card>
+            ))}
+            <Button variant="outline" onClick={addIPO} className="w-full" data-testid="button-add-ipo">
+              <Plus className="w-4 h-4 mr-2" />
+              공모주 추가
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Building className="w-5 h-5 text-green-600" />
+            <h2 className="text-xl font-bold text-foreground">부동산 청약</h2>
+          </div>
+          <div className="space-y-4">
+            {content.realEstates.map((item, index) => (
+              <Card key={item.id} className="p-4 bg-muted/30" data-testid={`realestate-form-${index}`}>
+                <div className="flex flex-wrap justify-between items-start gap-2 mb-3">
+                  <span className="font-semibold text-foreground">부동산 {index + 1}</span>
+                  <Button variant="destructive" size="sm" onClick={() => removeRealEstate(item.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label>이름</Label>
+                    <Input value={item.name} onChange={(e) => updateRealEstate(item.id, 'name', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>위치</Label>
+                    <Input value={item.location} onChange={(e) => updateRealEstate(item.id, 'location', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>세대수</Label>
+                    <Input type="number" value={item.units} onChange={(e) => updateRealEstate(item.id, 'units', parseInt(e.target.value) || 0)} />
+                  </div>
+                  <div>
+                    <Label>기간</Label>
+                    <Input value={item.period} onChange={(e) => updateRealEstate(item.id, 'period', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>순위</Label>
+                    <Input value={item.priority} onChange={(e) => updateRealEstate(item.id, 'priority', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>유형</Label>
+                    <select
+                      value={item.type}
+                      onChange={(e) => updateRealEstate(item.id, 'type', e.target.value as 'apartment' | 'urban')}
+                      className="w-full h-9 px-3 rounded-md border border-input bg-background"
+                    >
+                      <option value="apartment">아파트</option>
+                      <option value="urban">도시형 생활주택</option>
+                    </select>
+                  </div>
+                </div>
+              </Card>
+            ))}
+            <Button variant="outline" onClick={addRealEstate} className="w-full" data-testid="button-add-realestate">
+              <Plus className="w-4 h-4 mr-2" />
+              부동산 추가
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Newspaper className="w-5 h-5 text-orange-600" />
+            <h2 className="text-xl font-bold text-foreground">오늘의 뉴스픽</h2>
+          </div>
+          <div className="space-y-4">
+            {content.news.map((news, index) => (
+              <Card key={news.id} className="p-4 bg-muted/30" data-testid={`news-form-${index}`}>
+                <div className="flex flex-wrap justify-between items-start gap-2 mb-3">
+                  <span className="font-semibold text-foreground">뉴스 {index + 1}</span>
+                  <Button variant="destructive" size="sm" onClick={() => removeNews(news.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label>제목</Label>
+                    <Input value={news.title} onChange={(e) => updateNews(news.id, 'title', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>요약</Label>
+                    <Textarea value={news.summary} onChange={(e) => updateNews(news.id, 'summary', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>URL (선택)</Label>
+                    <Input value={news.url || ''} onChange={(e) => updateNews(news.id, 'url', e.target.value)} placeholder="https://" />
+                  </div>
+                </div>
+              </Card>
+            ))}
+            <Button variant="outline" onClick={addNews} className="w-full" data-testid="button-add-news">
+              <Plus className="w-4 h-4 mr-2" />
+              뉴스 추가
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <ListTodo className="w-5 h-5 text-yellow-600" />
+            <h2 className="text-xl font-bold text-foreground">오늘 해야하는 것</h2>
+          </div>
+          <div className="space-y-4">
+            {content.todos.map((todo, index) => (
+              <Card key={todo.id} className="p-4 bg-muted/30" data-testid={`todo-form-${index}`}>
+                <div className="flex flex-wrap justify-between items-start gap-2 mb-3">
+                  <span className="font-semibold text-foreground">할일 {index + 1}</span>
+                  <Button variant="destructive" size="sm" onClick={() => removeTodo(todo.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label>제목</Label>
+                    <Input value={todo.title} onChange={(e) => updateTodo(todo.id, 'title', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>설명</Label>
+                    <Textarea value={todo.description} onChange={(e) => updateTodo(todo.id, 'description', e.target.value)} />
+                  </div>
+                </div>
+              </Card>
+            ))}
+            <Button variant="outline" onClick={addTodo} className="w-full" data-testid="button-add-todo">
+              <Plus className="w-4 h-4 mr-2" />
+              할일 추가
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Quote className="w-5 h-5 text-purple-600" />
+            <h2 className="text-xl font-bold text-foreground">오늘의 한 줄</h2>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <Label>명언</Label>
+              <Textarea
+                value={content.quote.text}
+                onChange={(e) => setContent(prev => ({ ...prev, quote: { ...prev.quote, text: e.target.value } }))}
+                placeholder="명언을 입력하세요"
+                data-testid="input-quote-text"
+              />
+            </div>
+            <div>
+              <Label>저자</Label>
+              <Input
+                value={content.quote.author}
+                onChange={(e) => setContent(prev => ({ ...prev, quote: { ...prev.quote, author: e.target.value } }))}
+                placeholder="저자 이름"
+                data-testid="input-quote-author"
+              />
+            </div>
+          </div>
+        </Card>
+      </main>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-2xl p-4">
+        <div className="max-w-4xl mx-auto">
+          <Button 
+            onClick={handleSave} 
+            disabled={isSaving}
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg h-12 text-lg"
+            data-testid="button-save"
+          >
+            <Save className="w-5 h-5 mr-2" />
+            {isSaving ? '저장 중...' : '저장하기'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
