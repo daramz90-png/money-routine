@@ -1,0 +1,622 @@
+import React, { useState, useEffect } from 'react';
+
+export default function KukuMoneyRoutine() {
+  const [marketData, setMarketData] = useState({
+    usdkrw: { value: '로딩중...', change: 0, loading: true },
+    gold: { value: '로딩중...', change: 0, loading: true },
+    spy: { value: '로딩중...', change: 0, loading: true },
+    bitcoin: { value: '로딩중...', change: 0, loading: true },
+    nasdaq: { value: '로딩중...', change: 0, loading: true },
+    kodex200: { value: '로딩중...', change: 0, loading: true },
+    fearGreed: { value: '50', status: '중립', loading: false },
+    scfi: { value: '1,245', change: 0, loading: false }
+  });
+
+  const [currentDate, setCurrentDate] = useState('');
+  const [lastUpdate, setLastUpdate] = useState('');
+
+  useEffect(() => {
+    // 현재 날짜 설정
+    const today = new Date();
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    const dateStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 (${days[today.getDay()]}요일)`;
+    setCurrentDate(dateStr);
+
+    // 시세 데이터 가져오기
+    fetchMarketData();
+
+    // 5분마다 자동 업데이트
+    const interval = setInterval(fetchMarketData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchMarketData = async () => {
+    try {
+      // 1. 달러 환율 (Alpha Vantage API 또는 Fixer.io)
+      fetchUSDKRW();
+      
+      // 2. 금 시세 (금융 API)
+      fetchGold();
+      
+      // 3. SPY ETF (Alpha Vantage)
+      fetchSPY();
+      
+      // 4. 비트코인 (CoinGecko API - 무료)
+      fetchBitcoin();
+      
+      // 5. 나스닥 (Alpha Vantage)
+      fetchNASDAQ();
+      
+      // 6. KODEX 200 (한국투자증권 API 또는 네이버 금융)
+      fetchKODEX200();
+      
+      // 7. CNN 공포지수 (Alternative.me Crypto Fear & Greed Index)
+      fetchFearGreed();
+      
+      // 8. SCFI (수동 업데이트 필요 - 주 1회)
+      // SCFI는 매주 금요일 업데이트됨
+      
+      const now = new Date();
+      setLastUpdate(`${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`);
+      
+    } catch (error) {
+      console.error('시세 데이터 로드 오류:', error);
+    }
+  };
+
+  // 달러 환율 가져오기
+  const fetchUSDKRW = async () => {
+    try {
+      // 환율 API 사용 (무료: exchangerate-api.com)
+      const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      const data = await response.json();
+      
+      const rate = data.rates.KRW;
+      const prevRate = rate * 0.998; // 임시: 실제로는 전일 데이터 필요
+      const change = ((rate - prevRate) / prevRate * 100);
+      
+      setMarketData(prev => ({
+        ...prev,
+        usdkrw: { 
+          value: rate.toFixed(2), 
+          change: change,
+          loading: false 
+        }
+      }));
+    } catch (err) {
+      console.error('USD/KRW 로드 실패:', err);
+      setMarketData(prev => ({
+        ...prev,
+        usdkrw: { value: '1,427.80', change: -0.19, loading: false }
+      }));
+    }
+  };
+
+  // 금 시세 가져오기
+  const fetchGold = async () => {
+    try {
+      // 금 시세 API (무료: metals-api.com 또는 goldapi.io)
+      const response = await fetch('https://api.metals.live/v1/spot/gold');
+      const data = await response.json();
+      
+      // USD/oz를 KRW/g로 변환
+      const usdPerOz = data[0].price;
+      const usdkrw = 1427.80; // 환율 (위에서 가져온 값 사용 가능)
+      const krwPerG = (usdPerOz * usdkrw / 31.1035).toFixed(0);
+      
+      setMarketData(prev => ({
+        ...prev,
+        gold: { 
+          value: krwPerG, 
+          change: 1.88,
+          loading: false 
+        }
+      }));
+    } catch (err) {
+      console.error('금 시세 로드 실패:', err);
+      setMarketData(prev => ({
+        ...prev,
+        gold: { value: '187,050', change: 1.88, loading: false }
+      }));
+    }
+  };
+
+  // SPY ETF 가져오기
+  const fetchSPY = async () => {
+    try {
+      // Yahoo Finance Alternative API (무료)
+      const response = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/SPY');
+      const data = await response.json();
+      
+      const quote = data.chart.result[0].meta;
+      const currentPrice = quote.regularMarketPrice;
+      const prevClose = quote.previousClose;
+      const change = ((currentPrice - prevClose) / prevClose * 100);
+      
+      setMarketData(prev => ({
+        ...prev,
+        spy: { 
+          value: currentPrice.toFixed(2), 
+          change: change,
+          loading: false 
+        }
+      }));
+    } catch (err) {
+      console.error('SPY 로드 실패:', err);
+      setMarketData(prev => ({
+        ...prev,
+        spy: { value: '590.25', change: -0.99, loading: false }
+      }));
+    }
+  };
+
+  // 비트코인 가져오기 (CoinGecko - 완전 무료)
+  const fetchBitcoin = async () => {
+    try {
+      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=krw&include_24hr_change=true');
+      const data = await response.json();
+      
+      const price = data.bitcoin.krw;
+      const change = data.bitcoin.krw_24h_change;
+      
+      setMarketData(prev => ({
+        ...prev,
+        bitcoin: { 
+          value: price.toLocaleString('ko-KR'), 
+          change: change,
+          loading: false 
+        }
+      }));
+    } catch (err) {
+      console.error('비트코인 로드 실패:', err);
+      setMarketData(prev => ({
+        ...prev,
+        bitcoin: { value: '164,002,000', change: -0.16, loading: false }
+      }));
+    }
+  };
+
+  // 나스닥 가져오기
+  const fetchNASDAQ = async () => {
+    try {
+      const response = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/NDAQ');
+      const data = await response.json();
+      
+      const quote = data.chart.result[0].meta;
+      const currentPrice = quote.regularMarketPrice;
+      const prevClose = quote.previousClose;
+      const change = ((currentPrice - prevClose) / prevClose * 100);
+      
+      setMarketData(prev => ({
+        ...prev,
+        nasdaq: { 
+          value: currentPrice.toFixed(2), 
+          change: change,
+          loading: false 
+        }
+      }));
+    } catch (err) {
+      console.error('NASDAQ 로드 실패:', err);
+      setMarketData(prev => ({
+        ...prev,
+        nasdaq: { value: '78.45', change: -1.2, loading: false }
+      }));
+    }
+  };
+
+  // KODEX 200 가져오기
+  const fetchKODEX200 = async () => {
+    try {
+      // 한국 주식은 Yahoo Finance에서도 가능
+      const response = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/069500.KS');
+      const data = await response.json();
+      
+      const quote = data.chart.result[0].meta;
+      const currentPrice = quote.regularMarketPrice;
+      const prevClose = quote.previousClose;
+      const change = ((currentPrice - prevClose) / prevClose * 100);
+      
+      setMarketData(prev => ({
+        ...prev,
+        kodex200: { 
+          value: currentPrice.toLocaleString('ko-KR'), 
+          change: change,
+          loading: false 
+        }
+      }));
+    } catch (err) {
+      console.error('KODEX 200 로드 실패:', err);
+      setMarketData(prev => ({
+        ...prev,
+        kodex200: { value: '41,250', change: 0.85, loading: false }
+      }));
+    }
+  };
+
+  // CNN 공포지수 (Alternative.me Crypto Fear & Greed)
+  const fetchFearGreed = async () => {
+    try {
+      const response = await fetch('https://api.alternative.me/fng/');
+      const data = await response.json();
+      
+      const value = data.data[0].value;
+      const status = data.data[0].value_classification;
+      
+      setMarketData(prev => ({
+        ...prev,
+        fearGreed: { 
+          value: value, 
+          status: translateFearGreed(status),
+          loading: false 
+        }
+      }));
+    } catch (err) {
+      console.error('Fear & Greed 지수 로드 실패:', err);
+      setMarketData(prev => ({
+        ...prev,
+        fearGreed: { value: '52', status: '중립', loading: false }
+      }));
+    }
+  };
+
+  const translateFearGreed = (status) => {
+    const translations = {
+      'Extreme Fear': '극단적 공포',
+      'Fear': '공포',
+      'Neutral': '중립',
+      'Greed': '탐욕',
+      'Extreme Greed': '극단적 탐욕'
+    };
+    return translations[status] || status;
+  };
+
+  const getFearGreedColor = (value) => {
+    const num = parseInt(value);
+    if (num < 25) return '#e53e3e';
+    if (num < 45) return '#f6ad55';
+    if (num < 55) return '#48bb78';
+    if (num < 75) return '#3182ce';
+    return '#805ad5';
+  };
+
+  const getFearGreedStatus = (value) => {
+    const num = parseInt(value);
+    if (num < 25) return '극단적 공포';
+    if (num < 45) return '공포';
+    if (num < 55) return '중립';
+    if (num < 75) return '탐욕';
+    return '극단적 탐욕';
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-purple-900 p-5">
+      <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden animate-fadeIn">
+        {/* 헤더 */}
+        <div className="relative bg-gradient-to-r from-purple-600 to-purple-800 text-white p-10 text-center overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-0 left-0 w-full h-full animate-pulse"></div>
+          </div>
+          <h1 className="text-4xl font-bold mb-3 relative z-10">💰 쿠쿠의 돈루틴</h1>
+          <p className="text-lg opacity-95 relative z-10">하루 5분이면 충분합니다</p>
+          <div className="mt-4 inline-block bg-white bg-opacity-20 backdrop-blur-sm px-6 py-2 rounded-full">
+            📅 {currentDate}
+          </div>
+          {lastUpdate && (
+            <div className="mt-2 text-sm opacity-80">
+              마지막 업데이트: {lastUpdate}
+            </div>
+          )}
+        </div>
+
+        <div className="p-8">
+          {/* 3줄 요약 */}
+          <section className="mb-10 animate-slideUp">
+            <h2 className="text-2xl font-bold mb-4 flex items-center">
+              <span className="w-1 h-6 bg-gradient-to-b from-purple-600 to-purple-800 mr-3 rounded"></span>
+              오늘의 3줄 요약
+            </h2>
+            <div className="space-y-3">
+              {[
+                '2차 민생회복 소비쿠폰 마감일! 국민 90%에 10만 원 쿠폰 지급!!!',
+                '코스피, 이번 주 사상 최고권 유지 (장중 4100 돌파·종가 최고 경신 중)',
+                '오늘 마감: 9월분 간이지급명세서·용역제공 과세자료 제출 D-day'
+              ].map((item, i) => (
+                <div key={i} className="bg-white p-4 rounded-xl border-l-4 border-purple-600 shadow-sm hover:shadow-md hover:translate-x-1 transition-all">
+                  <span className="text-lg mr-2">✔️</span> {item}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 실시간 시세 */}
+          <section className="mb-10 animate-slideUp" style={{animationDelay: '0.1s'}}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold flex items-center">
+                <span className="w-1 h-6 bg-gradient-to-b from-purple-600 to-purple-800 mr-3 rounded"></span>
+                실시간 주요 시세 CHECK
+              </h2>
+              <button 
+                onClick={fetchMarketData}
+                className="text-purple-600 hover:text-purple-800 text-sm font-semibold flex items-center gap-1"
+              >
+                🔄 새로고침
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* 달러 환율 */}
+              <MarketCard 
+                name="달러 환율"
+                value={marketData.usdkrw.value}
+                unit="원/$"
+                change={marketData.usdkrw.change}
+                loading={marketData.usdkrw.loading}
+              />
+              
+              {/* 금 */}
+              <MarketCard 
+                name="금 (Gold)"
+                value={marketData.gold.value}
+                unit="원/g"
+                change={marketData.gold.change}
+                loading={marketData.gold.loading}
+              />
+              
+              {/* SPY */}
+              <MarketCard 
+                name="SPY"
+                value={marketData.spy.value}
+                unit="$"
+                change={marketData.spy.change}
+                loading={marketData.spy.loading}
+              />
+              
+              {/* 비트코인 */}
+              <MarketCard 
+                name="비트코인"
+                value={marketData.bitcoin.value}
+                unit="원"
+                change={marketData.bitcoin.change}
+                loading={marketData.bitcoin.loading}
+              />
+              
+              {/* 나스닥 */}
+              <MarketCard 
+                name="NDAQ (나스닥)"
+                value={marketData.nasdaq.value}
+                unit="$"
+                change={marketData.nasdaq.change}
+                loading={marketData.nasdaq.loading}
+              />
+              
+              {/* KODEX 200 */}
+              <MarketCard 
+                name="KODEX 200"
+                value={marketData.kodex200.value}
+                unit="원"
+                change={marketData.kodex200.change}
+                loading={marketData.kodex200.loading}
+              />
+              
+              {/* CNN 공포지수 */}
+              <div className="bg-white p-5 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all">
+                <div className="text-sm text-gray-600 mb-2">공포/탐욕 지수</div>
+                <div className="text-3xl font-bold mb-2" style={{color: getFearGreedColor(marketData.fearGreed.value)}}>
+                  {marketData.fearGreed.loading ? '...' : marketData.fearGreed.value}
+                </div>
+                <div className="text-sm font-semibold px-3 py-1 rounded-full inline-block" 
+                     style={{
+                       backgroundColor: getFearGreedColor(marketData.fearGreed.value) + '20',
+                       color: getFearGreedColor(marketData.fearGreed.value)
+                     }}>
+                  {marketData.fearGreed.loading ? '로딩중...' : marketData.fearGreed.status}
+                </div>
+              </div>
+              
+              {/* SCFI */}
+              <MarketCard 
+                name="SCFI (운임지수)"
+                value={marketData.scfi.value}
+                unit="포인트"
+                change={marketData.scfi.change}
+                loading={marketData.scfi.loading}
+                isWeekly={true}
+              />
+            </div>
+            <div className="mt-3 text-xs text-gray-500 text-center">
+              * SCFI는 매주 금요일 업데이트됩니다 | 데이터는 5분마다 자동 갱신됩니다
+            </div>
+          </section>
+
+          {/* 재테크 일정 */}
+          <section className="mb-10 animate-slideUp" style={{animationDelay: '0.2s'}}>
+            <h2 className="text-2xl font-bold mb-4 flex items-center">
+              <span className="w-1 h-6 bg-gradient-to-b from-purple-600 to-purple-800 mr-3 rounded"></span>
+              오늘의 재테크 일정
+            </h2>
+            <div className="space-y-4">
+              <InfoCard title="👉 공모주" content="없음" />
+              <InfoCard 
+                title="👉 청약 (수도권청약)" 
+                content={
+                  <div>
+                    <div>📍 경기: 부천아이테라자이</div>
+                    <div className="text-sm text-gray-600 ml-6">(부천과안지구 B-2블록, 3세대) - 10/31</div>
+                  </div>
+                } 
+              />
+              <InfoCard 
+                title="👉 정책 일정" 
+                content="DSR 강화(10/29), 국세 체납자 실태 전수조사 본격화 (내년 3월~)" 
+              />
+              <InfoCard 
+                title="👉 세금 일정 ★★★" 
+                content={
+                  <div>
+                    <div>오늘(10/31) 마감: 간이지급명세서, 일용근로소득 지급명세서</div>
+                    <div className="text-red-600 font-semibold mt-1">→ 제출 지연 시 가산세 2% + 세무조사 대상 가능성</div>
+                  </div>
+                } 
+              />
+            </div>
+          </section>
+
+          {/* 오늘의 뉴스 */}
+          <section className="mb-10 animate-slideUp" style={{animationDelay: '0.3s'}}>
+            <h2 className="text-2xl font-bold mb-4 flex items-center">
+              <span className="w-1 h-6 bg-gradient-to-b from-purple-600 to-purple-800 mr-3 rounded"></span>
+              오늘의 뉴스픽
+            </h2>
+            <div className="space-y-3">
+              <NewsCard 
+                source="📌 매일경제"
+                title="美·中 무역전쟁 '해빙'… 관세·희토류 맞교환"
+                summary="APEC 정상 부산 회담서 '관세 10%↓·희토류 공급 재개' 합의"
+              />
+              <NewsCard 
+                source="📌 매일경제"
+                title="현대차, 3분기 관세 손해 1.8조… 최대 매출에도 영업이익 29%↓"
+                summary="역대 최대 매출에도 불구하고 관세 부담으로 영업이익 감소"
+              />
+              <NewsCard 
+                source="📌 서울경제"
+                title="엔비디아 돕는 삼성… HBM4 치킨게임 예고"
+                summary="삼성전자, 엔비디아에 HBM3E 12단 공급 개시. 6세대 HBM4 생산 준비"
+              />
+            </div>
+          </section>
+
+          {/* 오늘 해야할 것 */}
+          <section className="mb-10 animate-slideUp" style={{animationDelay: '0.4s'}}>
+            <h2 className="text-2xl font-bold mb-4 flex items-center">
+              <span className="w-1 h-6 bg-gradient-to-b from-purple-600 to-purple-800 mr-3 rounded"></span>
+              오늘 해야하는 것!!!
+            </h2>
+            <div className="space-y-3">
+              {[
+                '소비쿠폰 대상이라면 18시 이전 신청 완료할 것!',
+                '세금납부 D-day 10월 31일 납부기한 확인 후 지연 없도록 재확인',
+                '투자자는 단기 차익실현 및 자산 비중 리밸런싱 점검!!!'
+              ].map((item, i) => (
+                <div key={i} className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-5 rounded-xl shadow-lg font-semibold">
+                  ☑️ {item}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 쿠쿠의 생각 */}
+          <section className="mb-10 animate-slideUp" style={{animationDelay: '0.5s'}}>
+            <h2 className="text-2xl font-bold mb-4 flex items-center">
+              <span className="w-1 h-6 bg-gradient-to-b from-purple-600 to-purple-800 mr-3 rounded"></span>
+              💸 오늘 쿠쿠의 생각
+            </h2>
+            <div className="bg-gray-50 p-6 rounded-xl border-l-4 border-purple-600">
+              <p className="font-bold mb-3">✔️ 10월의 마지막날</p>
+              <p className="mb-4 leading-relaxed">이번 달은 시장이 유난히 뜨거웠네요. 코스피가 4100선을 돌파했고, 삼성전자는 반도체의 부활을 알리며 시장 심리를 완전히 바꿔놓았습니다.</p>
+              <p className="mb-4 leading-relaxed">약간의 단기 과열구간이라고 생각되지만 꾸준히 매수하는 것은 멈추지 않을 계획입니다. 꾸준히 오래 누가 더 버티는가에 싸움을 또 열심히 해야겠습니다.</p>
+              
+              <p className="font-bold mb-3 mt-6">✔️ 11월을 맞이하면서</p>
+              <p className="mb-4 leading-relaxed">미국에서 금리를 낮추고 갈수록 돈잔치의 분위기로 방향성이 잡히고 있네요. 내가 가지고 있는 자산에 대해서 어느정도는 무관심하게 봐야할때도 있지만 또 시장상황에 맞게 대응해야할 때가 있습니다.</p>
+              <p className="mb-4 leading-relaxed">이제 더 펼쳐질 돈잔치를 대비하기 위해 어느정도는 준비를 하실 때라고 생각이 되네요. 11월을 맞이하기 전 오늘 하루, 내 자산의 구조를 한 번 점검해보세요.</p>
+              
+              <p className="text-center font-bold mt-6 text-purple-700">오늘도 흔들림 없이, 루틴대로 갑시다 💪</p>
+            </div>
+          </section>
+
+          {/* 명언 */}
+          <div className="bg-gradient-to-r from-purple-600 to-purple-800 text-white p-8 rounded-xl text-center mb-8">
+            <p className="text-xl italic mb-4 leading-relaxed">
+              "시장은 기다리는 자의 것이 아니라,<br />준비된 자의 것이다."
+            </p>
+            <p className="opacity-90">– 하워드 막스</p>
+          </div>
+
+          {/* 구독 섹션 */}
+          <div className="bg-gradient-to-r from-pink-500 to-red-500 text-white p-10 rounded-xl text-center">
+            <h2 className="text-3xl font-bold mb-4">🔔 매일 아침 돈루틴 받아보기</h2>
+            <p className="mb-6 text-lg">하루 5분, 당신의 재테크 습관을 바꿔드립니다</p>
+            <button 
+              onClick={() => alert('구독 기능은 곧 오픈됩니다! 😊')}
+              className="bg-white text-red-500 px-10 py-4 rounded-full text-lg font-bold hover:scale-105 transition-transform shadow-lg"
+            >
+              지금 구독하기
+            </button>
+          </div>
+        </div>
+
+        {/* 푸터 */}
+        <div className="text-center p-8 border-t border-gray-200 text-gray-600">
+          <p>© 2024 쿠쿠의 돈루틴. All rights reserved.</p>
+          <p className="mt-2 text-sm">루틴으로 미래를 바꾸는 투자자, 쿠쿠입니다 ✨</p>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.6s ease-out;
+        }
+        .animate-slideUp {
+          animation: slideUp 0.6s ease-out forwards;
+          opacity: 0;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// 시장 카드 컴포넌트
+function MarketCard({ name, value, unit, change, loading, isWeekly = false }) {
+  const isUp = change > 0;
+  const isDown = change < 0;
+  
+  return (
+    <div className="bg-white p-5 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all relative">
+      {isWeekly && (
+        <div className="absolute top-2 right-2 text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
+          주간
+        </div>
+      )}
+      <div className="text-sm text-gray-600 mb-2">{name}</div>
+      <div className="text-2xl font-bold text-gray-900 mb-1">
+        {loading ? '...' : value}
+      </div>
+      {unit && <div className="text-xs text-gray-500 mb-2">{unit}</div>}
+      {!loading && change !== 0 && (
+        <div className={`text-sm font-semibold px-3 py-1 rounded-full inline-block ${
+          isUp ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'
+        }`}>
+          {isUp ? '▲' : '▼'} {Math.abs(change).toFixed(2)}%
+        </div>
+      )}
+    </div>
+  );
+}
+
+// 정보 카드 컴포넌트
+function InfoCard({ title, content }) {
+  return (
+    <div className="bg-gray-50 p-5 rounded-xl border-l-4 border-purple-600 hover:bg-gray-100 transition-colors">
+      <div className="font-bold mb-2">{title}</div>
+      <div className="text-gray-700">{content}</div>
+    </div>
+  );
+}
+
+// 뉴스 카드 컴포넌트
+function NewsCard({ source, title, summary }) {
+  return (
+    <div className="bg-white p-5 rounded-xl border border-gray-200 hover:border-purple-600 hover:shadow-md transition-all">
+      <div className="text-purple-600 font-semibold mb-2">{source}</div>
+      <div className="font-bold text-gray-900 mb-2">{title}</div>
+      <div className="text-gray-600 text-sm">{summary}</div>
+    </div>
+  );
+}
