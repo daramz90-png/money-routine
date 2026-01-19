@@ -189,6 +189,38 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
+  app.get('/api/subscribers', async (_req, res) => {
+    try {
+      const subscribers = await storage.getSubscribers();
+      res.json(subscribers);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get subscribers' });
+    }
+  });
+
+  app.post('/api/subscribe', async (req, res) => {
+    try {
+      const { name, email } = req.body;
+      if (!name || !email) {
+        return res.status(400).json({ error: 'Name and email are required' });
+      }
+      const subscriber = await storage.addSubscriber(name, email);
+      res.json({ success: true, subscriber });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to subscribe' });
+    }
+  });
+
+  app.delete('/api/subscribers/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.removeSubscriber(id);
+      res.json({ success });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to remove subscriber' });
+    }
+  });
+
   app.post('/api/admin/verify', (req, res) => {
     const { password } = req.body;
     const adminPassword = process.env.ADMIN_PASSWORD || '5511';

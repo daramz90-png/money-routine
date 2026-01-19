@@ -97,6 +97,13 @@ export interface ThoughtItem {
   content: string;
 }
 
+export interface Subscriber {
+  id: string;
+  name: string;
+  email: string;
+  subscribedAt: string;
+}
+
 export interface ManualMarketItem {
   enabled: boolean;
   value: string;
