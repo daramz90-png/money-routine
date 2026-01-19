@@ -1,0 +1,193 @@
+import React, { useState, useEffect } from 'react';
+
+export default function KukuMoneyRoutine() {
+  const [marketData, setMarketData] = useState({
+    usdkrw: { value: '1,427.80', change: -0.19, loading: false },
+    gold: { value: '187,050', change: 1.88, loading: false },
+    spy: { value: '590.25', change: -0.99, loading: false },
+    bitcoin: { value: '164,002,000', change: -0.16, loading: false },
+    nasdaq: { value: '78.45', change: -1.2, loading: false },
+    kodex200: { value: '41,250', change: 0.85, loading: false },
+    fearGreed: { value: '52', status: '중립', loading: false },
+    scfi: { value: '1,245', change: 2.3, loading: false }
+  });
+
+  const [currentDate, setCurrentDate] = useState('');
+
+  useEffect(() => {
+    const today = new Date();
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    const dateStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 (${days[today.getDay()]}요일)`;
+    setCurrentDate(dateStr);
+  }, []);
+
+  const getFearGreedColor = (value) => {
+    const num = parseInt(value);
+    if (num < 25) return '#ef4444';
+    if (num < 45) return '#f59e0b';
+    if (num < 55) return '#10b981';
+    if (num < 75) return '#3b82f6';
+    return '#8b5cf6';
+  };
+
+  return (
+    <div className="min-h-screen p-6" style={{background: '#e0e5ec'}}>
+      <div className="max-w-5xl mx-auto">
+        {/* 헤더 */}
+        <div className="mb-8 p-8 rounded-3xl text-center" style={{
+          background: '#e0e5ec',
+          boxShadow: '20px 20px 60px #bec3c9, -20px -20px 60px #ffffff'
+        }}>
+          <h1 className="text-5xl font-bold mb-3" style={{color: '#4a5568'}}>
+            💰 쿠쿠의 돈루틴
+          </h1>
+          <p className="text-xl mb-4" style={{color: '#718096'}}>
+            하루 5분이면 충분합니다
+          </p>
+          <div className="inline-block px-6 py-3 rounded-2xl" style={{
+            background: '#e0e5ec',
+            boxShadow: 'inset 8px 8px 16px #bec3c9, inset -8px -8px 16px #ffffff'
+          }}>
+            <span style={{color: '#4a5568'}}>📅 {currentDate}</span>
+          </div>
+        </div>
+
+        {/* 3줄 요약 */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-6" style={{color: '#2d3748'}}>
+            오늘의 3줄 요약
+          </h2>
+          <div className="space-y-4">
+            {[
+              '2차 민생회복 소비쿠폰 마감일! 국민 90%에 10만 원 쿠폰 지급!!!',
+              '코스피, 이번 주 사상 최고권 유지 (장중 4100 돌파·종가 최고 경신 중)',
+              '오늘 마감: 9월분 간이지급명세서·용역제공 과세자료 제출 D-day'
+            ].map((item, i) => (
+              <div key={i} className="p-5 rounded-2xl" style={{
+                background: '#e0e5ec',
+                boxShadow: '8px 8px 16px #bec3c9, -8px -8px 16px #ffffff',
+                color: '#4a5568'
+              }}>
+                <span className="text-lg mr-2">✔️</span> {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 실시간 시세 */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-6" style={{color: '#2d3748'}}>
+            실시간 주요 시세 CHECK
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <NeuCard name="달러 환율" value={marketData.usdkrw.value} unit="원/$" change={marketData.usdkrw.change} />
+            <NeuCard name="금 (Gold)" value={marketData.gold.value} unit="원/g" change={marketData.gold.change} />
+            <NeuCard name="SPY" value={marketData.spy.value} unit="$" change={marketData.spy.change} />
+            <NeuCard name="비트코인" value={marketData.bitcoin.value} unit="원" change={marketData.bitcoin.change} />
+            <NeuCard name="NDAQ" value={marketData.nasdaq.value} unit="$" change={marketData.nasdaq.change} />
+            <NeuCard name="KODEX 200" value={marketData.kodex200.value} unit="원" change={marketData.kodex200.change} />
+            
+            {/* 공포지수 */}
+            <div className="p-6 rounded-2xl" style={{
+              background: '#e0e5ec',
+              boxShadow: '8px 8px 16px #bec3c9, -8px -8px 16px #ffffff'
+            }}>
+              <div className="text-sm mb-2" style={{color: '#718096'}}>공포/탐욕 지수</div>
+              <div className="text-4xl font-bold mb-2" style={{color: getFearGreedColor(marketData.fearGreed.value)}}>
+                {marketData.fearGreed.value}
+              </div>
+              <div className="text-sm font-semibold px-3 py-1 rounded-xl inline-block" style={{
+                background: '#e0e5ec',
+                boxShadow: 'inset 4px 4px 8px #bec3c9, inset -4px -4px 8px #ffffff',
+                color: getFearGreedColor(marketData.fearGreed.value)
+              }}>
+                {marketData.fearGreed.status}
+              </div>
+            </div>
+            
+            <NeuCard name="SCFI" value={marketData.scfi.value} unit="포인트" change={marketData.scfi.change} />
+          </div>
+        </div>
+
+        {/* 오늘 해야할 것 */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-6" style={{color: '#2d3748'}}>
+            오늘 해야하는 것!!!
+          </h2>
+          <div className="space-y-4">
+            {[
+              '소비쿠폰 대상이라면 18시 이전 신청 완료할 것!',
+              '세금납부 D-day 10월 31일 납부기한 확인 후 지연 없도록 재확인',
+              '투자자는 단기 차익실현 및 자산 비중 리밸런싱 점검!!!'
+            ].map((item, i) => (
+              <div key={i} className="p-5 rounded-2xl font-semibold" style={{
+                background: 'linear-gradient(145deg, #f59e0b, #d97706)',
+                boxShadow: '8px 8px 16px #bec3c9, -8px -8px 16px #ffffff',
+                color: '#fff'
+              }}>
+                ☑️ {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 명언 */}
+        <div className="p-8 rounded-3xl text-center mb-8" style={{
+          background: '#e0e5ec',
+          boxShadow: '20px 20px 60px #bec3c9, -20px -20px 60px #ffffff'
+        }}>
+          <p className="text-2xl italic mb-4" style={{color: '#4a5568'}}>
+            "시장은 기다리는 자의 것이 아니라,<br />준비된 자의 것이다."
+          </p>
+          <p style={{color: '#718096'}}>– 하워드 막스</p>
+        </div>
+
+        {/* 구독 */}
+        <div className="p-10 rounded-3xl text-center" style={{
+          background: '#e0e5ec',
+          boxShadow: 'inset 20px 20px 60px #bec3c9, inset -20px -20px 60px #ffffff'
+        }}>
+          <h2 className="text-3xl font-bold mb-4" style={{color: '#2d3748'}}>
+            🔔 매일 아침 돈루틴 받아보기
+          </h2>
+          <p className="mb-6 text-lg" style={{color: '#4a5568'}}>
+            하루 5분, 당신의 재테크 습관을 바꿔드립니다
+          </p>
+          <button className="px-10 py-4 rounded-2xl text-lg font-bold transition-all hover:scale-105" style={{
+            background: '#e0e5ec',
+            boxShadow: '8px 8px 16px #bec3c9, -8px -8px 16px #ffffff',
+            color: '#4a5568'
+          }}>
+            지금 구독하기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NeuCard({ name, value, unit, change }) {
+  const isUp = change > 0;
+  
+  return (
+    <div className="p-6 rounded-2xl" style={{
+      background: '#e0e5ec',
+      boxShadow: '8px 8px 16px #bec3c9, -8px -8px 16px #ffffff'
+    }}>
+      <div className="text-sm mb-2" style={{color: '#718096'}}>{name}</div>
+      <div className="text-3xl font-bold mb-1" style={{color: '#2d3748'}}>
+        {value}
+      </div>
+      {unit && <div className="text-xs mb-2" style={{color: '#a0aec0'}}>{unit}</div>}
+      {change !== 0 && (
+        <div className={`text-sm font-semibold px-3 py-1 rounded-xl inline-block`} style={{
+          background: '#e0e5ec',
+          boxShadow: 'inset 4px 4px 8px #bec3c9, inset -4px -4px 8px #ffffff',
+          color: isUp ? '#ef4444' : '#3b82f6'
+        }}>
+          {isUp ? '▲' : '▼'} {Math.abs(change).toFixed(2)}%
+        </div>
+      )}
+    </div>
+  );
+}
