@@ -129,7 +129,7 @@ function AuthorIntro() {
     { icon: Home, text: '지방→서울 갈아타기 성공' },
     { icon: TrendingUp, text: '순자산 9억 달성' },
     { icon: Award, text: '분양권 투자 1억+ 수익' },
-    { icon: Briefcase, text: '육아휴직 복직 후 과장 승진' },
+    { icon: Briefcase, text: '육아휴직 이후 복직하여 대기업 과장으로 근무중' },
   ];
 
   return (
