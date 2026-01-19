@@ -537,6 +537,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
           change={marketData.scfi.change}
           loading={isLoading || marketData.scfi.loading}
           icon={Ship}
+          url="https://m.stock.naver.com/marketindex/transport/.SCFIDXSSE"
         />
       </div>
       <p className="mt-4 text-xs text-muted-foreground text-center">
