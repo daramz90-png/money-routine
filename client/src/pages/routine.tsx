@@ -239,9 +239,13 @@ function ProfileSection() {
             </div>
             <div className="flex-1 text-center md:text-left">
               <h2 className="text-2xl font-bold text-foreground mb-4">안녕하세요, 쿠쿠입니다</h2>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
+              <p className="text-muted-foreground mb-4 leading-relaxed">
                 30대 중반 대기업 워킹맘이자,<br />
-                20년 부동산 투자 경력을 가진 실전 투자자입니다.
+                5년 부동산 투자 경력을 가진 실전 투자자입니다.
+              </p>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                지방에서 서울 갈아타기 성공경험 보유<br />
+                <span className="text-purple-600 dark:text-purple-400 font-bold text-lg">현 순자산 9억</span>
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
@@ -251,7 +255,7 @@ function ProfileSection() {
                 </div>
                 <div className="flex items-center gap-2 justify-center md:justify-start">
                   <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-foreground">지방/서울 투자로 2억 이상 수익</span>
+                  <span className="text-foreground">지방/서울 투자로 5억 이상 수익</span>
                 </div>
                 <div className="flex items-center gap-2 justify-center md:justify-start">
                   <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
@@ -259,13 +263,13 @@ function ProfileSection() {
                 </div>
                 <div className="flex items-center gap-2 justify-center md:justify-start">
                   <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-foreground">5년 공백 후에도 성공적 복귀</span>
+                  <span className="text-foreground">육아휴직 복직 후 과장 승진</span>
                 </div>
               </div>
               
               <p className="text-muted-foreground text-sm leading-relaxed">
-                아무것도 모르던 20년 전, 100번 넘게 듣고 배우며 시작했습니다.<br />
-                육아로 5년 쉬었지만, 다시 시작해서 여전히 수익내고 있습니다.
+                아무것도 모르던 5년 전, 100번 넘게 듣고 배우며 시작했습니다.<br />
+                바닥부터 시작해서 9억의 순자산을 만들어가고 있습니다.
               </p>
             </div>
           </div>
