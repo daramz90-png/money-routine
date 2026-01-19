@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
-  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type
+  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine
 } from 'lucide-react';
 import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem } from '@shared/schema';
 import { defaultContent } from '@shared/schema';
@@ -460,6 +460,36 @@ export default function Admin() {
               <Plus className="w-4 h-4 mr-2" />
               할일 추가
             </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 mb-6 shadow-lg">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <ChartLine className="w-5 h-5 text-pink-600" />
+            <h2 className="text-xl font-bold text-foreground">주요 항목 시세 CHECK</h2>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <Label>섹션 타이틀</Label>
+              <Input
+                value={content.marketSectionTitle || ''}
+                onChange={(e) => setContent(prev => ({ ...prev, marketSectionTitle: e.target.value }))}
+                placeholder="주요 항목 시세 CHECK"
+                data-testid="input-market-title"
+              />
+            </div>
+            <div>
+              <Label>새로고침 안내 문구</Label>
+              <Input
+                value={content.marketRefreshNote || ''}
+                onChange={(e) => setContent(prev => ({ ...prev, marketRefreshNote: e.target.value }))}
+                placeholder="* 데이터는 5분마다 자동 갱신됩니다"
+                data-testid="input-market-refresh-note"
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              * 시세 데이터는 실시간 API에서 자동으로 가져옵니다
+            </p>
           </div>
         </Card>
 

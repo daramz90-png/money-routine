@@ -107,6 +107,8 @@ export interface DashboardContent {
   news: NewsItem[];
   todos: TodoItem[];
   thoughts: ThoughtItem[];
+  marketSectionTitle: string;
+  marketRefreshNote: string;
   closingMessage: string;
   closingSubMessage: string;
   subscribeButtonText: string;
@@ -201,6 +203,8 @@ export const defaultContent: DashboardContent = {
       content: '미국에서 금리를 낮추고 갈수록 돈잔치의 분위기로 방향성이 잡히고 있네요. 내가 가지고 있는 자산에 대해서 어느정도는 무관심하게 봐야할때도 있지만 또 시장상황에 맞게 대응해야할 때가 있습니다.\n\n이제 더 펼쳐질 돈잔치를 대비하기 위해 어느정도는 준비를 하실 때라고 생각이 되네요. 11월을 맞이하기 전 오늘 하루, 내 자산의 구조를 한 번 점검해보세요.',
     },
   ],
+  marketSectionTitle: '주요 항목 시세 CHECK',
+  marketRefreshNote: '* 데이터는 5분마다 자동 갱신됩니다',
   closingMessage: '오늘도 흔들림 없이, 루틴대로 갑시다',
   closingSubMessage: '오늘도 화이팅입니다 ^^',
   subscribeButtonText: '이웃추가하고 돈되는 루틴 받기',

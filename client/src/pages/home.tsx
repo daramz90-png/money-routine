@@ -416,11 +416,13 @@ function FearGreedCard({ data }: { data: FearGreedData }) {
   );
 }
 
-function MarketSection({ marketData, isLoading, isFetching, onRefresh }: { 
+function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, refreshNote }: { 
   marketData: MarketData; 
   isLoading: boolean; 
   isFetching: boolean;
   onRefresh: () => void;
+  title: string;
+  refreshNote: string;
 }) {
   return (
     <section className="py-8" id="market">
@@ -429,7 +431,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh }: {
           <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white shadow-lg">
             <ChartLine className="w-5 h-5" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground">주요 항목 시세 CHECK</h2>
+          <h2 className="text-2xl font-bold text-foreground">{title || '주요 항목 시세 CHECK'}</h2>
         </div>
         <Button 
           variant="outline" 
@@ -503,7 +505,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh }: {
         />
       </div>
       <p className="mt-4 text-xs text-muted-foreground text-center">
-        * 데이터는 5분마다 자동 갱신됩니다
+        {refreshNote || '* 데이터는 5분마다 자동 갱신됩니다'}
       </p>
     </section>
   );
@@ -661,6 +663,8 @@ export default function Home() {
           isLoading={isLoading} 
           isFetching={isFetching}
           onRefresh={() => refetch()}
+          title={content.marketSectionTitle || ''}
+          refreshNote={content.marketRefreshNote || ''}
         />
         <ThoughtsSection thoughts={content.thoughts || []} />
         <QuoteSection quote={content.quote} />
