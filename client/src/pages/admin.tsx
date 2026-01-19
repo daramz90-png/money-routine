@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
-  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw, BookOpen, Edit, Loader2
+  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw, BookOpen, Edit, Loader2, Calendar
 } from 'lucide-react';
 import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData, Subscriber, RoutineArticle, Article, PageType } from '@shared/schema';
 import { defaultContent, defaultManualMarketData } from '@shared/schema';
@@ -464,30 +464,62 @@ export default function Admin() {
     }
   }, [isAuthenticated]);
 
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+
   useEffect(() => {
     if (!isAuthenticated) return;
-    const savedContent = localStorage.getItem('dashboardContent');
-    if (savedContent) {
-      try {
-        setContent(JSON.parse(savedContent));
-      } catch (e) {
-        console.error('Failed to parse saved content');
-      }
-    }
+    fetch('/api/dashboard/dates')
+      .then(res => res.json())
+      .then((dates: string[]) => {
+        setAvailableDates(dates);
+        if (dates.length > 0 && !dates.includes(selectedDate)) {
+          setSelectedDate(dates[0]);
+        }
+      })
+      .catch(console.error);
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !selectedDate) return;
+    fetch(`/api/dashboard/${selectedDate}`)
+      .then(res => {
+        if (res.ok) return res.json();
+        return null;
+      })
+      .then((data: DashboardContent | null) => {
+        if (data) {
+          setContent(data);
+        } else {
+          setContent({ ...defaultContent, date: selectedDate });
+        }
+      })
+      .catch(console.error);
+  }, [isAuthenticated, selectedDate]);
 
   if (!isAuthenticated) {
     return <PasswordGate onAuthenticated={() => setIsAuthenticated(true)} />;
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
     try {
-      localStorage.setItem('dashboardContent', JSON.stringify(content));
-      toast({
-        title: "저장 완료",
-        description: "콘텐츠가 성공적으로 저장되었습니다.",
+      const response = await fetch(`/api/dashboard/${selectedDate}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...content, date: selectedDate }),
       });
+      if (response.ok) {
+        if (!availableDates.includes(selectedDate)) {
+          setAvailableDates(prev => [selectedDate, ...prev].sort((a, b) => b.localeCompare(a)));
+        }
+        toast({
+          title: "저장 완료",
+          description: `${selectedDate} 콘텐츠가 성공적으로 저장되었습니다.`,
+        });
+      } else {
+        throw new Error('Save failed');
+      }
     } catch (e) {
       toast({
         title: "저장 실패",
@@ -663,6 +695,40 @@ export default function Admin() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8 pb-24">
+        <Card className="p-6 mb-6 shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Calendar className="w-5 h-5 text-blue-600" />
+            <h2 className="text-xl font-bold text-foreground">날짜 선택</h2>
+          </div>
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-auto"
+                data-testid="input-date-selector"
+              />
+              <span className="text-muted-foreground text-sm">편집할 날짜를 선택하세요</span>
+            </div>
+            {availableDates.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {availableDates.slice(0, 7).map((d) => (
+                  <Button
+                    key={d}
+                    variant={d === selectedDate ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedDate(d)}
+                    data-testid={`date-btn-${d}`}
+                  >
+                    {new Date(d).getMonth() + 1}/{new Date(d).getDate()}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        </Card>
+
         <Card className="p-6 mb-6 shadow-lg">
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <Sparkles className="w-5 h-5 text-purple-600" />
