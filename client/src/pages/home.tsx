@@ -215,7 +215,7 @@ function NewsSection({ news }: { news: any[] }) {
 
 function TodoSection({ todos }: { todos: any[] }) {
   return (
-    <section className="py-8">
+    <section className="py-8" id="todo">
       <Card className="p-6 shadow-xl border-4 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30">
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center text-white shadow-lg">
