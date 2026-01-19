@@ -57,12 +57,12 @@ function HeroSection({
   const isToday = safeAvailableDates.length === 0 || selectedDate === safeAvailableDates[0];
 
   return (
-    <section className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white py-12 sm:py-16 px-4">
+    <section className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white py-10 sm:py-16 px-4">
       <div className="max-w-6xl mx-auto text-center">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" data-testid="text-hero-title">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight" data-testid="text-hero-title">
           {title || '하루 5분으로 시작하는 재테크'}
         </h1>
-        <p className="text-lg sm:text-xl text-white/90 mb-6 max-w-2xl mx-auto">
+        <p className="text-base sm:text-xl text-white/90 mb-5 sm:mb-6 max-w-2xl mx-auto leading-relaxed px-2">
           {subtitle || '공모주 청약부터 부동산 뉴스, 놓치기 쉬운 정책 정보까지!'}
         </p>
         
