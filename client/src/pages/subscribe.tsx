@@ -4,17 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { 
-  Mail, Star, Clock, FileText, Calculator, Gift, 
+  Mail, Star, Clock, FileText, Gift, 
   Check, ChevronRight, Quote, Sparkles
 } from 'lucide-react';
 import { SharedHeader } from '@/components/shared-header';
 import { useToast } from '@/hooks/use-toast';
 
 const benefits = [
-  { icon: Clock, title: '매주 월/수/금 오전 7시', description: '출근길에 읽기 딱 좋은 시간에 발송' },
+  { icon: Clock, title: '매주 월/화/수/목/금 오전 10시', description: '점심 후 읽기 딱 좋은 시간에 발송' },
   { icon: FileText, title: '5분이면 읽는 핵심 정리', description: '바쁜 당신을 위한 요약 콘텐츠' },
   { icon: Sparkles, title: '실전 투자 팁 & 절세 전략', description: '바로 적용할 수 있는 실용적인 정보' },
-  { icon: Calculator, title: '독점 계산기 & 템플릿', description: '구독자만을 위한 특별 자료 제공' },
+  { icon: Gift, title: '구독자만을 위한 특별 자료 제공', description: '독점 콘텐츠와 유용한 자료 모음' },
 ];
 
 const recentNewsletters = [
