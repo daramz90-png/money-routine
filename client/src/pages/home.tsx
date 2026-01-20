@@ -237,6 +237,18 @@ function ScheduleSection({ ipos, realEstates }: { ipos: any[]; realEstates: any[
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <Building className="w-5 h-5 text-green-600" />
             <h3 className="text-lg font-bold text-foreground">부동산 청약</h3>
+            <a 
+              href="https://www.applyhome.co.kr/co/coa/selectMainView.do" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="ml-auto"
+              data-testid="link-applyhome"
+            >
+              <Badge className="bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 border-0 cursor-pointer">
+                <ExternalLink className="w-3 h-3 mr-1" />
+                청약하러 가기 (청약홈)
+              </Badge>
+            </a>
           </div>
           
           {apartments.length > 0 && (
