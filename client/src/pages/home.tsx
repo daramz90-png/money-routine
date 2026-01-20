@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Card } from '@/components/ui/card';
@@ -10,9 +10,8 @@ import {
   BarChart3, Bitcoin, LineChart, Building2, Gauge, Ship, 
   Check, Calendar, Newspaper, ListTodo, Quote, Bell,
   Clock, ChartLine, Star, ExternalLink, MessageCircle,
-  CheckSquare, Building, ChevronLeft, ChevronRight, Download, Camera
+  CheckSquare, Building, ChevronLeft, ChevronRight
 } from 'lucide-react';
-import html2canvas from 'html2canvas';
 import type { MarketData, FearGreedData, DashboardContent, ManualMarketData } from '@shared/schema';
 import { initialMarketData, defaultContent, defaultManualMarketData } from '@shared/schema';
 import { SharedHeader } from '@/components/shared-header';
@@ -724,36 +723,6 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [content, setContent] = useState<DashboardContent>(defaultContent);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const captureRef = useRef<HTMLDivElement>(null);
-
-  const captureAsImage = async () => {
-    if (!captureRef.current) return;
-    
-    setIsCapturing(true);
-    
-    try {
-      const canvas = await html2canvas(captureRef.current, {
-        scale: 2,
-        backgroundColor: '#0f172a',
-        useCORS: true,
-        logging: false,
-        width: captureRef.current.scrollWidth,
-        height: captureRef.current.scrollHeight,
-      });
-      
-      const link = document.createElement('a');
-      const today = new Date();
-      const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-      link.download = `쿠쿠의돈루틴_${dateStr}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    } catch (error) {
-      console.error('Failed to capture image:', error);
-    } finally {
-      setIsCapturing(false);
-    }
-  };
 
   const { data: availableDates = [] } = useQuery<string[]>({
     queryKey: ['/api/dashboard/dates'],
@@ -842,12 +811,6 @@ export default function Home() {
     content.manualMarketData
   );
 
-  const formatDateForCapture = () => {
-    const d = selectedDate ? new Date(selectedDate) : new Date();
-    const days = ['일', '월', '화', '수', '목', '금', '토'];
-    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}요일`;
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <SharedHeader />
@@ -861,133 +824,6 @@ export default function Home() {
       />
       
       <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex justify-end mb-4">
-          <Button
-            onClick={captureAsImage}
-            disabled={isCapturing}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
-            data-testid="button-capture-image"
-          >
-            {isCapturing ? (
-              <>
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                이미지 생성중...
-              </>
-            ) : (
-              <>
-                <Camera className="w-4 h-4 mr-2" />
-                이미지로 저장
-              </>
-            )}
-          </Button>
-        </div>
-
-        <div 
-          ref={captureRef} 
-          className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6 rounded-xl"
-          style={{ aspectRatio: '4/3', overflow: 'hidden' }}
-        >
-          <div className="h-full flex flex-col">
-            <div className="text-center mb-4">
-              <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-3 py-1 rounded-full text-sm font-medium mb-2">
-                <span className="w-2 h-2 bg-emerald-400 rounded-full"></span>
-                LIVE 실시간 금융 데이터
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-1">쿠쿠의 돈루틴</h2>
-              <p className="text-slate-400 text-sm">{formatDateForCapture()}</p>
-            </div>
-
-            <div className="grid grid-cols-4 gap-3 mb-4">
-              <div className="bg-slate-800/80 rounded-lg p-3 text-center border border-slate-700">
-                <DollarSign className="w-5 h-5 text-emerald-400 mx-auto mb-1" />
-                <p className="text-xs text-slate-400 mb-1">달러 환율</p>
-                <p className="text-lg font-bold text-white">{currentMarketData.usdkrw.value || '-'}</p>
-                <p className={`text-xs ${parseFloat(String(currentMarketData.usdkrw.change || '0')) >= 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                  {currentMarketData.usdkrw.change || '-'}
-                </p>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-3 text-center border border-slate-700">
-                <Coins className="w-5 h-5 text-yellow-400 mx-auto mb-1" />
-                <p className="text-xs text-slate-400 mb-1">금 시세</p>
-                <p className="text-lg font-bold text-white">{currentMarketData.gold.value || '-'}</p>
-                <p className={`text-xs ${parseFloat(String(currentMarketData.gold.change || '0')) >= 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                  {currentMarketData.gold.change || '-'}
-                </p>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-3 text-center border border-slate-700">
-                <BarChart3 className="w-5 h-5 text-blue-400 mx-auto mb-1" />
-                <p className="text-xs text-slate-400 mb-1">S&P 500</p>
-                <p className="text-lg font-bold text-white">{currentMarketData.spy.value || '-'}</p>
-                <p className={`text-xs ${parseFloat(String(currentMarketData.spy.change || '0')) >= 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                  {currentMarketData.spy.change || '-'}
-                </p>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-3 text-center border border-slate-700">
-                <Bitcoin className="w-5 h-5 text-orange-400 mx-auto mb-1" />
-                <p className="text-xs text-slate-400 mb-1">비트코인</p>
-                <p className="text-lg font-bold text-white">{currentMarketData.bitcoin.value || '-'}</p>
-                <p className={`text-xs ${parseFloat(String(currentMarketData.bitcoin.change || '0')) >= 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                  {currentMarketData.bitcoin.change || '-'}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-4 gap-3 mb-4">
-              <div className="bg-slate-800/80 rounded-lg p-3 text-center border border-slate-700">
-                <LineChart className="w-5 h-5 text-purple-400 mx-auto mb-1" />
-                <p className="text-xs text-slate-400 mb-1">나스닥</p>
-                <p className="text-lg font-bold text-white">{currentMarketData.nasdaq.value || '-'}</p>
-                <p className={`text-xs ${parseFloat(String(currentMarketData.nasdaq.change || '0')) >= 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                  {currentMarketData.nasdaq.change || '-'}
-                </p>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-3 text-center border border-slate-700">
-                <Building2 className="w-5 h-5 text-cyan-400 mx-auto mb-1" />
-                <p className="text-xs text-slate-400 mb-1">KODEX 200</p>
-                <p className="text-lg font-bold text-white">{currentMarketData.kodex200.value || '-'}</p>
-                <p className={`text-xs ${parseFloat(String(currentMarketData.kodex200.change || '0')) >= 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                  {currentMarketData.kodex200.change || '-'}
-                </p>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-3 text-center border border-slate-700">
-                <Gauge className="w-5 h-5 text-rose-400 mx-auto mb-1" />
-                <p className="text-xs text-slate-400 mb-1">CNN 공포지수</p>
-                <p className="text-lg font-bold text-white">{currentMarketData.fearGreed.value || '-'}</p>
-                <p className="text-xs text-slate-300">{currentMarketData.fearGreed.status || '-'}</p>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-3 text-center border border-slate-700">
-                <Ship className="w-5 h-5 text-teal-400 mx-auto mb-1" />
-                <p className="text-xs text-slate-400 mb-1">SCFI 운임</p>
-                <p className="text-lg font-bold text-white">{currentMarketData.scfi.value || '-'}</p>
-                <p className={`text-xs ${parseFloat(String(currentMarketData.scfi.change || '0')) >= 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                  {currentMarketData.scfi.change || '-'}
-                </p>
-              </div>
-            </div>
-
-            {content.summaries.length > 0 && (
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700 flex-1 overflow-hidden">
-                <h3 className="text-sm font-semibold text-emerald-400 mb-2 flex items-center gap-2">
-                  <Check className="w-4 h-4" />
-                  오늘의 주요 요약
-                </h3>
-                <div className="space-y-1.5">
-                  {content.summaries.slice(0, 4).map((summary, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <Check className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      <p className="text-sm text-slate-300 line-clamp-1">{summary.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="mt-3 pt-3 border-t border-slate-700 text-center">
-              <p className="text-xs text-slate-500">@쿠쿠의돈루틴 | 하루 5분으로 시작하는 재테크</p>
-            </div>
-          </div>
-        </div>
-
         <SummarySection summaries={content.summaries} />
         <ScheduleSection ipos={content.ipos} realEstates={content.realEstates} ipoOpinion={content.ipoOpinion} />
         <NewsSection news={content.news} />
