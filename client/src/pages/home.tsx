@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Card } from '@/components/ui/card';
@@ -10,8 +10,9 @@ import {
   BarChart3, Bitcoin, LineChart, Building2, Gauge, Ship, 
   Check, Calendar, Newspaper, ListTodo, Quote, Bell,
   Clock, ChartLine, Star, ExternalLink, MessageCircle,
-  CheckSquare, Building, ChevronLeft, ChevronRight
+  CheckSquare, Building, ChevronLeft, ChevronRight, Camera, Download
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import type { MarketData, FearGreedData, DashboardContent, ManualMarketData } from '@shared/schema';
 import { initialMarketData, defaultContent, defaultManualMarketData } from '@shared/schema';
 import { SharedHeader } from '@/components/shared-header';
@@ -811,9 +812,35 @@ export default function Home() {
     content.manualMarketData
   );
 
+  const pageRef = useRef<HTMLDivElement>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const isCaptureMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('capture') === 'true';
+
+  const handleCapture = async () => {
+    if (!pageRef.current) return;
+    setIsCapturing(true);
+    try {
+      const canvas = await html2canvas(pageRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        scrollY: -window.scrollY,
+        windowHeight: pageRef.current.scrollHeight,
+        height: pageRef.current.scrollHeight,
+      });
+      const link = document.createElement('a');
+      link.download = `쿠쿠의돈루틴_${currentDate}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (e) {
+      console.error('Capture failed:', e);
+    }
+    setIsCapturing(false);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      <SharedHeader />
+    <div className="min-h-screen bg-background" ref={pageRef}>
+      {!isCaptureMode && <SharedHeader />}
       <HeroSection 
         date={currentDate} 
         title={content.heroTitle || ''} 
@@ -849,6 +876,20 @@ export default function Home() {
         hashtags={content.hashtags || []} 
         footerText={content.footerText || ''} 
       />
+      
+      {isCaptureMode && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Button
+            onClick={handleCapture}
+            disabled={isCapturing}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg px-6 py-3 text-lg"
+            data-testid="button-capture-page"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            {isCapturing ? '캡처 중...' : '이미지로 저장'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

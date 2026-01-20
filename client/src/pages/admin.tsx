@@ -9,8 +9,9 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
-  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw, BookOpen, Edit, Loader2, Calendar, MessageCircle
+  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw, BookOpen, Edit, Loader2, Calendar, MessageCircle, Camera
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData, Subscriber, RoutineArticle, Article, PageType } from '@shared/schema';
 import { defaultContent, defaultManualMarketData } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
@@ -466,6 +467,7 @@ export default function Admin() {
 
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [isCapturing, setIsCapturing] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -528,6 +530,34 @@ export default function Admin() {
       });
     }
     setIsSaving(false);
+  };
+
+  const handleCaptureHome = async () => {
+    setIsCapturing(true);
+    try {
+      const popup = window.open('/?capture=true', '_blank', 'width=1200,height=800');
+      if (!popup) {
+        toast({
+          title: "팝업 차단됨",
+          description: "팝업을 허용해주세요.",
+          variant: "destructive",
+        });
+        setIsCapturing(false);
+        return;
+      }
+      
+      toast({
+        title: "캡처 준비 중",
+        description: "홈 페이지가 열립니다. 로딩 후 '이미지로 저장' 버튼을 클릭하세요.",
+      });
+    } catch (e) {
+      toast({
+        title: "캡처 실패",
+        description: "이미지 캡처 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    }
+    setIsCapturing(false);
   };
 
   const addSummary = () => {
@@ -1935,11 +1965,21 @@ export default function Admin() {
       </main>
 
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-2xl p-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto flex gap-3">
+          <Button 
+            onClick={handleCaptureHome}
+            disabled={isCapturing}
+            variant="outline"
+            className="h-12 px-6 text-lg border-emerald-500 text-emerald-600 hover:bg-emerald-50"
+            data-testid="button-capture-home"
+          >
+            <Camera className="w-5 h-5 mr-2" />
+            {isCapturing ? '준비 중...' : '홈 이미지 저장'}
+          </Button>
           <Button 
             onClick={handleSave} 
             disabled={isSaving}
-            className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg h-12 text-lg"
+            className="flex-1 bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg h-12 text-lg"
             data-testid="button-save"
           >
             <Save className="w-5 h-5 mr-2" />
