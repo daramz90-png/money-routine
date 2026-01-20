@@ -1974,7 +1974,7 @@ export default function Admin() {
             data-testid="button-capture-home"
           >
             <Camera className="w-5 h-5 mr-2" />
-            {isCapturing ? '준비 중...' : '홈 PDF 저장'}
+            {isCapturing ? '준비 중...' : '홈 이미지 저장'}
           </Button>
           <Button 
             onClick={handleSave} 

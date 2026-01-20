@@ -12,6 +12,7 @@ import {
   Clock, ChartLine, Star, ExternalLink, MessageCircle,
   CheckSquare, Building, ChevronLeft, ChevronRight, Camera, Download
 } from 'lucide-react';
+import domtoimage from 'dom-to-image-more';
 import type { MarketData, FearGreedData, DashboardContent, ManualMarketData } from '@shared/schema';
 import { initialMarketData, defaultContent, defaultManualMarketData } from '@shared/schema';
 import { SharedHeader } from '@/components/shared-header';
@@ -815,9 +816,42 @@ export default function Home() {
   const [isCapturing, setIsCapturing] = useState(false);
   const isCaptureMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('capture') === 'true';
 
-  const handleCapture = () => {
-    // 인쇄 다이얼로그를 열어 PDF로 저장하거나 인쇄할 수 있게 함
-    window.print();
+  const handleCapture = async () => {
+    if (!pageRef.current) return;
+    setIsCapturing(true);
+    
+    try {
+      window.scrollTo(0, 0);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const element = pageRef.current;
+      const scale = 2;
+      
+      const dataUrl = await domtoimage.toPng(element, {
+        quality: 1,
+        width: element.scrollWidth * scale,
+        height: element.scrollHeight * scale,
+        style: {
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+          width: `${element.scrollWidth}px`,
+          height: `${element.scrollHeight}px`,
+        },
+      });
+      
+      const link = document.createElement('a');
+      link.download = `쿠쿠의돈루틴_${currentDate}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      alert('고화질 이미지가 저장되었습니다!');
+    } catch (e) {
+      console.error('Capture failed:', e);
+      alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
+    }
+    setIsCapturing(false);
   };
 
   return (
@@ -863,11 +897,12 @@ export default function Home() {
         <div className="fixed bottom-6 right-6 z-50 print:hidden">
           <Button
             onClick={handleCapture}
+            disabled={isCapturing}
             className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg px-6 py-3 text-lg"
             data-testid="button-capture-page"
           >
             <Download className="w-5 h-5 mr-2" />
-            PDF로 저장
+            {isCapturing ? '캡처 중...' : '고화질 이미지 저장'}
           </Button>
         </div>
       )}
