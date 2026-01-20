@@ -819,21 +819,40 @@ export default function Home() {
   const handleCapture = async () => {
     if (!pageRef.current) return;
     setIsCapturing(true);
+    
     try {
-      const canvas = await html2canvas(pageRef.current, {
-        scale: 2,
+      // 스크롤을 맨 위로 이동
+      window.scrollTo(0, 0);
+      
+      // 약간의 딜레이 후 캡처 (렌더링 완료 대기)
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const element = pageRef.current;
+      const canvas = await html2canvas(element, {
+        scale: 1,
         useCORS: true,
+        allowTaint: true,
         backgroundColor: '#ffffff',
-        scrollY: -window.scrollY,
-        windowHeight: pageRef.current.scrollHeight,
-        height: pageRef.current.scrollHeight,
+        logging: true,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
       });
+      
+      // 이미지 다운로드
+      const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.download = `쿠쿠의돈루틴_${currentDate}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      
+      alert('이미지가 저장되었습니다!');
     } catch (e) {
       console.error('Capture failed:', e);
+      alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
     }
     setIsCapturing(false);
   };
