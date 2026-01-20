@@ -166,6 +166,14 @@ function ProfileSection() {
                   <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                   <span className="text-foreground">육아휴직 복직 후 과장 승진</span>
                 </div>
+                <div className="flex items-center gap-2 justify-center md:justify-start">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <span className="text-foreground">분양권 투자 3회</span>
+                </div>
+                <div className="flex items-center gap-2 justify-center md:justify-start">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <span className="text-foreground">스마트스토어/쿠팡 부업으로 소소한 수익중</span>
+                </div>
               </div>
               
               <p className="text-muted-foreground text-sm leading-relaxed">

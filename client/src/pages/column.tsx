@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   FileText, Clock, Calendar, Eye, ChevronRight, 
-  Lightbulb, Bell, Star, Loader2, User, TrendingUp, Home, Briefcase, Award
+  Lightbulb, Bell, Star, Loader2, User, TrendingUp, Home, Briefcase, Award,
+  Building2, ShoppingBag
 } from 'lucide-react';
 import { SharedHeader } from '@/components/shared-header';
 import { useQuery } from '@tanstack/react-query';
@@ -168,6 +169,14 @@ function AuthorIntro() {
             <div className="flex items-center gap-2 text-sm">
               <Star className="w-4 h-4 text-amber-500" />
               <span className="text-foreground">공모주 청약으로 월 <strong>10~50만원</strong></span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Building2 className="w-4 h-4 text-indigo-600" />
+              <span className="text-foreground">분양권 투자 <strong>3회</strong></span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <ShoppingBag className="w-4 h-4 text-orange-500" />
+              <span className="text-foreground">스마트스토어/쿠팡 부업으로 소소한 수익중</span>
             </div>
           </div>
 
