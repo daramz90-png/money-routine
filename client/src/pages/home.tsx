@@ -57,12 +57,18 @@ function HeroSection({
   const isToday = safeAvailableDates.length === 0 || selectedDate === safeAvailableDates[0];
 
   return (
-    <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950 text-white py-10 sm:py-16 px-4">
-      <div className="max-w-6xl mx-auto text-center">
-        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight" data-testid="text-hero-title">
+    <section className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white py-12 sm:py-20 px-4 overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+      <div className="max-w-6xl mx-auto text-center relative z-10">
+        <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
+          <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+          LIVE 실시간 금융 데이터
+        </div>
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight tracking-tight" data-testid="text-hero-title">
           {title || '하루 5분으로 시작하는 재테크'}
         </h1>
-        <p className="text-base sm:text-xl text-white/90 mb-5 sm:mb-6 max-w-2xl mx-auto leading-relaxed px-2">
+        <p className="text-base sm:text-lg text-slate-300 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-2">
           {subtitle || '공모주 청약부터 부동산 뉴스, 놓치기 쉬운 정책 정보까지!'}
         </p>
         
@@ -72,17 +78,17 @@ function HeroSection({
             size="icon"
             onClick={goToPrev}
             disabled={!canGoPrev}
-            className="text-white hover:bg-white/20 disabled:opacity-30"
+            className="text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-30 border border-slate-700"
             data-testid="button-prev-date"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5" />
           </Button>
           
-          <div className="inline-flex flex-wrap items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full" data-testid="text-date">
-            <Calendar className="w-5 h-5" />
-            <span className="font-medium">{selectedDate ? formatDateKorean(selectedDate) : date}</span>
+          <div className="inline-flex flex-wrap items-center gap-2 bg-slate-800/80 border border-slate-700 backdrop-blur-sm px-5 py-2.5 rounded-lg" data-testid="text-date">
+            <Calendar className="w-4 h-4 text-emerald-400" />
+            <span className="font-medium text-white">{selectedDate ? formatDateKorean(selectedDate) : date}</span>
             {!isToday && (
-              <Badge className="bg-amber-500 text-white border-0 ml-2">지난 호</Badge>
+              <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 ml-2">지난 호</Badge>
             )}
           </div>
           
@@ -91,10 +97,10 @@ function HeroSection({
             size="icon"
             onClick={goToNext}
             disabled={!canGoNext}
-            className="text-white hover:bg-white/20 disabled:opacity-30"
+            className="text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-30 border border-slate-700"
             data-testid="button-next-date"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 
@@ -104,10 +110,10 @@ function HeroSection({
               <button
                 key={d}
                 onClick={() => onDateChange(d)}
-                className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                className={`px-3 py-1.5 rounded-md text-sm transition-all ${
                   d === selectedDate 
-                    ? 'bg-white text-indigo-700 font-medium' 
-                    : 'bg-white/20 hover:bg-white/30'
+                    ? 'bg-emerald-500 text-white font-medium shadow-lg shadow-emerald-500/25' 
+                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700'
                 }`}
                 data-testid={`date-chip-${d}`}
               >
@@ -125,19 +131,22 @@ function SummarySection({ summaries }: { summaries: { id: string; text: string }
   return (
     <section className="py-8" id="summary">
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+        <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center text-emerald-400 border border-slate-700">
           <Check className="w-5 h-5" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground">오늘의 주요 요약</h2>
+        <div>
+          <h2 className="text-xl font-bold text-foreground">오늘의 주요 요약</h2>
+          <p className="text-sm text-muted-foreground">Today's Key Points</p>
+        </div>
       </div>
-      <Card className="p-6 shadow-lg border-0 bg-card">
-        <div className="space-y-4">
-          {summaries.map((item) => (
-            <div key={item.id} className="flex flex-wrap items-start gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-950/30" data-testid={`summary-${item.id}`}>
-              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Check className="w-4 h-4 text-white" />
+      <Card className="p-0 shadow-lg border border-slate-200 dark:border-slate-800 bg-card overflow-hidden">
+        <div className="divide-y divide-slate-100 dark:divide-slate-800">
+          {summaries.map((item, index) => (
+            <div key={item.id} className="flex flex-wrap items-start gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" data-testid={`summary-${item.id}`}>
+              <div className="w-7 h-7 bg-emerald-500 rounded flex items-center justify-center flex-shrink-0 mt-0.5 text-white font-bold text-sm">
+                {index + 1}
               </div>
-              <span className="text-foreground font-medium flex-1 min-w-0">{item.text}</span>
+              <span className="text-foreground flex-1 min-w-0 leading-relaxed">{item.text}</span>
             </div>
           ))}
         </div>
@@ -148,60 +157,64 @@ function SummarySection({ summaries }: { summaries: { id: string; text: string }
 
 function IPOCard({ ipo }: { ipo: any }) {
   return (
-    <Card className={`p-5 shadow-md transition-all ${ipo.isHighlight ? 'ring-2 ring-red-500 bg-red-50/50 dark:bg-red-950/20' : 'bg-card'}`} data-testid={`ipo-${ipo.id}`}>
+    <div className={`p-4 rounded-lg border transition-all ${ipo.isHighlight ? 'border-red-300 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50'}`} data-testid={`ipo-${ipo.id}`}>
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
-        <h4 className="text-lg font-bold text-foreground">{ipo.name}</h4>
-        <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-          접수 {ipo.score}점
-        </Badge>
-      </div>
-      {ipo.isHighlight && (
-        <Badge className="mb-3 bg-red-500 text-white">
-          <Star className="w-3 h-3 mr-1" />
-          청약하세요
-        </Badge>
-      )}
-      <div className="space-y-2 text-sm">
-        <div className="flex flex-wrap justify-between gap-2">
-          <span className="text-muted-foreground">청약기간</span>
-          <span className="font-medium text-foreground">{ipo.period}</span>
-        </div>
-        <div className="flex flex-wrap justify-between gap-2">
-          <span className="text-muted-foreground">공모가</span>
-          <span className="font-medium text-foreground">{ipo.price} ({ipo.minAmount})</span>
-        </div>
-        <div className="flex flex-wrap justify-between gap-2">
-          <span className="text-muted-foreground">증권사</span>
-          <span className="font-medium text-foreground">{ipo.broker}</span>
+        <h4 className="text-base font-bold text-foreground">{ipo.name}</h4>
+        <div className="flex items-center gap-2">
+          {ipo.isHighlight && (
+            <Badge className="bg-red-500 text-white text-xs">
+              <Star className="w-3 h-3 mr-1" />
+              청약
+            </Badge>
+          )}
+          <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{ipo.score}점</span>
         </div>
       </div>
-      <p className="mt-3 text-sm text-muted-foreground">{ipo.description}</p>
-    </Card>
+      <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+        <div>
+          <span className="text-muted-foreground text-xs">청약기간</span>
+          <p className="font-medium text-foreground">{ipo.period}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground text-xs">공모가</span>
+          <p className="font-medium text-foreground">{ipo.price}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground text-xs">최소금액</span>
+          <p className="font-medium text-foreground">{ipo.minAmount}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground text-xs">증권사</span>
+          <p className="font-medium text-foreground">{ipo.broker}</p>
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground border-t border-slate-200 dark:border-slate-700 pt-2">{ipo.description}</p>
+    </div>
   );
 }
 
 function RealEstateCard({ item }: { item: any }) {
   return (
-    <Card className="p-4 shadow-md bg-card" data-testid={`realestate-${item.id}`}>
+    <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50" data-testid={`realestate-${item.id}`}>
       <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
-        <h4 className="font-bold text-foreground">{item.name}</h4>
-        <Badge variant="outline" className="text-xs">{item.priority}</Badge>
+        <h4 className="font-bold text-foreground text-sm">{item.name}</h4>
+        <Badge variant="outline" className="text-xs border-emerald-300 text-emerald-600 dark:border-emerald-700 dark:text-emerald-400">{item.priority}</Badge>
       </div>
-      <div className="space-y-1 text-sm">
-        <div className="flex flex-wrap justify-between gap-2">
+      <div className="grid grid-cols-3 gap-2 text-xs">
+        <div>
           <span className="text-muted-foreground">위치</span>
-          <span className="text-foreground">{item.location}</span>
+          <p className="text-foreground font-medium">{item.location}</p>
         </div>
-        <div className="flex flex-wrap justify-between gap-2">
+        <div>
           <span className="text-muted-foreground">세대수</span>
-          <span className="text-foreground">{item.units}세대</span>
+          <p className="text-foreground font-medium">{item.units}세대</p>
         </div>
-        <div className="flex flex-wrap justify-between gap-2">
+        <div>
           <span className="text-muted-foreground">기간</span>
-          <span className="text-foreground">{item.period}</span>
+          <p className="text-foreground font-medium">{item.period}</p>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -212,45 +225,53 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
   return (
     <section className="py-8" id="schedule">
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+        <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center text-emerald-400 border border-slate-700">
           <Calendar className="w-5 h-5" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground">오늘의 재테크 일정</h2>
+        <div>
+          <h2 className="text-xl font-bold text-foreground">오늘의 재테크 일정</h2>
+          <p className="text-sm text-muted-foreground">Today's Investment Schedule</p>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6 shadow-lg border-0 bg-card">
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-bold text-foreground">공모주 청약</h3>
+        <Card className="p-5 shadow-lg border border-slate-200 dark:border-slate-800 bg-card">
+          <div className="flex flex-wrap items-center gap-2 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 className="text-base font-bold text-foreground">공모주 청약</h3>
+            <span className="ml-auto text-xs text-muted-foreground">IPO</span>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {ipos.length > 0 ? (
               ipos.map((ipo) => <IPOCard key={ipo.id} ipo={ipo} />)
             ) : (
-              <p className="text-muted-foreground text-center py-4">오늘 공모주 청약 일정이 없습니다</p>
+              <p className="text-muted-foreground text-center py-6 text-sm">오늘 공모주 청약 일정이 없습니다</p>
             )}
           </div>
           
           {ipoOpinion && (
-            <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl border border-blue-200 dark:border-blue-800" data-testid="ipo-opinion-section">
+            <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700" data-testid="ipo-opinion-section">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MessageCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MessageCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-blue-700 dark:text-blue-300 mb-1">공모주 할까말까?</h4>
-                  <p className="text-sm text-foreground whitespace-pre-wrap">{ipoOpinion}</p>
+                  <h4 className="text-sm font-bold text-foreground mb-1">쿠쿠의 의견</h4>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{ipoOpinion}</p>
                 </div>
               </div>
             </div>
           )}
         </Card>
         
-        <Card className="p-6 shadow-lg border-0 bg-card">
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            <Building className="w-5 h-5 text-green-600" />
-            <h3 className="text-lg font-bold text-foreground">부동산 청약</h3>
+        <Card className="p-5 shadow-lg border border-slate-200 dark:border-slate-800 bg-card">
+          <div className="flex flex-wrap items-center gap-2 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+              <Building className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <h3 className="text-base font-bold text-foreground">부동산 청약</h3>
             <a 
               href="https://www.applyhome.co.kr/co/coa/selectMainView.do" 
               target="_blank" 
@@ -258,17 +279,17 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
               className="ml-auto"
               data-testid="link-applyhome"
             >
-              <Badge className="bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 border-0 cursor-pointer">
+              <Badge className="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 cursor-pointer text-xs">
                 <ExternalLink className="w-3 h-3 mr-1" />
-                청약하러 가기 (청약홈)
+                청약홈
               </Badge>
             </a>
           </div>
           
           {apartments.length > 0 && (
             <div className="mb-4">
-              <h4 className="text-sm font-semibold text-muted-foreground mb-3">아파트</h4>
-              <div className="space-y-3">
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">아파트</h4>
+              <div className="space-y-2">
                 {apartments.map((item) => <RealEstateCard key={item.id} item={item} />)}
               </div>
             </div>
@@ -276,15 +297,15 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
           
           {urban.length > 0 && (
             <div>
-              <h4 className="text-sm font-semibold text-muted-foreground mb-3">도시형 생활주택</h4>
-              <div className="space-y-3">
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">도시형 생활주택</h4>
+              <div className="space-y-2">
                 {urban.map((item) => <RealEstateCard key={item.id} item={item} />)}
               </div>
             </div>
           )}
           
           {apartments.length === 0 && urban.length === 0 && (
-            <p className="text-muted-foreground text-center py-4">오늘 부동산 청약 일정이 없습니다</p>
+            <p className="text-muted-foreground text-center py-6 text-sm">오늘 부동산 청약 일정이 없습니다</p>
           )}
         </Card>
       </div>
@@ -296,24 +317,27 @@ function NewsSection({ news }: { news: any[] }) {
   return (
     <section className="py-8" id="news">
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+        <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center text-emerald-400 border border-slate-700">
           <Newspaper className="w-5 h-5" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground">오늘의 뉴스픽</h2>
+        <div>
+          <h2 className="text-xl font-bold text-foreground">오늘의 뉴스픽</h2>
+          <p className="text-sm text-muted-foreground">Today's News Pick</p>
+        </div>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         {news.map((item) => (
-          <Card key={item.id} className="p-5 shadow-md border-0 bg-card hover-elevate transition-all" data-testid={`news-${item.id}`}>
+          <Card key={item.id} className="p-4 shadow-md border border-slate-200 dark:border-slate-800 bg-card hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" data-testid={`news-${item.id}`}>
             <div className="flex flex-wrap gap-4">
-              <div className="w-1 bg-gradient-to-b from-indigo-600 to-blue-600 rounded flex-shrink-0"></div>
+              <div className="w-1 bg-emerald-500 rounded flex-shrink-0"></div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-bold text-foreground mb-2">{item.title}</h3>
-                <p className="text-muted-foreground mb-3">{item.summary}</p>
+                <h3 className="text-base font-bold text-foreground mb-1">{item.title}</h3>
+                <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{item.summary}</p>
                 {item.url && (
-                  <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex flex-wrap items-center gap-1 text-blue-600 hover:text-blue-700 font-medium text-sm">
-                    기사 전문 보기
-                    <ExternalLink className="w-4 h-4" />
+                  <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex flex-wrap items-center gap-1 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium text-xs">
+                    기사 보기
+                    <ExternalLink className="w-3 h-3" />
                   </a>
                 )}
               </div>
@@ -328,28 +352,28 @@ function NewsSection({ news }: { news: any[] }) {
 function TodoSection({ todos }: { todos: any[] }) {
   return (
     <section className="py-8" id="todo">
-      <Card className="p-6 shadow-xl border-4 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30">
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+      <Card className="p-5 shadow-lg border-2 border-amber-400 dark:border-amber-600 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center text-white">
             <ListTodo className="w-5 h-5" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground">오늘 해야하는 것!!!</h2>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">오늘 해야하는 것</h2>
+            <p className="text-sm text-amber-600 dark:text-amber-400">Action Required</p>
+          </div>
         </div>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
           {todos.map((todo) => (
-            <Card key={todo.id} className="p-4 bg-white dark:bg-card shadow-md" data-testid={`todo-${todo.id}`}>
+            <div key={todo.id} className="p-3 bg-white dark:bg-slate-800/80 rounded-lg border border-amber-200 dark:border-amber-800/50" data-testid={`todo-${todo.id}`}>
               <div className="flex flex-wrap items-start gap-3">
-                <CheckSquare className="w-6 h-6 text-orange-500 flex-shrink-0 mt-0.5" />
+                <CheckSquare className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-foreground mb-1">{todo.title}</h4>
-                  <p className="text-sm text-muted-foreground flex flex-wrap items-center gap-1">
-                    <span className="text-orange-600">→</span>
-                    <span>{todo.description}</span>
-                  </p>
+                  <h4 className="font-bold text-foreground text-sm mb-0.5">{todo.title}</h4>
+                  <p className="text-xs text-muted-foreground">{todo.description}</p>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       </Card>
@@ -378,19 +402,19 @@ function MarketCard({
   
   const cardContent = (
     <>
-      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-3">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
         {Icon && <Icon className="w-4 h-4" />}
-        <span>{name}</span>
-        {url && <ExternalLink className="w-3 h-3 ml-auto opacity-50" />}
+        <span className="font-medium">{name}</span>
+        {url && <ExternalLink className="w-3 h-3 ml-auto opacity-40" />}
       </div>
       {loading ? (
-        <Skeleton className="h-8 w-28 mb-2" />
+        <Skeleton className="h-7 w-24 mb-1" />
       ) : (
-        <div className="text-2xl font-bold text-foreground mb-1">{value}</div>
+        <div className="text-xl font-bold text-foreground tabular-nums mb-0.5">{value}</div>
       )}
-      {unit && <div className="text-xs text-muted-foreground mb-3">{unit}</div>}
+      {unit && <div className="text-xs text-muted-foreground mb-2">{unit}</div>}
       {!loading && change !== 0 && (
-        <div className={`inline-flex flex-wrap items-center gap-1 text-sm font-semibold px-3 py-1 rounded-full ${
+        <div className={`inline-flex flex-wrap items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded ${
           isUp ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
         }`}>
           {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -403,7 +427,7 @@ function MarketCard({
   if (url) {
     return (
       <a href={url} target="_blank" rel="noopener noreferrer" className="block">
-        <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all cursor-pointer" data-testid={`card-market-${name.toLowerCase().replace(/\s/g, '-')}`}>
+        <Card className="p-4 shadow-md border border-slate-200 dark:border-slate-800 bg-card hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" data-testid={`card-market-${name.toLowerCase().replace(/\s/g, '-')}`}>
           {cardContent}
         </Card>
       </a>
@@ -411,7 +435,7 @@ function MarketCard({
   }
   
   return (
-    <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all" data-testid={`card-market-${name.toLowerCase().replace(/\s/g, '-')}`}>
+    <Card className="p-4 shadow-md border border-slate-200 dark:border-slate-800 bg-card" data-testid={`card-market-${name.toLowerCase().replace(/\s/g, '-')}`}>
       {cardContent}
     </Card>
   );
@@ -420,31 +444,31 @@ function MarketCard({
 function FearGreedCard({ data, url }: { data: FearGreedData; url?: string }) {
   const getFearGreedStyle = (value: string) => {
     const num = parseInt(value);
-    if (num < 25) return { color: 'text-red-600', bg: 'bg-red-100 dark:bg-red-900/30' };
-    if (num < 45) return { color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30' };
-    if (num < 55) return { color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/30' };
-    if (num < 75) return { color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30' };
-    return { color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' };
+    if (num < 25) return { color: 'text-red-600 dark:text-red-400', bg: 'bg-red-100 dark:bg-red-900/30' };
+    if (num < 45) return { color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-900/30' };
+    if (num < 55) return { color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-100 dark:bg-yellow-900/30' };
+    if (num < 75) return { color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/30' };
+    return { color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-900/30' };
   };
 
   const style = getFearGreedStyle(data.value);
 
   const cardContent = (
     <>
-      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-3">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
         <Gauge className="w-4 h-4" />
-        <span>CNN 공포지수</span>
-        {url && <ExternalLink className="w-3 h-3 ml-auto opacity-50" />}
+        <span className="font-medium">CNN 공포지수</span>
+        {url && <ExternalLink className="w-3 h-3 ml-auto opacity-40" />}
       </div>
       {data.loading ? (
-        <Skeleton className="h-8 w-16 mb-2" />
+        <Skeleton className="h-7 w-12 mb-1" />
       ) : (
-        <div className={`text-3xl font-bold mb-2 ${style.color}`}>{data.value}</div>
+        <div className={`text-2xl font-bold mb-0.5 tabular-nums ${style.color}`}>{data.value}</div>
       )}
       {data.loading ? (
-        <Skeleton className="h-6 w-20" />
+        <Skeleton className="h-5 w-16" />
       ) : (
-        <div className={`inline-block text-sm font-semibold px-3 py-1 rounded-full ${style.bg} ${style.color}`}>
+        <div className={`inline-block text-xs font-semibold px-2 py-0.5 rounded ${style.bg} ${style.color}`}>
           {data.status}
         </div>
       )}
@@ -454,7 +478,7 @@ function FearGreedCard({ data, url }: { data: FearGreedData; url?: string }) {
   if (url) {
     return (
       <a href={url} target="_blank" rel="noopener noreferrer" className="block">
-        <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all cursor-pointer" data-testid="card-fear-greed">
+        <Card className="p-4 shadow-md border border-slate-200 dark:border-slate-800 bg-card hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" data-testid="card-fear-greed">
           {cardContent}
         </Card>
       </a>
@@ -462,7 +486,7 @@ function FearGreedCard({ data, url }: { data: FearGreedData; url?: string }) {
   }
 
   return (
-    <Card className="p-5 shadow-md border-0 bg-card hover-elevate transition-all" data-testid="card-fear-greed">
+    <Card className="p-4 shadow-md border border-slate-200 dark:border-slate-800 bg-card" data-testid="card-fear-greed">
       {cardContent}
     </Card>
   );
@@ -480,16 +504,20 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
     <section className="py-8" id="market">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+          <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center text-emerald-400 border border-slate-700">
             <ChartLine className="w-5 h-5" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground">{title || '주요 항목 시세 CHECK'}</h2>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">{title || '주요 항목 시세 CHECK'}</h2>
+            <p className="text-sm text-muted-foreground">Real-time Market Data</p>
+          </div>
         </div>
         <Button 
           variant="outline" 
           size="sm"
           onClick={onRefresh}
           disabled={isFetching}
+          className="border-slate-300 dark:border-slate-700"
           data-testid="button-refresh"
         >
           <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
@@ -577,31 +605,36 @@ function ThoughtsSection({ thoughts }: { thoughts: { id: string; title: string; 
   return (
     <section className="py-8" id="thoughts">
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+        <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center text-emerald-400 border border-slate-700">
           <DollarSign className="w-5 h-5" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground">오늘 쿠쿠의 생각</h2>
+        <div>
+          <h2 className="text-xl font-bold text-foreground">오늘 쿠쿠의 생각</h2>
+          <p className="text-sm text-muted-foreground">Today's Insight</p>
+        </div>
       </div>
       
-      <Card className="p-6 shadow-lg border-0 bg-card">
-        <div className="space-y-6">
+      <Card className="p-5 shadow-lg border border-slate-200 dark:border-slate-800 bg-card">
+        <div className="space-y-5">
           {thoughts.map((thought) => (
             <div key={thought.id} data-testid={`thought-${thought.id}`}>
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <Check className="w-5 h-5 text-teal-600" />
-                <h3 className="text-lg font-bold text-foreground">{thought.title}</h3>
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <div className="w-6 h-6 rounded bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                  <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h3 className="text-base font-bold text-foreground">{thought.title}</h3>
               </div>
-              <div className="pl-7 space-y-3">
+              <div className="pl-8 space-y-2">
                 {thought.content.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="text-muted-foreground leading-relaxed">{paragraph}</p>
+                  <p key={idx} className="text-sm text-muted-foreground leading-relaxed">{paragraph}</p>
                 ))}
               </div>
             </div>
           ))}
         </div>
         
-        <div className="mt-8 pt-6 border-t">
-          <p className="text-center text-lg font-bold text-foreground">
+        <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <p className="text-center text-base font-medium text-foreground">
             오늘도 흔들림 없이, 루틴대로 갑시다
           </p>
         </div>
@@ -613,13 +646,14 @@ function ThoughtsSection({ thoughts }: { thoughts: { id: string; title: string; 
 function QuoteSection({ quote }: { quote: { text: string; author: string } }) {
   return (
     <section className="py-8">
-      <Card className="p-8 bg-gradient-to-br from-slate-800 via-blue-900 to-indigo-900 text-white shadow-xl border-0">
-        <div className="text-center">
-          <Quote className="w-10 h-10 mx-auto mb-4 opacity-80" />
-          <p className="text-xl sm:text-2xl font-medium mb-4 italic leading-relaxed">
+      <Card className="p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl border border-slate-700 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-emerald-900/10 via-transparent to-transparent"></div>
+        <div className="text-center relative z-10">
+          <Quote className="w-8 h-8 mx-auto mb-3 text-emerald-400/60" />
+          <p className="text-lg sm:text-xl font-medium mb-3 italic leading-relaxed text-slate-100">
             "{quote.text}"
           </p>
-          <p className="text-white/90">– {quote.author}</p>
+          <p className="text-emerald-400 text-sm">– {quote.author}</p>
         </div>
       </Card>
     </section>
@@ -629,14 +663,14 @@ function QuoteSection({ quote }: { quote: { text: string; author: string } }) {
 function ClosingSection({ closingMessage, closingSubMessage, subscribeButtonText }: { closingMessage: string; closingSubMessage: string; subscribeButtonText: string }) {
   return (
     <section className="py-8">
-      <Card className="p-8 text-center shadow-lg border-0 bg-card">
-        <p className="text-xl font-medium text-foreground mb-2">
+      <Card className="p-6 text-center shadow-lg border border-slate-200 dark:border-slate-800 bg-card">
+        <p className="text-lg font-medium text-foreground mb-1">
           {closingMessage || '오늘 하루도 차분하게, 그리고 흔들리지 않게 갑시다'}
         </p>
-        <p className="text-muted-foreground mb-6">{closingSubMessage || '오늘도 화이팅입니다 ^^'}</p>
+        <p className="text-sm text-muted-foreground mb-5">{closingSubMessage || '오늘도 화이팅입니다 ^^'}</p>
         <Link href="/subscribe">
           <Button 
-            className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
             data-testid="button-subscribe"
           >
             <Bell className="w-4 h-4 mr-2" />
@@ -653,21 +687,21 @@ function Footer({ hashtags, footerText }: { hashtags: string[]; footerText: stri
   const displayHashtags = hashtags && hashtags.length > 0 ? hashtags : defaultHashtags;
   
   return (
-    <footer className="bg-gray-900 text-white py-12 mt-8">
+    <footer className="bg-slate-950 text-white py-10 mt-8 border-t border-slate-800">
       <div className="max-w-6xl mx-auto px-4 text-center">
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-xl flex items-center justify-center">
-            <Coins className="w-6 h-6" />
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+          <div className="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center">
+            <Coins className="w-5 h-5" />
           </div>
-          <span className="text-xl font-bold">쿠쿠의 돈루틴</span>
+          <span className="text-lg font-bold">쿠쿠의 돈루틴</span>
         </div>
-        <p className="text-gray-400 mb-6">{footerText || '하루 5분으로 시작하는 재테크 루틴'}</p>
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <p className="text-slate-400 text-sm mb-4">{footerText || '하루 5분으로 시작하는 재테크 루틴'}</p>
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
           {displayHashtags.map((tag) => (
-            <span key={tag} className="text-sm text-blue-400">#{tag}</span>
+            <span key={tag} className="text-xs text-emerald-400">#{tag}</span>
           ))}
         </div>
-        <p className="text-gray-500 text-sm">© 2024 쿠쿠의 돈루틴. All rights reserved.</p>
+        <p className="text-slate-600 text-xs">© 2026 쿠쿠의 돈루틴. All rights reserved.</p>
       </div>
     </footer>
   );
