@@ -38,7 +38,7 @@ function CalculatorCard({ icon, title, description, color, onClick, testId }: Ca
         <div className="flex-1">
           <h3 className="font-bold text-lg text-foreground mb-2">{title}</h3>
           <p className="text-sm text-muted-foreground mb-4">{description}</p>
-          <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-0" data-testid={`${testId}-button`}>
+          <Button className="bg-gradient-to-r from-blue-500 to-sky-500 text-white border-0" data-testid={`${testId}-button`}>
             <Calculator className="w-4 h-4 mr-2" />
             계산하기
           </Button>
@@ -219,7 +219,7 @@ function CompoundInterestModal({ open, onClose }: { open: boolean; onClose: () =
           <div className="flex gap-2">
             <Button 
               onClick={calculate} 
-              className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-0"
+              className="flex-1 bg-gradient-to-r from-blue-500 to-sky-500 text-white border-0"
               data-testid="button-calculate"
             >
               <Calculator className="w-4 h-4 mr-2" />
@@ -241,7 +241,7 @@ function CompoundInterestModal({ open, onClose }: { open: boolean; onClose: () =
                   <p className="text-xs text-muted-foreground mb-1">총 원금</p>
                   <p className="text-lg font-bold text-foreground">{formatCurrency(result.totalDeposit)}</p>
                 </div>
-                <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-xl p-4 text-center">
+                <div className="bg-gradient-to-br from-blue-500/10 to-sky-500/10 rounded-xl p-4 text-center">
                   <p className="text-xs text-muted-foreground mb-1">총 수익</p>
                   <p className="text-lg font-bold text-blue-600">+{formatCurrency(result.totalInterest)}</p>
                 </div>
@@ -300,7 +300,7 @@ export default function Tools() {
       icon: <Banknote className="w-7 h-7" />,
       title: '대출 이자 계산기',
       description: '원리금균등 vs 원금균등 비교',
-      color: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+      color: 'bg-gradient-to-br from-blue-500 to-sky-500',
     },
     {
       id: 'capital-gains',
@@ -314,7 +314,7 @@ export default function Tools() {
       icon: <ArrowLeftRight className="w-7 h-7" />,
       title: '전월세 비교 계산기',
       description: '전세 vs 월세 뭐가 유리할까?',
-      color: 'bg-gradient-to-br from-purple-500 to-pink-500',
+      color: 'bg-gradient-to-br from-sky-500 to-cyan-500',
     },
     {
       id: 'compound',
@@ -326,10 +326,10 @@ export default function Tools() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <SharedHeader />
       
-      <section className="bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white py-12 sm:py-16 px-4">
+      <section className="bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-400 text-white py-12 sm:py-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-6">
             <Wrench className="w-8 h-8" />

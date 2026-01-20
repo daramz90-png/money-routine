@@ -57,7 +57,7 @@ function HeroSection({
   const isToday = safeAvailableDates.length === 0 || selectedDate === safeAvailableDates[0];
 
   return (
-    <section className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white py-10 sm:py-16 px-4">
+    <section className="bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-400 text-white py-10 sm:py-16 px-4">
       <div className="max-w-6xl mx-auto text-center">
         <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight" data-testid="text-hero-title">
           {title || '하루 5분으로 시작하는 재테크'}
@@ -106,7 +106,7 @@ function HeroSection({
                 onClick={() => onDateChange(d)}
                 className={`px-3 py-1 rounded-full text-sm transition-colors ${
                   d === selectedDate 
-                    ? 'bg-white text-purple-700 font-medium' 
+                    ? 'bg-white text-blue-600 font-medium' 
                     : 'bg-white/20 hover:bg-white/30'
                 }`}
                 data-testid={`date-chip-${d}`}
@@ -125,7 +125,7 @@ function SummarySection({ summaries }: { summaries: { id: string; text: string }
   return (
     <section className="py-8" id="summary">
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl flex items-center justify-center text-white shadow-lg">
           <Check className="w-5 h-5" />
         </div>
         <h2 className="text-2xl font-bold text-foreground">오늘의 주요 요약</h2>
@@ -280,7 +280,7 @@ function NewsSection({ news }: { news: any[] }) {
         {news.map((item) => (
           <Card key={item.id} className="p-5 shadow-md border-0 bg-card hover-elevate transition-all" data-testid={`news-${item.id}`}>
             <div className="flex flex-wrap gap-4">
-              <div className="w-1 bg-gradient-to-b from-blue-500 to-indigo-600 rounded flex-shrink-0"></div>
+              <div className="w-1 bg-gradient-to-b from-blue-500 to-sky-500 rounded flex-shrink-0"></div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-bold text-foreground mb-2">{item.title}</h3>
                 <p className="text-muted-foreground mb-3">{item.summary}</p>
@@ -454,7 +454,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
     <section className="py-8" id="market">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl flex items-center justify-center text-white shadow-lg">
             <ChartLine className="w-5 h-5" />
           </div>
           <h2 className="text-2xl font-bold text-foreground">{title || '주요 항목 시세 CHECK'}</h2>
@@ -587,7 +587,7 @@ function ThoughtsSection({ thoughts }: { thoughts: { id: string; title: string; 
 function QuoteSection({ quote }: { quote: { text: string; author: string } }) {
   return (
     <section className="py-8">
-      <Card className="p-8 bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 text-white shadow-xl border-0">
+      <Card className="p-8 bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-400 text-white shadow-xl border-0">
         <div className="text-center">
           <Quote className="w-10 h-10 mx-auto mb-4 opacity-80" />
           <p className="text-xl sm:text-2xl font-medium mb-4 italic leading-relaxed">
@@ -610,7 +610,7 @@ function ClosingSection({ closingMessage, closingSubMessage, subscribeButtonText
         <p className="text-muted-foreground mb-6">{closingSubMessage || '오늘도 화이팅입니다 ^^'}</p>
         <Link href="/subscribe">
           <Button 
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+            className="bg-gradient-to-r from-blue-500 to-sky-500 text-white shadow-lg"
             data-testid="button-subscribe"
           >
             <Bell className="w-4 h-4 mr-2" />
@@ -630,7 +630,7 @@ function Footer({ hashtags, footerText }: { hashtags: string[]; footerText: stri
     <footer className="bg-gray-900 text-white py-12 mt-8">
       <div className="max-w-6xl mx-auto px-4 text-center">
         <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl flex items-center justify-center">
             <Coins className="w-6 h-6" />
           </div>
           <span className="text-xl font-bold">쿠쿠의 돈루틴</span>

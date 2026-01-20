@@ -78,10 +78,10 @@ function PasswordGate({ onAuthenticated }: { onAuthenticated: () => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 bg-card/95 backdrop-blur-sm shadow-2xl">
         <div className="flex flex-col items-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-lg mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-sky-500 rounded-2xl flex items-center justify-center text-white shadow-lg mb-4">
             <Lock className="w-8 h-8" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">관리자 인증</h1>
@@ -695,7 +695,7 @@ export default function Admin() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8 pb-24">
-        <Card className="p-6 mb-6 shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30">
+        <Card className="p-6 mb-6 shadow-lg bg-gradient-to-r from-blue-50 to-sky-50 dark:from-blue-950/30 dark:to-sky-950/30">
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <Calendar className="w-5 h-5 text-blue-600" />
             <h2 className="text-xl font-bold text-foreground">날짜 선택</h2>
@@ -731,7 +731,7 @@ export default function Admin() {
 
         <Card className="p-6 mb-6 shadow-lg">
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <Sparkles className="w-5 h-5 text-purple-600" />
+            <Sparkles className="w-5 h-5 text-blue-600" />
             <h2 className="text-xl font-bold text-foreground">히어로 섹션</h2>
           </div>
           <div className="space-y-3">
@@ -1200,7 +1200,7 @@ export default function Admin() {
 
         <Card className="p-6 mb-6 shadow-lg">
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <Quote className="w-5 h-5 text-purple-600" />
+            <Quote className="w-5 h-5 text-blue-600" />
             <h2 className="text-xl font-bold text-foreground">오늘의 한 줄</h2>
           </div>
           <div className="space-y-3">
@@ -1227,7 +1227,7 @@ export default function Admin() {
 
         <Card className="p-6 mb-6 shadow-lg">
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <Type className="w-5 h-5 text-indigo-600" />
+            <Type className="w-5 h-5 text-blue-600" />
             <h2 className="text-xl font-bold text-foreground">마무리 섹션</h2>
           </div>
           <div className="space-y-3">
@@ -1285,7 +1285,7 @@ export default function Admin() {
         <Card className="p-6 mb-6 shadow-lg">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-3">
-              <BookOpen className="w-5 h-5 text-purple-600" />
+              <BookOpen className="w-5 h-5 text-blue-600" />
               <h2 className="text-xl font-bold text-foreground">쿠쿠의 루틴 글 관리</h2>
               <span className="text-sm text-muted-foreground">({articles.length}개)</span>
             </div>
@@ -1299,7 +1299,7 @@ export default function Admin() {
           </div>
 
           {isArticleFormOpen && (
-            <Card className="p-4 mb-4 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800">
+            <Card className="p-4 mb-4 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
               <h3 className="font-semibold mb-3 text-foreground">
                 {editingArticle ? '글 수정' : '새 글 작성'}
               </h3>
@@ -1423,7 +1423,7 @@ export default function Admin() {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded">
+                      <span className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
                         {categoryOptions.find(c => c.value === article.category)?.label}
                       </span>
                       {article.featured && (
@@ -1916,7 +1916,7 @@ export default function Admin() {
           <Button 
             onClick={handleSave} 
             disabled={isSaving}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg h-12 text-lg"
+            className="w-full bg-gradient-to-r from-blue-500 to-sky-500 text-white shadow-lg h-12 text-lg"
             data-testid="button-save"
           >
             <Save className="w-5 h-5 mr-2" />

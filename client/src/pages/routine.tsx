@@ -67,10 +67,10 @@ const monthlyRecords = [
 
 const dailySchedule = [
   { time: '06:00', activity: '출근 준비', task: '10분 뉴스 체크', icon: Sun, color: 'from-yellow-400 to-orange-400' },
-  { time: '09:00', activity: '출근 (지하철)', task: '공모주 청약 확인', icon: Train, color: 'from-blue-400 to-indigo-400' },
+  { time: '09:00', activity: '출근 (지하철)', task: '공모주 청약 확인', icon: Train, color: 'from-blue-400 to-sky-400' },
   { time: '12:00', activity: '점심시간', task: '20분 투자 정보 수집', icon: Coffee, color: 'from-amber-400 to-orange-400' },
   { time: '19:00', activity: '퇴근 후', task: '육아 (투자 OFF)', icon: Baby, color: 'from-pink-400 to-rose-400' },
-  { time: '22:00', activity: '아이 재운 후', task: '30분 투자 분석', icon: Moon, color: 'from-indigo-400 to-purple-400' },
+  { time: '22:00', activity: '아이 재운 후', task: '30분 투자 분석', icon: Moon, color: 'from-sky-400 to-cyan-400' },
 ];
 
 function formatDate(dateStr: string) {
@@ -119,7 +119,7 @@ function EmailForm() {
       <Button 
         type="submit" 
         disabled={isLoading}
-        className="h-12 px-8 bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+        className="h-12 px-8 bg-gradient-to-r from-blue-500 to-sky-500 text-white"
         data-testid="button-subscribe"
       >
         <Mail className="w-4 h-4 mr-2" />
@@ -133,9 +133,9 @@ function ProfileSection() {
   return (
     <section className="py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <Card className="p-8 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-0 shadow-xl">
+        <Card className="p-8 bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-950/30 dark:to-sky-950/30 border-0 shadow-xl">
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-            <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+            <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-sky-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
               <User className="w-16 h-16 text-white" />
             </div>
             <div className="flex-1 text-center md:text-left">
@@ -146,7 +146,7 @@ function ProfileSection() {
               </p>
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 지방에서 서울 갈아타기 성공경험 보유<br />
-                <span className="text-purple-600 dark:text-purple-400 font-bold text-lg">현 순자산 9억</span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">현 순자산 9억</span>
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
@@ -198,7 +198,7 @@ function CategoryTabs({ activeCategory, onCategoryChange }: {
         >
           전체
           {activeCategory === null && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 to-indigo-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-sky-500" />
           )}
         </button>
         {categories.map((cat) => (
@@ -215,7 +215,7 @@ function CategoryTabs({ activeCategory, onCategoryChange }: {
             <cat.icon className="w-4 h-4" />
             {cat.name}
             {activeCategory === cat.id && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 to-indigo-500" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-sky-500" />
             )}
           </button>
         ))}
@@ -229,7 +229,7 @@ function TimelineSection() {
     <section className="py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center text-white">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl flex items-center justify-center text-white">
             <Calendar className="w-5 h-5" />
           </div>
           <h2 className="text-xl font-bold text-foreground">월별 투자 기록</h2>
@@ -240,7 +240,7 @@ function TimelineSection() {
             <Card key={index} className="p-6 bg-card/95 backdrop-blur-sm border-0 shadow-lg" data-testid={`timeline-${index}`}>
               <div className="flex flex-col md:flex-row md:items-start gap-4">
                 <div className="flex-shrink-0">
-                  <Badge className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white border-0 text-sm px-3 py-1">
+                  <Badge className="bg-gradient-to-r from-blue-500 to-sky-500 text-white border-0 text-sm px-3 py-1">
                     {record.month}
                   </Badge>
                 </div>
@@ -296,7 +296,7 @@ function DailyScheduleSection() {
                     <span className="text-muted-foreground">-</span>
                     <span className="text-foreground">{item.activity}</span>
                   </div>
-                  <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">{item.task}</p>
+                  <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">{item.task}</p>
                 </div>
               </div>
             ))}
@@ -320,7 +320,7 @@ function ArticleCard({ article }: { article: Article }) {
     <Link href={`/routine/${article.id}`}>
       <Card className="p-5 hover-elevate cursor-pointer bg-card/95 backdrop-blur-sm border-0 shadow-lg h-full" data-testid={`article-card-${article.id}`}>
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center text-white flex-shrink-0">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl flex items-center justify-center text-white flex-shrink-0">
             {category && <category.icon className="w-6 h-6" />}
           </div>
           <div className="flex-1 min-w-0">
@@ -362,7 +362,7 @@ function ArticlesSection({ activeCategory }: { activeCategory: string | null }) 
     <section className="py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl flex items-center justify-center text-white">
             <BookOpen className="w-5 h-5" />
           </div>
           <h2 className="text-xl font-bold text-foreground">글 목록</h2>
@@ -396,7 +396,7 @@ function ArticlesSection({ activeCategory }: { activeCategory: string | null }) 
 
 function SubscribeSection() {
   return (
-    <section className="py-12 px-4 bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 text-white">
+    <section className="py-12 px-4 bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-400 text-white">
       <div className="max-w-2xl mx-auto text-center">
         <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6">
           <Mail className="w-8 h-8" />
@@ -420,7 +420,7 @@ export default function Routine() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <SharedHeader />
       
       <section className="bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 text-white py-12 sm:py-16 px-4">

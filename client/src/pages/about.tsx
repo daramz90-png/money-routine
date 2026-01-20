@@ -4,7 +4,7 @@ import { SharedHeader } from '@/components/shared-header';
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <SharedHeader />
       <div className="container mx-auto px-4 py-12">
         <div className="flex items-center gap-4 mb-8">

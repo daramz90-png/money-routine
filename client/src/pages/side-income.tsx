@@ -216,7 +216,7 @@ export default function SideIncome() {
     : articles;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <SharedHeader />
       
       <section className="bg-gradient-to-br from-pink-500 via-rose-500 to-red-600 text-white py-12 px-4">

@@ -18,7 +18,7 @@ export function SharedHeader() {
   const [location] = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-xl">
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400 text-white shadow-xl">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center justify-between h-16 gap-4">
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
@@ -74,7 +74,7 @@ export function SharedHeader() {
       </div>
       
       <div 
-        className={`md:hidden fixed top-0 right-0 h-full w-64 z-50 bg-gradient-to-b from-indigo-600 to-purple-700 shadow-2xl transform transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed top-0 right-0 h-full w-64 z-50 bg-gradient-to-b from-blue-500 to-sky-500 shadow-2xl transform transition-transform duration-300 ease-in-out ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
