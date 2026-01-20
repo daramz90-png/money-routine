@@ -126,7 +126,7 @@ export default function Subscribe() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <SharedHeader />
       
-      <section className="bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-400 text-white py-16 sm:py-24 px-4">
+      <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950 text-white py-16 sm:py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
             <Star className="w-4 h-4 text-yellow-300" />
@@ -172,7 +172,7 @@ export default function Subscribe() {
                   type="submit" 
                   size="lg"
                   disabled={isSubmitting}
-                  className="w-full bg-white text-blue-600 hover:bg-white/90 font-bold text-lg py-6"
+                  className="w-full bg-white text-indigo-700 hover:bg-white/90 font-bold text-lg py-6"
                   data-testid="button-subscribe"
                 >
                   {isSubmitting ? (
@@ -212,7 +212,7 @@ export default function Subscribe() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {benefits.map((benefit, index) => (
               <Card key={index} className="p-6 bg-card/95 backdrop-blur-sm border-0 shadow-lg text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl flex items-center justify-center mx-auto mb-4 text-white">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 text-white">
                   <benefit.icon className="w-6 h-6" />
                 </div>
                 <h3 className="font-bold text-foreground mb-2">{benefit.title}</h3>
@@ -252,10 +252,10 @@ export default function Subscribe() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((testimonial) => (
               <Card key={testimonial.id} className="p-6 bg-card/95 backdrop-blur-sm border-0 shadow-lg">
-                <Quote className="w-8 h-8 text-blue-500/30 mb-4" />
+                <Quote className="w-8 h-8 text-indigo-500/30 mb-4" />
                 <p className="text-foreground mb-4">"{testimonial.text}"</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold">
+                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                     {testimonial.name.charAt(0)}
                   </div>
                   <div>
@@ -281,7 +281,7 @@ export default function Subscribe() {
           {!isSubscribed && (
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-blue-500 to-sky-500 text-white font-bold text-lg px-8 py-6"
+              className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold text-lg px-8 py-6"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               data-testid="button-subscribe-bottom"
             >

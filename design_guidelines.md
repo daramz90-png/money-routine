@@ -1,146 +1,183 @@
-# Design Guidelines: 쿠쿠의 돈루틴 Financial Dashboard
+# Design Guidelines: 쿠쿠의 돈루틴 Premium Financial Dashboard
 
 ## Design Approach
-**Selected Framework:** Modern Korean Finance Dashboard with Rich Visual Design
-**Visual References:** Modern fintech apps with gradient accents and card-based layouts
-**User Preference:** User explicitly requested modern gradients, shadows, and visual impact
+**Framework:** Sophisticated Korean Fintech Dashboard (Bloomberg Terminal meets Korean Premium Banking)
+**Visual References:** Samsung Securities, KB Premium Banking, Stripe Dashboard, Bloomberg Professional
+**Core Philosophy:** Trustworthy luxury through restraint - dark, sophisticated gradients with clean card hierarchies
 
-**Core Principles:**
-1. Modern gradient accents for headers and hero sections
-2. Card-based layouts with shadow effects for depth
-3. Korean color conventions for financial data (red=상승, blue=하락)
-4. Professional yet visually engaging design
-5. Clear visual hierarchy with gradient backgrounds
+**Design Principles:**
+1. Dark navy/slate gradients for premium atmosphere
+2. Deep shadows and layered cards for depth and trust
+3. Korean financial conventions strictly maintained
+4. Generous whitespace for sophistication
+5. Content-rich sections with clear hierarchy
 
 ---
 
 ## Typography System
 
-**Font Family:** 
-- Primary: 'Pretendard Variable', 'Noto Sans KR', system-ui, sans-serif
+**Font Stack:** 'Pretendard Variable', 'Noto Sans KR', system-ui, sans-serif
 
-**Type Scale:**
-- Page Title (h1): text-3xl to text-5xl, font-bold
-- Section Headers (h2): text-2xl, font-bold
-- Card Titles: text-lg, font-bold
-- Data Values: text-2xl to text-3xl, font-bold
-- Data Labels: text-sm, font-medium
-- Body text: text-sm to text-base
+**Hierarchy:**
+- Hero Title: text-4xl lg:text-6xl, font-bold
+- Section Headers: text-3xl, font-bold
+- Subsection Titles: text-xl, font-semibold
+- Card Headlines: text-lg, font-bold
+- Market Values: text-2xl to text-4xl, font-bold, tabular-nums
+- Body/Article Text: text-base, leading-relaxed
+- Captions/Labels: text-sm, font-medium
 
 ---
 
-## Color System
+## Color Palette
 
-**Gradient Backgrounds (Per User Request):**
-- Header: from-blue-600 via-indigo-600 to-purple-600
-- Hero: from-blue-600 via-indigo-600 to-purple-700
-- Quote Section: from-purple-600 via-indigo-600 to-blue-600
-- Todo Section Accent: yellow-400 border with yellow/orange gradient background
+**Sophisticated Gradients:**
+- Header/Hero: from-slate-900 via-blue-900 to-indigo-950
+- Section Accents: from-slate-800 to-slate-900
+- Newsletter CTA: from-indigo-900 via-blue-800 to-slate-900
 
 **Surface Colors:**
-- Background: soft gray (#F8F9FA in light mode)
-- Cards: white with shadow-lg/shadow-md
-- Dark mode: deep charcoal backgrounds
+- Background: slate-50 (light) / slate-950 (dark)
+- Primary Cards: white with shadow-xl
+- Secondary Cards: slate-100/slate-800
+- Dividers: slate-200/slate-700
 
-**Status Colors (Korean Financial Convention):**
-- 상승 (Up/Positive): Red (#EF4444) - bg-red-100, text-red-600
-- 하락 (Down/Negative): Blue (#3B82F6) - bg-blue-100, text-blue-600
-- Neutral: Gray
+**Financial Status (Korean Convention):**
+- 상승: Red (#DC2626) - bg-red-50, text-red-600, border-red-200
+- 하락: Blue (#2563EB) - bg-blue-50, text-blue-600, border-blue-200
 
 **Accent Colors:**
-- Primary: Blue-indigo gradient
-- Section icons: Gradient backgrounds (blue, green, orange, purple, yellow)
+- Primary Action: indigo-600
+- Links: blue-700
+- Success: emerald-600
 
 ---
 
 ## Layout System
 
-**Container:**
-- Max width: max-w-6xl (1152px)
-- Outer padding: px-4 (mobile), expanding on larger screens
-- Section spacing: py-8
+**Spacing Units:** Tailwind 4, 6, 8, 12, 16, 20, 24 (consistent rhythm)
 
-**Grid System:**
-- Mobile: grid-cols-1
-- Tablet: grid-cols-2
-- Desktop: grid-cols-4 for market cards
+**Container Widths:**
+- Main content: max-w-7xl
+- Article content: max-w-4xl
+- Newsletter form: max-w-2xl
+
+**Grid Patterns:**
+- Market Cards: grid-cols-1 md:grid-cols-2 lg:grid-cols-4, gap-6
+- Column Articles: grid-cols-1 md:grid-cols-2 lg:grid-cols-3, gap-8
+- Featured Content: 2-column asymmetric layout (8/4 split)
 
 ---
 
-## Component Styles
+## Core Components
 
 ### Header
-- Gradient background (blue-indigo-purple)
-- White text
-- Shadow-xl for depth
-- Sticky positioning
-- Mobile hamburger menu
+- Dark gradient background (slate-blue-indigo)
+- White text, height 16
+- Logo + Navigation + CTA button
+- Sticky with shadow-2xl on scroll
+- Mobile: hamburger menu
 
 ### Hero Section
+- **Large hero image**: Professional financial imagery (cityscape, trading floor, modern office)
+- Dark overlay gradient (from-slate-900/80 to-transparent)
+- Hero content: centered, white text
+- CTAs with backdrop-blur-sm bg-white/10 (no hover states on blur buttons)
+- Height: min-h-[600px] lg:min-h-[700px]
+
+### Real-Time Market Cards
+- White cards with shadow-lg
+- Icon (gradient background circle) + Market name
+- Large tabular value (text-3xl)
+- Status badge (red/blue pill shape)
+- Grid layout, equal height
+
+### Investment Column Cards
+- Image thumbnail (16:9 ratio, rounded-t-xl)
+- White card body with shadow-md
+- Category badge, headline, excerpt, author/date
+- hover:shadow-xl transition
+
+### Newsletter Section
 - Full-width gradient background
-- Large centered text
-- Date badge with backdrop blur
+- Centered content (max-w-2xl)
+- Compelling headline + benefits list
+- Email input + submit button (inline form)
+- Trust indicators (subscriber count, privacy note)
 
-### Cards
-- White/card background
-- shadow-md to shadow-lg
-- Rounded corners (rounded-xl)
-- hover-elevate for interactive cards
-- No hover effects on pure data display
-
-### Market Data Cards
-- Clean card with shadow-md
-- Icon + label at top
-- Large bold value
-- Change indicator badge (red for up, blue for down)
-
-### Section Headers
-- Gradient icon container (10x10)
-- Bold text-2xl heading
-- Flex layout with gap
-
-### Todo Section
-- Yellow-400 border (4px)
-- Yellow-orange gradient background
-- White inner cards
-
-### Quote Section
-- Purple-indigo-blue gradient
-- White text
-- Quote icon
-- Centered layout
+### Footer
+- Dark slate background (bg-slate-900)
+- 4-column grid: Company, Products, Resources, Legal
+- Social links, contact info
+- Newsletter signup (secondary placement)
+- Copyright with subtle divider
 
 ---
 
-## Icons
-- Use lucide-react icons exclusively
-- No emojis (per global design rules)
-- Icon size: w-4 h-4 to w-6 h-6 depending on context
+## Icons & Assets
+- **Icons:** Lucide-react exclusively (TrendingUp, TrendingDown, Building2, Newspaper, Mail, ChevronRight)
+- **Icon Sizes:** w-5 h-5 (standard), w-6 h-6 (section headers)
+- **No emojis**
+
+### Images
+**Hero Image:** 
+- Professional financial cityscape or modern trading floor
+- High quality, dark tones, professional photography
+- Placement: Full-width background with overlay
+
+**Column Thumbnails:**
+- Real estate imagery, investment charts, financial concepts
+- 16:9 aspect ratio
+- Placement: Top of article cards
 
 ---
 
-## Responsive Behavior
-- Mobile-first approach
-- Flex-wrap on all horizontal flex containers
-- Grid columns adjust by breakpoint
-- Hamburger menu on mobile
+## Component Details
+
+**Market Status Indicators:**
+- Pill shape badges (px-3 py-1, rounded-full)
+- Icon + percentage change
+- Red (상승) or Blue (하락) backgrounds
+
+**Section Headers:**
+- Gradient icon container (w-12 h-12, rounded-xl)
+- Bold headline
+- Optional subtitle (text-slate-600)
+- Bottom border (border-b border-slate-200)
+
+**Cards:**
+- Consistent padding: p-6
+- Rounded corners: rounded-xl
+- Shadows: shadow-lg (primary), shadow-md (secondary)
+- Hover: hover:shadow-xl transition-shadow
+
+**Buttons:**
+- Primary: bg-indigo-600 hover:bg-indigo-700
+- Secondary: border-2 border-indigo-600 hover:bg-indigo-50
+- On hero images: bg-white/10 backdrop-blur-sm border border-white/20 (no additional hover/active states)
 
 ---
 
-## Animation
-- Subtle hover effects using hover-elevate
-- No heavy animations
-- Smooth transitions (transition-all)
+## Responsive Strategy
+- Mobile: Single column, stacked layout
+- Tablet: 2-column grids
+- Desktop: 3-4 column grids, side-by-side sections
+- All flex containers: flex-wrap
+- Touch-friendly tap targets: min 44x44px
 
 ---
 
-## Data Presentation
+## Data Formatting
+- Korean locale numbers: 1,234,567
+- Currency: ₩ symbol, comma separators
+- Percentages: +2.5%, -1.3% with appropriate colors
+- Dates: YYYY.MM.DD format
 
-**Number Formatting:**
-- Korean locale with comma separators
-- Currency symbols where appropriate
-- Percentage with +/- sign
+---
 
-**Status Indicators:**
-- 상승: TrendingUp icon + red text/bg
-- 하락: TrendingDown icon + blue text/bg
+## Animation & Interaction
+- Minimal, purposeful animations
+- Card hover: shadow elevation only
+- Transitions: transition-shadow, transition-colors (300ms)
+- No distracting motion
+- Smooth scroll behavior

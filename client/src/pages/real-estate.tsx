@@ -53,7 +53,7 @@ function ArticleCard({ article }: { article: Article }) {
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
           {category && (
-            <Badge className="absolute top-3 left-3 bg-gradient-to-r from-blue-500 to-sky-500 text-white border-0">
+            <Badge className="absolute top-3 left-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white border-0">
               {category.name}
             </Badge>
           )}
@@ -99,7 +99,7 @@ function CategoryTabs({ activeCategory, onCategoryChange }: {
         >
           전체
           {activeCategory === null && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-sky-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-600 to-blue-600" />
           )}
         </button>
         {categories.map((cat) => (
@@ -116,7 +116,7 @@ function CategoryTabs({ activeCategory, onCategoryChange }: {
             <cat.icon className="w-4 h-4" />
             {cat.name}
             {activeCategory === cat.id && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-sky-500" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-600 to-blue-600" />
             )}
           </button>
         ))}
@@ -161,7 +161,7 @@ function Sidebar({ articles }: { articles: Article[] }) {
             {popularArticles.map((article, index) => (
               <Link key={article.id} href={`/real-estate/${article.id}`}>
                 <div className="flex items-start gap-3 p-2 rounded-lg hover-elevate cursor-pointer" data-testid={`popular-article-${index + 1}`}>
-                  <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-blue-500 to-sky-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-indigo-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
                     {index + 1}
                   </span>
                   <p className="text-sm text-foreground line-clamp-2">{article.title}</p>
@@ -172,7 +172,7 @@ function Sidebar({ articles }: { articles: Article[] }) {
         </Card>
       )}
 
-      <Card className="p-5 bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-950/30 dark:to-sky-950/30 border-0 shadow-lg">
+      <Card className="p-5 bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950/30 dark:to-indigo-950/30 border-0 shadow-lg">
         <div className="flex items-center gap-2 mb-3">
           <Lightbulb className="w-5 h-5 text-amber-500" />
           <h3 className="font-bold text-foreground">오늘의 부동산 팁</h3>
@@ -180,7 +180,7 @@ function Sidebar({ articles }: { articles: Article[] }) {
         <p className="text-sm text-muted-foreground leading-relaxed">{randomTip}</p>
       </Card>
 
-      <Card className="p-5 bg-gradient-to-br from-blue-500 to-sky-500 border-0 shadow-lg text-white">
+      <Card className="p-5 bg-gradient-to-br from-indigo-600 to-blue-600 border-0 shadow-lg text-white">
         <div className="flex items-center gap-2 mb-3">
           <Bell className="w-5 h-5" />
           <h3 className="font-bold">뉴스레터 구독</h3>
@@ -189,7 +189,7 @@ function Sidebar({ articles }: { articles: Article[] }) {
           매주 부동산 시장 동향과 실전 팁을 받아보세요.
         </p>
         <Link href="/subscribe">
-          <Button className="w-full bg-white text-blue-600" data-testid="button-subscribe-sidebar">
+          <Button className="w-full bg-white text-indigo-700" data-testid="button-subscribe-sidebar">
             무료 구독하기
             <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
@@ -214,7 +214,7 @@ export default function RealEstate() {
     <div className="min-h-screen bg-background">
       <SharedHeader />
       
-      <section className="bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-400 text-white py-12 sm:py-16 px-4">
+      <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950 text-white py-12 sm:py-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-6">
             <Building className="w-8 h-8" />
@@ -238,7 +238,7 @@ export default function RealEstate() {
             
             {isLoading ? (
               <div className="text-center py-16">
-                <Loader2 className="w-12 h-12 mx-auto text-blue-500 animate-spin mb-4" />
+                <Loader2 className="w-12 h-12 mx-auto text-indigo-500 animate-spin mb-4" />
                 <p className="text-muted-foreground">로딩 중...</p>
               </div>
             ) : (

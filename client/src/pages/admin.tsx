@@ -81,7 +81,7 @@ function PasswordGate({ onAuthenticated }: { onAuthenticated: () => void }) {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 bg-card/95 backdrop-blur-sm shadow-2xl">
         <div className="flex flex-col items-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-sky-500 rounded-2xl flex items-center justify-center text-white shadow-lg mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg mb-4">
             <Lock className="w-8 h-8" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">관리자 인증</h1>
@@ -695,7 +695,7 @@ export default function Admin() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8 pb-24">
-        <Card className="p-6 mb-6 shadow-lg bg-gradient-to-r from-blue-50 to-sky-50 dark:from-blue-950/30 dark:to-sky-950/30">
+        <Card className="p-6 mb-6 shadow-lg bg-gradient-to-r from-slate-50 to-indigo-50 dark:from-slate-950/30 dark:to-indigo-950/30">
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <Calendar className="w-5 h-5 text-blue-600" />
             <h2 className="text-xl font-bold text-foreground">날짜 선택</h2>
@@ -1916,7 +1916,7 @@ export default function Admin() {
           <Button 
             onClick={handleSave} 
             disabled={isSaving}
-            className="w-full bg-gradient-to-r from-blue-500 to-sky-500 text-white shadow-lg h-12 text-lg"
+            className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg h-12 text-lg"
             data-testid="button-save"
           >
             <Save className="w-5 h-5 mr-2" />
