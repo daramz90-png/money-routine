@@ -257,6 +257,7 @@ export interface DashboardContent {
   heroSubtitle: string;
   summaries: SummaryItem[];
   ipos: IPOItem[];
+  ipoOpinion?: string;
   realEstates: RealEstateItem[];
   news: NewsItem[];
   todos: TodoItem[];
@@ -297,6 +298,7 @@ export const defaultContent: DashboardContent = {
       isHighlight: true,
     },
   ],
+  ipoOpinion: '',
   realEstates: [
     {
       id: '1',

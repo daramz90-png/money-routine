@@ -9,7 +9,7 @@ import {
   RefreshCw, TrendingUp, TrendingDown, DollarSign, Coins, 
   BarChart3, Bitcoin, LineChart, Building2, Gauge, Ship, 
   Check, Calendar, Newspaper, ListTodo, Quote, Bell,
-  Clock, ChartLine, Star, ExternalLink,
+  Clock, ChartLine, Star, ExternalLink, MessageCircle,
   CheckSquare, Building, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import type { MarketData, FearGreedData, DashboardContent, ManualMarketData } from '@shared/schema';
@@ -205,7 +205,7 @@ function RealEstateCard({ item }: { item: any }) {
   );
 }
 
-function ScheduleSection({ ipos, realEstates }: { ipos: any[]; realEstates: any[] }) {
+function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realEstates: any[]; ipoOpinion?: string }) {
   const apartments = realEstates.filter(r => r.type === 'apartment');
   const urban = realEstates.filter(r => r.type === 'urban');
   
@@ -231,6 +231,20 @@ function ScheduleSection({ ipos, realEstates }: { ipos: any[]; realEstates: any[
               <p className="text-muted-foreground text-center py-4">오늘 공모주 청약 일정이 없습니다</p>
             )}
           </div>
+          
+          {ipoOpinion && (
+            <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl border border-blue-200 dark:border-blue-800" data-testid="ipo-opinion-section">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MessageCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-blue-700 dark:text-blue-300 mb-1">공모주 할까말까?</h4>
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{ipoOpinion}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </Card>
         
         <Card className="p-6 shadow-lg border-0 bg-card">
@@ -765,7 +779,7 @@ export default function Home() {
       
       <main className="max-w-6xl mx-auto px-4 py-8">
         <SummarySection summaries={content.summaries} />
-        <ScheduleSection ipos={content.ipos} realEstates={content.realEstates} />
+        <ScheduleSection ipos={content.ipos} realEstates={content.realEstates} ipoOpinion={content.ipoOpinion} />
         <NewsSection news={content.news} />
         <TodoSection todos={content.todos} />
         <MarketSection 

@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, Save, Plus, Trash2, Check, TrendingUp, Building, 
-  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw, BookOpen, Edit, Loader2, Calendar
+  Newspaper, ListTodo, Quote, Coins, MessageSquare, Sparkles, Hash, Type, ChartLine, Lock, Users, Mail, RefreshCw, BookOpen, Edit, Loader2, Calendar, MessageCircle
 } from 'lucide-react';
 import type { DashboardContent, SummaryItem, IPOItem, RealEstateItem, NewsItem, TodoItem, ThoughtItem, ManualMarketData, Subscriber, RoutineArticle, Article, PageType } from '@shared/schema';
 import { defaultContent, defaultManualMarketData } from '@shared/schema';
@@ -847,6 +847,20 @@ export default function Admin() {
               <Plus className="w-4 h-4 mr-2" />
               공모주 추가
             </Button>
+            
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center gap-2 mb-3">
+                <MessageCircle className="w-5 h-5 text-blue-600" />
+                <Label className="text-base font-bold text-blue-700 dark:text-blue-300">공모주 할까말까? 의견</Label>
+              </div>
+              <Textarea
+                value={content.ipoOpinion || ''}
+                onChange={(e) => setContent({ ...content, ipoOpinion: e.target.value })}
+                placeholder="오늘의 공모주에 대한 의견을 작성하세요. (예: 세미파이브는 반도체 설계 기업으로 성장 가능성이 높아 청약 추천합니다!)"
+                className="min-h-[100px]"
+                data-testid="input-ipo-opinion"
+              />
+            </div>
           </div>
         </Card>
 
