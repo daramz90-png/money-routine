@@ -12,7 +12,7 @@ import {
   Clock, ChartLine, Star, ExternalLink, MessageCircle,
   CheckSquare, Building, ChevronLeft, ChevronRight, Camera, Download
 } from 'lucide-react';
-import domtoimage from 'dom-to-image-more';
+import html2canvas from 'html2canvas';
 import type { MarketData, FearGreedData, DashboardContent, ManualMarketData } from '@shared/schema';
 import { initialMarketData, defaultContent, defaultManualMarketData } from '@shared/schema';
 import { SharedHeader } from '@/components/shared-header';
@@ -822,23 +822,29 @@ export default function Home() {
     
     try {
       window.scrollTo(0, 0);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const element = pageRef.current;
-      const scale = 2;
       
-      const dataUrl = await domtoimage.toPng(element, {
-        quality: 1,
-        width: element.scrollWidth * scale,
-        height: element.scrollHeight * scale,
-        style: {
-          transform: `scale(${scale})`,
-          transformOrigin: 'top left',
-          width: `${element.scrollWidth}px`,
-          height: `${element.scrollHeight}px`,
-        },
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        foreignObjectRendering: true,
+        removeContainer: true,
+        imageTimeout: 15000,
+        onclone: (clonedDoc) => {
+          const svgs = clonedDoc.querySelectorAll('svg');
+          svgs.forEach((svg) => {
+            svg.setAttribute('width', svg.getBoundingClientRect().width.toString());
+            svg.setAttribute('height', svg.getBoundingClientRect().height.toString());
+          });
+        }
       });
       
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
       const link = document.createElement('a');
       link.download = `쿠쿠의돈루틴_${currentDate}.png`;
       link.href = dataUrl;
