@@ -214,6 +214,18 @@ function RealEstateCard({ item }: { item: any }) {
           <p className="text-foreground font-medium">{item.period}</p>
         </div>
       </div>
+      {item.link && (
+        <a 
+          href={item.link} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center gap-1 text-sm text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium"
+          data-testid={`realestate-link-${item.id}`}
+        >
+          <ExternalLink className="w-3 h-3" />
+          청약하는 곳 위치 확인하기
+        </a>
+      )}
     </div>
   );
 }

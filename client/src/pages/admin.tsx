@@ -593,6 +593,7 @@ export default function Admin() {
         period: '',
         priority: '',
         type: 'apartment',
+        link: '',
       }]
     }));
   };
@@ -909,6 +910,14 @@ export default function Admin() {
                       <option value="apartment">아파트</option>
                       <option value="urban">도시형 생활주택</option>
                     </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <Label>링크 (선택)</Label>
+                    <Input 
+                      value={item.link || ''} 
+                      onChange={(e) => updateRealEstate(item.id, 'link', e.target.value)} 
+                      placeholder="https://청약홈링크..."
+                    />
                   </div>
                 </div>
               </Card>

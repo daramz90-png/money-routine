@@ -135,6 +135,7 @@ export interface RealEstateItem {
   period: string;
   priority: string;
   type: 'apartment' | 'urban';
+  link?: string;
 }
 
 export interface NewsItem {
