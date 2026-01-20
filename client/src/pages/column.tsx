@@ -161,22 +161,24 @@ function AuthorIntro() {
             ))}
           </div>
 
-          <div className="bg-white/60 dark:bg-white/10 rounded-lg p-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm">
-              <TrendingUp className="w-4 h-4 text-green-600" />
-              <span className="text-foreground">지방/서울 투자로 <strong>5억+</strong> 수익</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Star className="w-4 h-4 text-amber-500" />
-              <span className="text-foreground">공모주 청약으로 월 <strong>10~50만원</strong></span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Building2 className="w-4 h-4 text-indigo-600" />
-              <span className="text-foreground">분양권 투자 <strong>3회</strong></span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <ShoppingBag className="w-4 h-4 text-orange-500" />
-              <span className="text-foreground">스마트스토어/쿠팡 부업으로 소소한 수익중</span>
+          <div className="bg-white/60 dark:bg-white/10 rounded-lg p-4">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex items-center gap-2 text-sm">
+                <TrendingUp className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <span className="text-foreground">지방/서울 투자로 <strong>5억+</strong> 수익 (매매 3회)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Star className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                <span className="text-foreground">공모주 청약으로 월 <strong>10~50만원</strong></span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Building2 className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                <span className="text-foreground">분양권 투자 <strong>3회</strong></span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <ShoppingBag className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                <span className="text-foreground">스마트스토어/쿠팡 부업으로 소소한 수익중</span>
+              </div>
             </div>
           </div>
 

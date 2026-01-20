@@ -156,7 +156,7 @@ function ProfileSection() {
                 </div>
                 <div className="flex items-center gap-2 justify-center md:justify-start">
                   <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-foreground">지방/서울 투자로 5억 이상 수익</span>
+                  <span className="text-foreground">지방/서울 투자로 5억+ 수익 (매매 3회)</span>
                 </div>
                 <div className="flex items-center gap-2 justify-center md:justify-start">
                   <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
