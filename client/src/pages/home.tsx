@@ -61,14 +61,14 @@ function HeroSection({
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent"></div>
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
       <div className="max-w-6xl mx-auto text-center relative z-10">
-        <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
+        <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-4 py-1.5 rounded-full text-base font-medium mb-4">
           <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
           LIVE 실시간 금융 데이터
         </div>
-        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight tracking-tight" data-testid="text-hero-title">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight tracking-tight" data-testid="text-hero-title">
           {title || '하루 5분으로 시작하는 재테크'}
         </h1>
-        <p className="text-base sm:text-lg text-slate-300 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-2">
+        <p className="text-lg sm:text-xl text-slate-300 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-2">
           {subtitle || '공모주 청약부터 부동산 뉴스, 놓치기 쉬운 정책 정보까지!'}
         </p>
         
@@ -110,7 +110,7 @@ function HeroSection({
               <button
                 key={d}
                 onClick={() => onDateChange(d)}
-                className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                className={`px-3 py-1.5 rounded-md text-base transition-all ${
                   d === selectedDate 
                     ? 'bg-emerald-500 text-white font-medium shadow-lg shadow-emerald-500/25' 
                     : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700'
@@ -135,18 +135,18 @@ function SummarySection({ summaries }: { summaries: { id: string; text: string }
           <Check className="w-5 h-5" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">오늘의 주요 요약</h2>
-          <p className="text-sm text-muted-foreground">Today's Key Points</p>
+          <h2 className="text-2xl font-bold text-foreground">오늘의 주요 요약</h2>
+          <p className="text-base text-muted-foreground">Today's Key Points</p>
         </div>
       </div>
       <Card className="p-0 shadow-lg border border-slate-200 dark:border-slate-800 bg-card overflow-hidden">
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
           {summaries.map((item, index) => (
             <div key={item.id} className="flex flex-wrap items-start gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" data-testid={`summary-${item.id}`}>
-              <div className="w-7 h-7 bg-emerald-500 rounded flex items-center justify-center flex-shrink-0 mt-0.5 text-white font-bold text-sm">
+              <div className="w-8 h-8 bg-emerald-500 rounded flex items-center justify-center flex-shrink-0 mt-0.5 text-white font-bold text-base">
                 {index + 1}
               </div>
-              <span className="text-foreground flex-1 min-w-0 leading-relaxed">{item.text}</span>
+              <span className="text-foreground text-lg flex-1 min-w-0 leading-relaxed">{item.text}</span>
             </div>
           ))}
         </div>
@@ -159,36 +159,36 @@ function IPOCard({ ipo }: { ipo: any }) {
   return (
     <div className={`p-4 rounded-lg border transition-all ${ipo.isHighlight ? 'border-red-300 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50'}`} data-testid={`ipo-${ipo.id}`}>
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
-        <h4 className="text-base font-bold text-foreground">{ipo.name}</h4>
+        <h4 className="text-lg font-bold text-foreground">{ipo.name}</h4>
         <div className="flex items-center gap-2">
           {ipo.isHighlight && (
-            <Badge className="bg-red-500 text-white text-xs">
+            <Badge className="bg-red-500 text-white text-sm">
               <Star className="w-3 h-3 mr-1" />
               청약
             </Badge>
           )}
-          <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{ipo.score}점</span>
+          <span className="text-base font-semibold text-emerald-600 dark:text-emerald-400">{ipo.score}점</span>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+      <div className="grid grid-cols-2 gap-2 text-base mb-3">
         <div>
-          <span className="text-muted-foreground text-xs">청약기간</span>
+          <span className="text-muted-foreground text-sm">청약기간</span>
           <p className="font-medium text-foreground">{ipo.period}</p>
         </div>
         <div>
-          <span className="text-muted-foreground text-xs">공모가</span>
+          <span className="text-muted-foreground text-sm">공모가</span>
           <p className="font-medium text-foreground">{ipo.price}</p>
         </div>
         <div>
-          <span className="text-muted-foreground text-xs">최소금액</span>
+          <span className="text-muted-foreground text-sm">최소금액</span>
           <p className="font-medium text-foreground">{ipo.minAmount}</p>
         </div>
         <div>
-          <span className="text-muted-foreground text-xs">증권사</span>
+          <span className="text-muted-foreground text-sm">증권사</span>
           <p className="font-medium text-foreground">{ipo.broker}</p>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground border-t border-slate-200 dark:border-slate-700 pt-2">{ipo.description}</p>
+      <p className="text-sm text-muted-foreground border-t border-slate-200 dark:border-slate-700 pt-2">{ipo.description}</p>
     </div>
   );
 }
@@ -197,10 +197,10 @@ function RealEstateCard({ item }: { item: any }) {
   return (
     <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50" data-testid={`realestate-${item.id}`}>
       <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
-        <h4 className="font-bold text-foreground text-sm">{item.name}</h4>
-        <Badge variant="outline" className="text-xs border-emerald-300 text-emerald-600 dark:border-emerald-700 dark:text-emerald-400">{item.priority}</Badge>
+        <h4 className="font-bold text-foreground text-base">{item.name}</h4>
+        <Badge variant="outline" className="text-sm border-emerald-300 text-emerald-600 dark:border-emerald-700 dark:text-emerald-400">{item.priority}</Badge>
       </div>
-      <div className="grid grid-cols-3 gap-2 text-xs">
+      <div className="grid grid-cols-3 gap-2 text-sm">
         <div>
           <span className="text-muted-foreground">위치</span>
           <p className="text-foreground font-medium">{item.location}</p>
@@ -229,8 +229,8 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
           <Calendar className="w-5 h-5" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">오늘의 재테크 일정</h2>
-          <p className="text-sm text-muted-foreground">Today's Investment Schedule</p>
+          <h2 className="text-2xl font-bold text-foreground">오늘의 재테크 일정</h2>
+          <p className="text-base text-muted-foreground">Today's Investment Schedule</p>
         </div>
       </div>
       
@@ -240,14 +240,14 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
             <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-base font-bold text-foreground">공모주 청약</h3>
-            <span className="ml-auto text-xs text-muted-foreground">IPO</span>
+            <h3 className="text-lg font-bold text-foreground">공모주 청약</h3>
+            <span className="ml-auto text-sm text-muted-foreground">IPO</span>
           </div>
           <div className="space-y-3">
             {ipos.length > 0 ? (
               ipos.map((ipo) => <IPOCard key={ipo.id} ipo={ipo} />)
             ) : (
-              <p className="text-muted-foreground text-center py-6 text-sm">오늘 공모주 청약 일정이 없습니다</p>
+              <p className="text-muted-foreground text-center py-6 text-base">오늘 공모주 청약 일정이 없습니다</p>
             )}
           </div>
           
@@ -258,8 +258,8 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
                   <MessageCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-foreground mb-1">쿠쿠의 의견</h4>
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{ipoOpinion}</p>
+                  <h4 className="text-base font-bold text-foreground mb-1">쿠쿠의 의견</h4>
+                  <p className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed">{ipoOpinion}</p>
                 </div>
               </div>
             </div>
@@ -271,7 +271,7 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
             <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
               <Building className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h3 className="text-base font-bold text-foreground">부동산 청약</h3>
+            <h3 className="text-lg font-bold text-foreground">부동산 청약</h3>
             <a 
               href="https://www.applyhome.co.kr/co/coa/selectMainView.do" 
               target="_blank" 
@@ -279,7 +279,7 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
               className="ml-auto"
               data-testid="link-applyhome"
             >
-              <Badge className="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 cursor-pointer text-xs">
+              <Badge className="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 cursor-pointer text-sm">
                 <ExternalLink className="w-3 h-3 mr-1" />
                 청약홈
               </Badge>
@@ -288,7 +288,7 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
           
           {apartments.length > 0 && (
             <div className="mb-4">
-              <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">아파트</h4>
+              <h4 className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wide">아파트</h4>
               <div className="space-y-2">
                 {apartments.map((item) => <RealEstateCard key={item.id} item={item} />)}
               </div>
@@ -297,7 +297,7 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
           
           {urban.length > 0 && (
             <div>
-              <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">도시형 생활주택</h4>
+              <h4 className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wide">도시형 생활주택</h4>
               <div className="space-y-2">
                 {urban.map((item) => <RealEstateCard key={item.id} item={item} />)}
               </div>
@@ -305,7 +305,7 @@ function ScheduleSection({ ipos, realEstates, ipoOpinion }: { ipos: any[]; realE
           )}
           
           {apartments.length === 0 && urban.length === 0 && (
-            <p className="text-muted-foreground text-center py-6 text-sm">오늘 부동산 청약 일정이 없습니다</p>
+            <p className="text-muted-foreground text-center py-6 text-base">오늘 부동산 청약 일정이 없습니다</p>
           )}
         </Card>
       </div>
@@ -321,8 +321,8 @@ function NewsSection({ news }: { news: any[] }) {
           <Newspaper className="w-5 h-5" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">오늘의 뉴스픽</h2>
-          <p className="text-sm text-muted-foreground">Today's News Pick</p>
+          <h2 className="text-2xl font-bold text-foreground">오늘의 뉴스픽</h2>
+          <p className="text-base text-muted-foreground">Today's News Pick</p>
         </div>
       </div>
       
@@ -332,10 +332,10 @@ function NewsSection({ news }: { news: any[] }) {
             <div className="flex flex-wrap gap-4">
               <div className="w-1 bg-emerald-500 rounded flex-shrink-0"></div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-bold text-foreground mb-1">{item.title}</h3>
-                <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{item.summary}</p>
+                <h3 className="text-lg font-bold text-foreground mb-1">{item.title}</h3>
+                <p className="text-base text-muted-foreground mb-2 line-clamp-2">{item.summary}</p>
                 {item.url && (
-                  <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex flex-wrap items-center gap-1 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium text-xs">
+                  <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex flex-wrap items-center gap-1 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium text-sm">
                     기사 보기
                     <ExternalLink className="w-3 h-3" />
                   </a>
@@ -358,8 +358,8 @@ function TodoSection({ todos }: { todos: any[] }) {
             <ListTodo className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-foreground">오늘 해야하는 것</h2>
-            <p className="text-sm text-amber-600 dark:text-amber-400">Action Required</p>
+            <h2 className="text-2xl font-bold text-foreground">오늘 해야하는 것</h2>
+            <p className="text-base text-amber-600 dark:text-amber-400">Action Required</p>
           </div>
         </div>
         
@@ -369,8 +369,8 @@ function TodoSection({ todos }: { todos: any[] }) {
               <div className="flex flex-wrap items-start gap-3">
                 <CheckSquare className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-foreground text-sm mb-0.5">{todo.title}</h4>
-                  <p className="text-xs text-muted-foreground">{todo.description}</p>
+                  <h4 className="font-bold text-foreground text-base mb-0.5">{todo.title}</h4>
+                  <p className="text-sm text-muted-foreground">{todo.description}</p>
                 </div>
               </div>
             </div>
@@ -402,19 +402,19 @@ function MarketCard({
   
   const cardContent = (
     <>
-      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
+      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-2">
         {Icon && <Icon className="w-4 h-4" />}
         <span className="font-medium">{name}</span>
         {url && <ExternalLink className="w-3 h-3 ml-auto opacity-40" />}
       </div>
       {loading ? (
-        <Skeleton className="h-7 w-24 mb-1" />
+        <Skeleton className="h-8 w-24 mb-1" />
       ) : (
-        <div className="text-xl font-bold text-foreground tabular-nums mb-0.5">{value}</div>
+        <div className="text-2xl font-bold text-foreground tabular-nums mb-0.5">{value}</div>
       )}
-      {unit && <div className="text-xs text-muted-foreground mb-2">{unit}</div>}
+      {unit && <div className="text-sm text-muted-foreground mb-2">{unit}</div>}
       {!loading && change !== 0 && (
-        <div className={`inline-flex flex-wrap items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded ${
+        <div className={`inline-flex flex-wrap items-center gap-1 text-sm font-semibold px-2 py-0.5 rounded ${
           isUp ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
         }`}>
           {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -455,20 +455,20 @@ function FearGreedCard({ data, url }: { data: FearGreedData; url?: string }) {
 
   const cardContent = (
     <>
-      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
+      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-2">
         <Gauge className="w-4 h-4" />
         <span className="font-medium">CNN 공포지수</span>
         {url && <ExternalLink className="w-3 h-3 ml-auto opacity-40" />}
       </div>
       {data.loading ? (
-        <Skeleton className="h-7 w-12 mb-1" />
+        <Skeleton className="h-8 w-12 mb-1" />
       ) : (
-        <div className={`text-2xl font-bold mb-0.5 tabular-nums ${style.color}`}>{data.value}</div>
+        <div className={`text-3xl font-bold mb-0.5 tabular-nums ${style.color}`}>{data.value}</div>
       )}
       {data.loading ? (
-        <Skeleton className="h-5 w-16" />
+        <Skeleton className="h-6 w-16" />
       ) : (
-        <div className={`inline-block text-xs font-semibold px-2 py-0.5 rounded ${style.bg} ${style.color}`}>
+        <div className={`inline-block text-sm font-semibold px-2 py-0.5 rounded ${style.bg} ${style.color}`}>
           {data.status}
         </div>
       )}
@@ -508,8 +508,8 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
             <ChartLine className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-foreground">{title || '주요 항목 시세 CHECK'}</h2>
-            <p className="text-sm text-muted-foreground">Real-time Market Data</p>
+            <h2 className="text-2xl font-bold text-foreground">{title || '주요 항목 시세 CHECK'}</h2>
+            <p className="text-base text-muted-foreground">Real-time Market Data</p>
           </div>
         </div>
         <Button 
@@ -594,7 +594,7 @@ function MarketSection({ marketData, isLoading, isFetching, onRefresh, title, re
           url="https://m.stock.naver.com/marketindex/transport/.SCFIDXSSE"
         />
       </div>
-      <p className="mt-4 text-xs text-muted-foreground text-center">
+      <p className="mt-4 text-sm text-muted-foreground text-center">
         {refreshNote || '* 데이터는 1분마다 자동 갱신됩니다'}
       </p>
     </section>
@@ -609,8 +609,8 @@ function ThoughtsSection({ thoughts }: { thoughts: { id: string; title: string; 
           <DollarSign className="w-5 h-5" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">오늘 쿠쿠의 생각</h2>
-          <p className="text-sm text-muted-foreground">Today's Insight</p>
+          <h2 className="text-2xl font-bold text-foreground">오늘 쿠쿠의 생각</h2>
+          <p className="text-base text-muted-foreground">Today's Insight</p>
         </div>
       </div>
       
@@ -622,11 +622,11 @@ function ThoughtsSection({ thoughts }: { thoughts: { id: string; title: string; 
                 <div className="w-6 h-6 rounded bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                   <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <h3 className="text-base font-bold text-foreground">{thought.title}</h3>
+                <h3 className="text-lg font-bold text-foreground">{thought.title}</h3>
               </div>
               <div className="pl-8 space-y-2">
                 {thought.content.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="text-sm text-muted-foreground leading-relaxed">{paragraph}</p>
+                  <p key={idx} className="text-base text-muted-foreground leading-relaxed">{paragraph}</p>
                 ))}
               </div>
             </div>
@@ -634,7 +634,7 @@ function ThoughtsSection({ thoughts }: { thoughts: { id: string; title: string; 
         </div>
         
         <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-          <p className="text-center text-base font-medium text-foreground">
+          <p className="text-center text-lg font-medium text-foreground">
             오늘도 흔들림 없이, 루틴대로 갑시다
           </p>
         </div>
@@ -649,11 +649,11 @@ function QuoteSection({ quote }: { quote: { text: string; author: string } }) {
       <Card className="p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl border border-slate-700 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-emerald-900/10 via-transparent to-transparent"></div>
         <div className="text-center relative z-10">
-          <Quote className="w-8 h-8 mx-auto mb-3 text-emerald-400/60" />
-          <p className="text-lg sm:text-xl font-medium mb-3 italic leading-relaxed text-slate-100">
+          <Quote className="w-10 h-10 mx-auto mb-3 text-emerald-400/60" />
+          <p className="text-xl sm:text-2xl font-medium mb-3 italic leading-relaxed text-slate-100">
             "{quote.text}"
           </p>
-          <p className="text-emerald-400 text-sm">– {quote.author}</p>
+          <p className="text-emerald-400 text-base">– {quote.author}</p>
         </div>
       </Card>
     </section>
@@ -664,10 +664,10 @@ function ClosingSection({ closingMessage, closingSubMessage, subscribeButtonText
   return (
     <section className="py-8">
       <Card className="p-6 text-center shadow-lg border border-slate-200 dark:border-slate-800 bg-card">
-        <p className="text-lg font-medium text-foreground mb-1">
+        <p className="text-xl font-medium text-foreground mb-1">
           {closingMessage || '오늘 하루도 차분하게, 그리고 흔들리지 않게 갑시다'}
         </p>
-        <p className="text-sm text-muted-foreground mb-5">{closingSubMessage || '오늘도 화이팅입니다 ^^'}</p>
+        <p className="text-base text-muted-foreground mb-5">{closingSubMessage || '오늘도 화이팅입니다 ^^'}</p>
         <Link href="/subscribe">
           <Button 
             className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
@@ -690,18 +690,18 @@ function Footer({ hashtags, footerText }: { hashtags: string[]; footerText: stri
     <footer className="bg-slate-950 text-white py-10 mt-8 border-t border-slate-800">
       <div className="max-w-6xl mx-auto px-4 text-center">
         <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
-          <div className="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center">
-            <Coins className="w-5 h-5" />
+          <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+            <Coins className="w-6 h-6" />
           </div>
-          <span className="text-lg font-bold">쿠쿠의 돈루틴</span>
+          <span className="text-xl font-bold">쿠쿠의 돈루틴</span>
         </div>
-        <p className="text-slate-400 text-sm mb-4">{footerText || '하루 5분으로 시작하는 재테크 루틴'}</p>
+        <p className="text-slate-400 text-base mb-4">{footerText || '하루 5분으로 시작하는 재테크 루틴'}</p>
         <div className="flex flex-wrap justify-center gap-2 mb-4">
           {displayHashtags.map((tag) => (
-            <span key={tag} className="text-xs text-emerald-400">#{tag}</span>
+            <span key={tag} className="text-sm text-emerald-400">#{tag}</span>
           ))}
         </div>
-        <p className="text-slate-600 text-xs">© 2026 쿠쿠의 돈루틴. All rights reserved.</p>
+        <p className="text-slate-600 text-sm">© 2026 쿠쿠의 돈루틴. All rights reserved.</p>
       </div>
     </footer>
   );
